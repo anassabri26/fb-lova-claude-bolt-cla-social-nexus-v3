@@ -26,7 +26,7 @@ export const usePosts = () => {
         .from('posts')
         .select(`
           *,
-          profiles (full_name, avatar_url)
+          profiles!posts_user_id_fkey (full_name, avatar_url)
         `)
         .order('created_at', { ascending: false });
 

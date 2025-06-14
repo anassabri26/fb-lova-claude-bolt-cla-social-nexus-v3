@@ -23,7 +23,7 @@ export const useComments = (postId: string) => {
         .from('comments')
         .select(`
           *,
-          profiles (full_name, avatar_url)
+          profiles!comments_user_id_fkey (full_name, avatar_url)
         `)
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
@@ -50,7 +50,7 @@ export const useCreateComment = () => {
         ])
         .select(`
           *,
-          profiles (full_name, avatar_url)
+          profiles!comments_user_id_fkey (full_name, avatar_url)
         `)
         .single();
 
