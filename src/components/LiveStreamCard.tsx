@@ -1,33 +1,53 @@
 
-import React from 'react';
-import { Play, Eye, Heart, MessageCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Users, Heart, MessageCircle, Share } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import AccessibleButton from './AccessibleButton';
+import { toast } from 'sonner';
 
 interface LiveStream {
   id: string;
+  title: string;
   streamer: {
     name: string;
     avatar: string;
-    verified: boolean;
   };
-  title: string;
   thumbnail: string;
-  viewers: number;
+  viewerCount: number;
   duration: string;
   category: string;
 }
 
 interface LiveStreamCardProps {
   stream: LiveStream;
-  onClick?: () => void;
 }
 
-const LiveStreamCard = ({ stream, onClick }: LiveStreamCardProps) => {
+const LiveStreamCard = ({ stream }: LiveStreamCardProps) => {
+  const [isWatching, setIsWatching] = useState(false);
+  const [likes, setLikes] = useState(Math.floor(Math.random() * 500) + 50);
+  const [isLiked, setIsLiked] = useState(false);
+
+  const handleWatch = () => {
+    setIsWatching(true);
+    toast.success(`Now watching ${stream.title}`);
+  };
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikes(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
+  const handleComment = () => {
+    toast.info('Comments feature coming soon!');
+  };
+
+  const handleShare = () => {
+    toast.success('Link copied to clipboard!');
+  };
+
   return (
-    <Card className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow" onClick={onClick}>
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <CardContent className="p-0">
         <div className="relative">
           <img
@@ -35,62 +55,80 @@ const LiveStreamCard = ({ stream, onClick }: LiveStreamCardProps) => {
             alt={stream.title}
             className="w-full h-48 object-cover"
           />
-          <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-            <Play className="w-12 h-12 text-white" />
-          </div>
-          <Badge className="absolute top-2 left-2 bg-red-600 text-white">
+          
+          {/* Live indicator */}
+          <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
             LIVE
-          </Badge>
-          <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-            {stream.duration}
           </div>
-          <div className="absolute bottom-2 right-2 flex items-center bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-            <Eye className="w-3 h-3 mr-1" />
-            {stream.viewers.toLocaleString()}
+          
+          {/* Viewer count */}
+          <div className="absolute top-3 right-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded flex items-center space-x-1">
+            <Users className="w-3 h-3" />
+            <span className="text-xs">{stream.viewerCount.toLocaleString()}</span>
+          </div>
+          
+          {/* Play button overlay */}
+          {!isWatching && (
+            <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+              <AccessibleButton
+                onClick={handleWatch}
+                className="bg-white bg-opacity-90 hover:bg-opacity-100 text-black rounded-full w-16 h-16"
+              >
+                <Play className="w-8 h-8 ml-1" />
+              </AccessibleButton>
+            </div>
+          )}
+          
+          {/* Duration */}
+          <div className="absolute bottom-3 right-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+            {stream.duration}
           </div>
         </div>
         
-        <div className="p-3">
-          <div className="flex items-start space-x-3">
+        <div className="p-4">
+          <div className="flex items-start space-x-3 mb-3">
             <Avatar className="w-10 h-10">
               <AvatarImage src={stream.streamer.avatar} />
               <AvatarFallback>{stream.streamer.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 text-sm line-clamp-2">
-                {stream.title}
-              </h3>
-              <div className="flex items-center space-x-1 mt-1">
-                <p className="text-sm text-gray-600">{stream.streamer.name}</p>
-                {stream.streamer.verified && (
-                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs">✓</span>
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-gray-500 mt-1">{stream.category}</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1">{stream.title}</h3>
+              <p className="text-sm text-gray-600">{stream.streamer.name}</p>
+              <p className="text-xs text-gray-500">{stream.category}</p>
             </div>
           </div>
           
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-            <div className="flex space-x-4">
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                className="flex items-center space-x-1 text-gray-600 hover:text-red-600"
-              >
-                <Heart className="w-4 h-4" />
-                <span className="text-xs">Like</span>
-              </AccessibleButton>
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span className="text-xs">Chat</span>
-              </AccessibleButton>
-            </div>
+          {/* Action buttons */}
+          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              onClick={handleLike}
+              className={`flex items-center space-x-1 ${isLiked ? 'text-red-600' : 'text-gray-600'}`}
+            >
+              <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+              <span className="text-sm">{likes}</span>
+            </AccessibleButton>
+            
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              onClick={handleComment}
+              className="flex items-center space-x-1 text-gray-600"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span className="text-sm">Comment</span>
+            </AccessibleButton>
+            
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              onClick={handleShare}
+              className="flex items-center space-x-1 text-gray-600"
+            >
+              <Share className="w-4 h-4" />
+              <span className="text-sm">Share</span>
+            </AccessibleButton>
           </div>
         </div>
       </CardContent>

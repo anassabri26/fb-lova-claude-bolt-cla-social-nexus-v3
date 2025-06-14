@@ -2,7 +2,6 @@
 import React from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import RightSidebar from '../components/RightSidebar';
 import MobileNavigation from '../components/MobileNavigation';
 import SavedPostsList from '../components/SavedPostsList';
 
@@ -15,7 +14,6 @@ const Saved = () => {
         <main className="flex-1 px-4 py-6">
           <SavedPostsList />
         </main>
-        <RightSidebar />
       </div>
       <MobileNavigation />
     </div>
