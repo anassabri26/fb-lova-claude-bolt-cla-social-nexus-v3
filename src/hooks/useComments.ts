@@ -19,17 +19,32 @@ export const useComments = (postId: string) => {
   return useQuery({
     queryKey: ['comments', postId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First, get comments
+      const { data: comments, error } = await supabase
         .from('comments')
-        .select(`
-          *,
-          profiles!comments_user_id_fkey (full_name, avatar_url)
-        `)
+        .select('*')
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      return data as Comment[];
+
+      // Then, get profiles for each comment
+      const commentsWithProfiles = await Promise.all(
+        (comments || []).map(async (comment) => {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name, avatar_url')
+            .eq('id', comment.user_id)
+            .single();
+
+          return {
+            ...comment,
+            profiles: profile
+          };
+        })
+      );
+
+      return commentsWithProfiles as Comment[];
     }
   });
 };
@@ -48,14 +63,22 @@ export const useCreateComment = () => {
             user_id: (await supabase.auth.getUser()).data.user?.id
           }
         ])
-        .select(`
-          *,
-          profiles!comments_user_id_fkey (full_name, avatar_url)
-        `)
+        .select()
         .single();
 
       if (error) throw error;
-      return data;
+
+      // Get profile data for the new comment
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', data.user_id)
+        .single();
+
+      return {
+        ...data,
+        profiles: profile
+      };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['comments', data.post_id] });

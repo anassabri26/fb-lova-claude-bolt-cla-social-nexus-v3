@@ -22,20 +22,18 @@ export const usePosts = () => {
   return useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Get posts
+      const { data: posts, error } = await supabase
         .from('posts')
-        .select(`
-          *,
-          profiles!posts_user_id_fkey (full_name, avatar_url)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       
       // Get likes count and user's like status for each post
       const postsWithCounts = await Promise.all(
-        (data || []).map(async (post) => {
-          const [likesResult, userLikeResult] = await Promise.all([
+        (posts || []).map(async (post) => {
+          const [likesResult, userLikeResult, profile] = await Promise.all([
             supabase
               .from('likes')
               .select('id', { count: 'exact' })
@@ -45,13 +43,19 @@ export const usePosts = () => {
               .select('id')
               .eq('post_id', post.id)
               .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+              .single(),
+            supabase
+              .from('profiles')
+              .select('full_name, avatar_url')
+              .eq('id', post.user_id)
               .single()
           ]);
 
           return {
             ...post,
             likes_count: likesResult.count || 0,
-            user_has_liked: !userLikeResult.error
+            user_has_liked: !userLikeResult.error,
+            profiles: profile.data
           };
         })
       );

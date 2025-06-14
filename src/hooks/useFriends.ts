@@ -26,17 +26,32 @@ export const useFriendRequests = () => {
       const user = await supabase.auth.getUser();
       if (!user.data.user) return [];
 
-      const { data, error } = await supabase
+      // Get friend requests
+      const { data: requests, error } = await supabase
         .from('friendships')
-        .select(`
-          *,
-          requester_profile:profiles!friendships_requester_id_fkey (full_name, avatar_url)
-        `)
+        .select('*')
         .eq('addressee_id', user.data.user.id)
         .eq('status', 'pending');
 
       if (error) throw error;
-      return data as Friendship[];
+
+      // Get profiles for each request
+      const requestsWithProfiles = await Promise.all(
+        (requests || []).map(async (request) => {
+          const { data: requesterProfile } = await supabase
+            .from('profiles')
+            .select('full_name, avatar_url')
+            .eq('id', request.requester_id)
+            .single();
+
+          return {
+            ...request,
+            requester_profile: requesterProfile
+          };
+        })
+      );
+
+      return requestsWithProfiles as Friendship[];
     }
   });
 };
@@ -48,18 +63,40 @@ export const useFriends = () => {
       const user = await supabase.auth.getUser();
       if (!user.data.user) return [];
 
-      const { data, error } = await supabase
+      // Get friendships
+      const { data: friendships, error } = await supabase
         .from('friendships')
-        .select(`
-          *,
-          requester_profile:profiles!friendships_requester_id_fkey (full_name, avatar_url),
-          addressee_profile:profiles!friendships_addressee_id_fkey (full_name, avatar_url)
-        `)
+        .select('*')
         .or(`requester_id.eq.${user.data.user.id},addressee_id.eq.${user.data.user.id}`)
         .eq('status', 'accepted');
 
       if (error) throw error;
-      return data as Friendship[];
+
+      // Get profiles for each friendship
+      const friendshipsWithProfiles = await Promise.all(
+        (friendships || []).map(async (friendship) => {
+          const [requesterProfile, addresseeProfile] = await Promise.all([
+            supabase
+              .from('profiles')
+              .select('full_name, avatar_url')
+              .eq('id', friendship.requester_id)
+              .single(),
+            supabase
+              .from('profiles')
+              .select('full_name, avatar_url')
+              .eq('id', friendship.addressee_id)
+              .single()
+          ]);
+
+          return {
+            ...friendship,
+            requester_profile: requesterProfile.data,
+            addressee_profile: addresseeProfile.data
+          };
+        })
+      );
+
+      return friendshipsWithProfiles as Friendship[];
     }
   });
 };
