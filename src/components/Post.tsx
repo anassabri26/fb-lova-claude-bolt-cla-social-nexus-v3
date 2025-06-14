@@ -63,6 +63,10 @@ const Post: React.FC<PostProps> = ({ post }) => {
     toast.success('Post shared!');
   };
 
+  const handleCloseComments = () => {
+    setShowComments(false);
+  };
+
   const getUserReactionIcon = () => {
     if (!userReaction) return ThumbsUp;
     const reaction = reactions.find(r => r.type === userReaction);
@@ -209,7 +213,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
         <CommentSystem 
           postId={post.id} 
           isVisible={showComments} 
-          onClose={() => setShowComments(false)} 
+          onClose={handleCloseComments}
         />
       </CardContent>
     </Card>
