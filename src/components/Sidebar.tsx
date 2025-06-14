@@ -29,7 +29,7 @@ const Sidebar = () => {
   ];
 
   const handleNavigation = (path: string) => {
-    if (path === '/' || path === '/profile') {
+    if (path === '/' || path === '/profile' || path === '/friends' || path === '/messages' || path === '/watch') {
       navigate(path);
     } else {
       // For routes that don't exist yet, show in console

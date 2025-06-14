@@ -28,6 +28,14 @@ const Header = () => {
     navigate('/profile');
   };
 
+  const handleNotificationsClick = () => {
+    if (isNotificationsOpen) {
+      setIsNotificationsOpen(false);
+    } else {
+      navigate('/notifications');
+    }
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
@@ -79,7 +87,7 @@ const Header = () => {
                 variant="ghost" 
                 size="sm" 
                 className="relative p-2 rounded-full hover:bg-gray-100"
-                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                onClick={handleNotificationsClick}
                 aria-label="Notifications"
               >
                 <Bell className="w-5 h-5 text-gray-600" />

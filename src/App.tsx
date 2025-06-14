@@ -6,6 +6,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
 import Groups from "./pages/Groups";
+import Friends from "./pages/Friends";
+import Messages from "./pages/Messages";
+import Notifications from "./pages/Notifications";
+import Watch from "./pages/Watch";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -18,6 +22,10 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/groups" element={<Groups />} />
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/watch" element={<Watch />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

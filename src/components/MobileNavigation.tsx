@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Home, Users, MessageCircle, Bell, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,12 +23,8 @@ const MobileNavigation = () => {
   ];
 
   const handleNavigation = (path: string, id: string) => {
-    if (path === '/friends' || path === '/messages' || path === '/notifications') {
-      // For routes that don't exist yet, show a toast or keep on current page
-      console.log(`Navigating to ${path} - Feature coming soon!`);
-      return;
-    }
     navigate(path);
+    setActiveTab(id);
   };
 
   return (
