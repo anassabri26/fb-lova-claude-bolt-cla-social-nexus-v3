@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { toast } from 'sonner';
-import MarketplaceItemCard from './MarketplaceItemCard';
 import MarketplaceSearch from './MarketplaceSearch';
 import MarketplaceCategories from './MarketplaceCategories';
+import MarketplaceItemCard from './MarketplaceItemCard';
+import { toast } from 'sonner';
 
 interface MarketplaceItem {
   id: string;
@@ -24,66 +24,52 @@ const MarketplaceGrid = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const items: MarketplaceItem[] = [
+  const categories = ['all', 'Electronics', 'Furniture', 'Clothing', 'Sports', 'Books'];
+
+  const [items] = useState<MarketplaceItem[]>([
     {
       id: '1',
-      title: 'MacBook Pro 13" M2',
+      title: 'MacBook Pro 13"',
       price: 1200,
-      image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=600&fit=crop',
       location: 'San Francisco, CA',
       seller: {
-        name: 'Sarah Johnson',
-        avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
+        name: 'John Smith',
+        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
       },
       condition: 'Like New',
       category: 'Electronics',
-      description: 'Barely used MacBook Pro in excellent condition'
+      description: 'Excellent condition MacBook Pro, barely used. Perfect for students or professionals.'
     },
     {
       id: '2',
-      title: 'Vintage Wooden Chair',
-      price: 85,
-      image: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400&h=300&fit=crop',
-      location: 'New York, NY',
+      title: 'Gaming Chair',
+      price: 250,
+      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
+      location: 'Los Angeles, CA',
       seller: {
-        name: 'Mike Chen',
-        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+        name: 'Sarah Wilson',
+        avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
       },
       condition: 'Good',
       category: 'Furniture',
-      description: 'Beautiful vintage chair perfect for any room'
+      description: 'Comfortable gaming chair with lumbar support. Great for long work sessions.'
     },
     {
       id: '3',
-      title: 'Digital Camera',
-      price: 350,
-      image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&h=300&fit=crop',
-      location: 'Los Angeles, CA',
+      title: 'Nike Running Shoes',
+      price: 80,
+      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=600&fit=crop',
+      location: 'New York, NY',
       seller: {
-        name: 'Emma Wilson',
-        avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face'
-      },
-      condition: 'New',
-      category: 'Electronics',
-      description: 'Brand new DSLR camera with warranty'
-    },
-    {
-      id: '4',
-      title: 'Bicycle',
-      price: 200,
-      image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop',
-      location: 'Chicago, IL',
-      seller: {
-        name: 'David Kim',
+        name: 'Mike Johnson',
         avatar: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face'
       },
-      condition: 'Good',
+      condition: 'New',
       category: 'Sports',
-      description: 'Well-maintained mountain bike'
+      description: 'Brand new Nike running shoes, size 10. Never worn, still in box.'
     }
-  ];
-
-  const categories = ['all', 'Electronics', 'Furniture', 'Sports', 'Clothing', 'Books'];
+  ]);
 
   const filteredItems = items.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -93,33 +79,31 @@ const MarketplaceGrid = () => {
   });
 
   const handleContact = (seller: any) => {
-    toast.success(`Contacting ${seller.name}...`);
+    toast.success(`Starting conversation with ${seller.name}`);
+    console.log('Contact seller:', seller);
   };
 
   const handleSave = (item: MarketplaceItem) => {
-    toast.success(`${item.title} saved to your wishlist!`);
+    toast.success(`Saved ${item.title} to your saved items`);
+    console.log('Save item:', item);
   };
 
   return (
     <div className="space-y-6">
-      {/* Search and Filters */}
-      <div className="space-y-4">
-        <MarketplaceSearch 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
-        
-        <MarketplaceCategories
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-        />
-      </div>
-
-      {/* Items Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <MarketplaceSearch 
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
+      
+      <MarketplaceCategories 
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+      />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map(item => (
-          <MarketplaceItemCard
+          <MarketplaceItemCard 
             key={item.id}
             item={item}
             onContact={handleContact}
@@ -127,10 +111,10 @@ const MarketplaceGrid = () => {
           />
         ))}
       </div>
-
+      
       {filteredItems.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No items found matching your search.</p>
+        <div className="text-center py-12">
+          <p className="text-gray-500">No items found matching your criteria.</p>
         </div>
       )}
     </div>
