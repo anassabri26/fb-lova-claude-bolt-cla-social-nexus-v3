@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Heart, MessageCircle, Share, MoreHorizontal, ThumbsUp } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -210,11 +209,14 @@ const Post: React.FC<PostProps> = ({ post }) => {
         </div>
 
         {/* Comments Section */}
-        <CommentSystem 
-          postId={post.id.toString()} 
-          isVisible={showComments} 
-          onClose={handleCloseComments}
-        />
+        {showComments && (
+          <div className="border-t border-gray-100 px-4 py-4">
+            <CommentSystem 
+              postId={post.id.toString()} 
+              commentCount={commentsCount}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
