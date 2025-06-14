@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import MobileNavigation from '../components/MobileNavigation';
 import MessagesList from '../components/MessagesList';
-import { Search, Plus, Settings, VideoIcon, Phone, MoreHorizontal } from 'lucide-react';
+import { Search, Plus, Settings, VideoIcon, Phone, MoreHorizontal, MessageCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
