@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import VirtualizedNewsFeed from '../components/VirtualizedNewsFeed';
 import RightSidebar from '../components/RightSidebar';
+import MobileNavigation from '../components/MobileNavigation';
 import ErrorBoundary from '../components/ErrorBoundary';
 import usePerformanceMonitoring from '../hooks/usePerformanceMonitoring';
 
@@ -17,7 +18,7 @@ const Index = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
         <Header />
         <div className="flex max-w-7xl mx-auto">
           <Sidebar />
@@ -32,6 +33,7 @@ const Index = () => {
           </main>
           <RightSidebar />
         </div>
+        <MobileNavigation />
       </div>
     </ErrorBoundary>
   );

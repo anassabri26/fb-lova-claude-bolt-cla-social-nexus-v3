@@ -1,16 +1,15 @@
 
 import React, { useState } from 'react';
-import { Search, Home, Users, MessageCircle, Bell, Menu } from 'lucide-react';
+import { Home, Users, MessageCircle, Bell, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import NotificationsDropdown from './NotificationsDropdown';
 import SearchDropdown from './SearchDropdown';
+import EnhancedSearch from './EnhancedSearch';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
     <>
@@ -26,12 +25,7 @@ const Header = () => {
                 <span className="hidden sm:block text-xl font-bold text-blue-600">facebook</span>
               </div>
               <div className="hidden md:block relative max-w-xs">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search Facebook"
-                  className="pl-10 bg-gray-100 border-none rounded-full"
-                  onFocus={() => setIsSearchOpen(true)}
-                />
+                <EnhancedSearch />
               </div>
             </div>
 
@@ -73,14 +67,7 @@ const Header = () => {
 
         {/* Mobile search */}
         <div className="md:hidden px-4 pb-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search Facebook"
-              className="pl-10 bg-gray-100 border-none rounded-full"
-              onFocus={() => setIsSearchOpen(true)}
-            />
-          </div>
+          <EnhancedSearch />
         </div>
       </header>
 
@@ -88,10 +75,6 @@ const Header = () => {
       <NotificationsDropdown 
         isOpen={isNotificationsOpen} 
         onClose={() => setIsNotificationsOpen(false)} 
-      />
-      <SearchDropdown 
-        isOpen={isSearchOpen} 
-        onClose={() => setIsSearchOpen(false)} 
       />
     </>
   );
