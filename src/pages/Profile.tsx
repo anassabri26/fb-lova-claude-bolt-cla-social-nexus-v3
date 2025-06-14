@@ -1,249 +1,105 @@
 
-import React, { useState } from 'react';
-import { Camera, Edit, MessageCircle, UserPlus, MoreHorizontal, MapPin, Briefcase, GraduationCap, Heart } from 'lucide-react';
+import React from 'react';
+import { Camera, Edit, MoreHorizontal, Plus } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Header from '../components/Header';
-import Post from '../components/Post';
+import MobileNavigation from '../components/MobileNavigation';
+import AccessibleButton from '../components/AccessibleButton';
 
 const Profile = () => {
-  const [isOwnProfile] = useState(true);
-  
-  const userInfo = {
-    name: 'Jane Doe',
-    bio: 'Software Developer | Travel Enthusiast | Coffee Lover ☕',
-    location: 'San Francisco, CA',
-    work: 'Software Engineer at Tech Corp',
-    education: 'Stanford University',
-    relationship: 'Single',
-    joined: 'Joined May 2018',
-    friends: 1247,
-    photos: 342
-  };
-
-  const photos = [
-    'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=300&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=300&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=300&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=300&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=300&h=300&fit=crop'
-  ];
-
-  const posts = [
-    {
-      id: 1,
-      author: {
-        name: 'Jane Doe',
-        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face',
-        verified: false
-      },
-      content: 'Just finished an amazing hiking trip in Yosemite! The views were absolutely breathtaking. Nature never fails to inspire me. 🏔️',
-      image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
-      timestamp: '3h',
-      likes: 89,
-      comments: 12,
-      shares: 5
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       <Header />
-      <div className="max-w-5xl mx-auto">
-        {/* Cover Photo & Profile Section */}
-        <Card className="bg-white shadow-sm border-0 shadow-gray-100 rounded-none md:rounded-lg md:mt-4">
-          <div className="relative">
-            {/* Cover Photo */}
-            <div className="h-80 bg-gradient-to-r from-blue-400 to-purple-500 relative">
-              <img
-                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=400&fit=crop"
-                alt="Cover"
-                className="w-full h-full object-cover"
-              />
-              {isOwnProfile && (
-                <Button className="absolute bottom-4 right-4 bg-white text-gray-900 hover:bg-gray-100">
-                  <Camera className="w-4 h-4 mr-2" />
-                  Edit cover photo
-                </Button>
-              )}
+      <div className="max-w-4xl mx-auto">
+        {/* Cover Photo */}
+        <div className="relative h-80 md:h-96 bg-gradient-to-r from-blue-400 to-purple-500 rounded-b-lg overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=400&fit=crop"
+            alt="Cover photo"
+            className="w-full h-full object-cover"
+          />
+          <AccessibleButton
+            variant="ghost"
+            className="absolute bottom-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 px-4 py-2 rounded-lg"
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Edit cover photo
+          </AccessibleButton>
+        </div>
+
+        {/* Profile Info */}
+        <div className="relative px-4 pb-4">
+          <div className="flex flex-col md:flex-row md:items-end md:space-x-4">
+            <div className="relative -mt-16 md:-mt-20">
+              <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-white">
+                <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                className="absolute bottom-0 right-0 bg-gray-100 hover:bg-gray-200 rounded-full p-2"
+                aria-label="Update profile picture"
+              >
+                <Camera className="w-4 h-4" />
+              </AccessibleButton>
             </div>
-            
-            {/* Profile Info */}
-            <div className="p-6">
-              <div className="flex flex-col md:flex-row md:items-end md:justify-between -mt-20">
-                <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-6">
-                  <div className="relative">
-                    <Avatar className="w-32 h-32 border-4 border-white">
-                      <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                    {isOwnProfile && (
-                      <Button size="sm" className="absolute bottom-0 right-0 rounded-full p-2 bg-gray-100 text-gray-600 hover:bg-gray-200">
-                        <Camera className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-                  
-                  <div className="text-center md:text-left">
-                    <h1 className="text-3xl font-bold text-gray-900">{userInfo.name}</h1>
-                    <p className="text-gray-600 mt-1">{userInfo.friends} friends</p>
-                    <div className="flex -space-x-2 mt-2 justify-center md:justify-start">
-                      {[...Array(8)].map((_, i) => (
-                        <Avatar key={i} className="w-8 h-8 border-2 border-white">
-                          <AvatarImage src={`https://images.unsplash.com/photo-${1580000000000 + i}?w=100&h=100&fit=crop&crop=face`} />
-                          <AvatarFallback>F</AvatarFallback>
-                        </Avatar>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-2 mt-4 md:mt-0">
-                  {isOwnProfile ? (
-                    <>
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit profile
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Add friend
-                      </Button>
-                      <Button variant="outline">
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Message
-                      </Button>
-                    </>
-                  )}
-                  <Button variant="outline" size="icon">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                </div>
+
+            <div className="flex-1 mt-4 md:mt-0">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">John Doe</h1>
+              <p className="text-gray-600 mt-1">Software Developer at Tech Company</p>
+              <p className="text-sm text-gray-500 mt-1">1,234 friends • 567 followers</p>
+              
+              <div className="flex items-center space-x-2 mt-4">
+                <AccessibleButton className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add to story
+                </AccessibleButton>
+                <AccessibleButton variant="outline" className="px-6 py-2">
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit profile
+                </AccessibleButton>
+                <AccessibleButton variant="outline" size="sm" className="p-2">
+                  <MoreHorizontal className="w-4 h-4" />
+                </AccessibleButton>
               </div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4 px-4 lg:px-0">
-          {/* Left Sidebar - About */}
-          <div className="space-y-4">
-            <Card className="bg-white shadow-sm border-0 shadow-gray-100">
+        {/* Profile Content */}
+        <div className="px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* About */}
+          <div className="lg:col-span-1">
+            <Card className="bg-white shadow-sm">
               <CardContent className="p-4">
-                <h3 className="font-bold text-gray-900 mb-4">About</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3 text-gray-600">
-                    <Briefcase className="w-5 h-5" />
-                    <span>{userInfo.work}</span>
-                  </div>
-                  <div className="flex items-center space-x-3 text-gray-600">
-                    <GraduationCap className="w-5 h-5" />
-                    <span>Studied at {userInfo.education}</span>
-                  </div>
-                  <div className="flex items-center space-x-3 text-gray-600">
-                    <MapPin className="w-5 h-5" />
-                    <span>Lives in {userInfo.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-3 text-gray-600">
-                    <Heart className="w-5 h-5" />
-                    <span>{userInfo.relationship}</span>
-                  </div>
-                </div>
-                <p className="text-gray-600 mt-4 text-sm">{userInfo.joined}</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-sm border-0 shadow-gray-100">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-gray-900">Photos</h3>
-                  <Button variant="ghost" size="sm" className="text-blue-600">See all photos</Button>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {photos.slice(0, 9).map((photo, index) => (
-                    <img
-                      key={index}
-                      src={photo}
-                      alt={`Photo ${index + 1}`}
-                      className="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                    />
-                  ))}
+                <h2 className="text-lg font-semibold mb-4">About</h2>
+                <div className="space-y-3 text-sm">
+                  <p>🏢 Works at Tech Company</p>
+                  <p>🎓 Studied Computer Science at University</p>
+                  <p>📍 Lives in San Francisco, CA</p>
+                  <p>💼 Joined March 2020</p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Main Content - Posts */}
-          <div className="lg:col-span-2 space-y-4">
-            <Tabs defaultValue="posts" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="posts">Posts</TabsTrigger>
-                <TabsTrigger value="about">About</TabsTrigger>
-                <TabsTrigger value="friends">Friends</TabsTrigger>
-                <TabsTrigger value="photos">Photos</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="posts" className="space-y-4 mt-4">
-                {posts.map((post) => (
-                  <Post key={post.id} post={post} />
-                ))}
-              </TabsContent>
-              
-              <TabsContent value="about" className="mt-4">
-                <Card className="bg-white shadow-sm border-0 shadow-gray-100">
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-gray-900 mb-4">Bio</h3>
-                    <p className="text-gray-700">{userInfo.bio}</p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="friends" className="mt-4">
-                <Card className="bg-white shadow-sm border-0 shadow-gray-100">
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-gray-900 mb-4">Friends ({userInfo.friends})</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {[...Array(6)].map((_, i) => (
-                        <div key={i} className="text-center">
-                          <Avatar className="w-16 h-16 mx-auto">
-                            <AvatarImage src={`https://images.unsplash.com/photo-${1580000000000 + i}?w=200&h=200&fit=crop&crop=face`} />
-                            <AvatarFallback>F{i}</AvatarFallback>
-                          </Avatar>
-                          <p className="text-sm font-medium text-gray-900 mt-2">Friend {i + 1}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="photos" className="mt-4">
-                <Card className="bg-white shadow-sm border-0 shadow-gray-100">
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-gray-900 mb-4">Photos ({userInfo.photos})</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {photos.map((photo, index) => (
-                        <img
-                          key={index}
-                          src={photo}
-                          alt={`Photo ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                        />
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+          {/* Posts */}
+          <div className="lg:col-span-2">
+            <Card className="bg-white shadow-sm">
+              <CardContent className="p-4">
+                <h2 className="text-lg font-semibold mb-4">Posts</h2>
+                <div className="text-center py-8 text-gray-500">
+                  <p>No posts to show</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
+      <MobileNavigation />
     </div>
   );
 };

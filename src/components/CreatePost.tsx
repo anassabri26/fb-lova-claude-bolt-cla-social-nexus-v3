@@ -1,12 +1,24 @@
 
-import React from 'react';
-import { Image, Smile, MapPin, Calendar } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import React, { useState } from 'react';
+import { Image, Smile, MapPin, Users, MoreHorizontal } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import AccessibleButton from './AccessibleButton';
 
 const CreatePost = () => {
+  const [postContent, setPostContent] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleSubmit = () => {
+    if (postContent.trim()) {
+      console.log('Posting:', postContent);
+      setPostContent('');
+      setIsExpanded(false);
+    }
+  };
+
   return (
     <Card className="bg-white shadow-sm border-0 shadow-gray-100">
       <CardContent className="p-4">
@@ -17,34 +29,105 @@ const CreatePost = () => {
           </Avatar>
           <div className="flex-1">
             <Textarea
-              placeholder="What's on your mind, Jane?"
-              className="border-none resize-none p-0 text-gray-700 placeholder-gray-500 text-lg focus:ring-0 focus:outline-none bg-transparent"
-              rows={3}
+              placeholder="What's on your mind?"
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+              onFocus={() => setIsExpanded(true)}
+              className="border-none resize-none focus:ring-0 p-0 text-base placeholder-gray-500 bg-transparent"
+              rows={isExpanded ? 3 : 1}
+              aria-label="Create a new post"
             />
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex space-x-4">
-              <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-lg">
-                <Image className="w-5 h-5 text-green-500" />
-                <span className="hidden sm:inline">Photo/Video</span>
-              </Button>
-              <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-lg">
-                <Smile className="w-5 h-5 text-yellow-500" />
-                <span className="hidden sm:inline">Feeling</span>
-              </Button>
-              <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-lg">
-                <MapPin className="w-5 h-5 text-red-500" />
-                <span className="hidden sm:inline">Location</span>
-              </Button>
+        {isExpanded && (
+          <div className="mt-4 space-y-4">
+            <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+              <span className="text-sm text-gray-700">Add to your post</span>
+              <div className="flex space-x-2">
+                <AccessibleButton
+                  variant="ghost"
+                  size="sm"
+                  className="p-2 text-green-600 hover:bg-green-50"
+                  aria-label="Add photo"
+                >
+                  <Image className="w-5 h-5" />
+                </AccessibleButton>
+                <AccessibleButton
+                  variant="ghost"
+                  size="sm"
+                  className="p-2 text-yellow-600 hover:bg-yellow-50"
+                  aria-label="Add feeling"
+                >
+                  <Smile className="w-5 h-5" />
+                </AccessibleButton>
+                <AccessibleButton
+                  variant="ghost"
+                  size="sm"
+                  className="p-2 text-red-600 hover:bg-red-50"
+                  aria-label="Add location"
+                >
+                  <MapPin className="w-5 h-5" />
+                </AccessibleButton>
+                <AccessibleButton
+                  variant="ghost"
+                  size="sm"
+                  className="p-2 text-blue-600 hover:bg-blue-50"
+                  aria-label="Tag people"
+                >
+                  <Users className="w-5 h-5" />
+                </AccessibleButton>
+                <AccessibleButton
+                  variant="ghost"
+                  size="sm"
+                  className="p-2 text-gray-600 hover:bg-gray-50"
+                  aria-label="More options"
+                >
+                  <MoreHorizontal className="w-5 h-5" />
+                </AccessibleButton>
+              </div>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-              Post
-            </Button>
+
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <Users className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-500">Public</span>
+              </div>
+              <AccessibleButton
+                onClick={handleSubmit}
+                disabled={!postContent.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Post
+              </AccessibleButton>
+            </div>
           </div>
-        </div>
+        )}
+
+        {!isExpanded && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <div className="flex justify-between">
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                className="flex-1 flex items-center justify-center space-x-2 py-2 hover:bg-gray-50 rounded-lg"
+                aria-label="Add photo or video"
+              >
+                <Image className="w-5 h-5 text-green-600" />
+                <span className="text-gray-600 font-medium">Photo/Video</span>
+              </AccessibleButton>
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                className="flex-1 flex items-center justify-center space-x-2 py-2 hover:bg-gray-50 rounded-lg"
+                aria-label="Add feeling or activity"
+              >
+                <Smile className="w-5 h-5 text-yellow-600" />
+                <span className="text-gray-600 font-medium">Feeling/Activity</span>
+              </AccessibleButton>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -1,13 +1,11 @@
 
-import React, { useState, useCallback, memo } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal } from 'lucide-react';
+import React, { useState } from 'react';
+import { Heart, MessageCircle, Share, MoreHorizontal, ThumbsUp } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import CommentsSection from './CommentsSection';
 import OptimizedImage from './OptimizedImage';
 import AccessibleButton from './AccessibleButton';
-import useTouchHandler from '../hooks/useTouchHandler';
-import usePerformanceMonitoring from '../hooks/usePerformanceMonitoring';
 
 interface PostProps {
   post: {
@@ -26,174 +24,123 @@ interface PostProps {
   };
 }
 
-const Post: React.FC<PostProps> = memo(({ post }) => {
-  const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(post.likes);
-  const [showComments, setShowComments] = useState(false);
-  const { trackInteractionStart, trackInteractionEnd } = usePerformanceMonitoring('Post');
+const Post: React.FC<PostProps> = ({ post }) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(post.likes);
 
-  const handleLike = useCallback(() => {
-    trackInteractionStart();
-    setLiked(prev => !prev);
-    setLikeCount(prev => liked ? prev - 1 : prev + 1);
-    trackInteractionEnd('like');
-  }, [liked, trackInteractionStart, trackInteractionEnd]);
-
-  const handleToggleComments = useCallback(() => {
-    trackInteractionStart();
-    setShowComments(prev => !prev);
-    trackInteractionEnd('toggle-comments');
-  }, [trackInteractionStart, trackInteractionEnd]);
-
-  const handleShare = useCallback(() => {
-    trackInteractionStart();
-    // Implement share functionality
-    console.log('Share post:', post.id);
-    trackInteractionEnd('share');
-  }, [post.id, trackInteractionStart, trackInteractionEnd]);
-
-  const touchHandlers = useTouchHandler({
-    onTap: handleLike,
-    onLongPress: () => console.log('Long press on post'),
-  });
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+  };
 
   return (
-    <Card className="bg-white shadow-sm border-0 shadow-gray-100" role="article" aria-labelledby={`post-${post.id}`}>
+    <Card className="bg-white shadow-sm border-0 shadow-gray-100 mb-4">
       <CardContent className="p-0">
         {/* Post Header */}
-        <header className="p-4 flex items-center justify-between">
+        <div className="p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={post.author.avatar} alt={`${post.author.name}'s profile picture`} />
+              <AvatarImage src={post.author.avatar} alt={`${post.author.name}'s profile`} />
               <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div>
               <div className="flex items-center space-x-1">
-                <h3 id={`post-${post.id}`} className="font-semibold text-gray-900">{post.author.name}</h3>
+                <h3 className="font-semibold text-gray-900 text-sm">{post.author.name}</h3>
                 {post.author.verified && (
-                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center" aria-label="Verified account">
+                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
                     <span className="text-white text-xs">✓</span>
                   </div>
                 )}
               </div>
-              <time className="text-gray-500 text-sm" dateTime={post.timestamp}>
-                {post.timestamp}
-              </time>
+              <p className="text-xs text-gray-500">{post.timestamp}</p>
             </div>
           </div>
-          <AccessibleButton 
-            variant="ghost" 
-            size="sm" 
+          <AccessibleButton
+            variant="ghost"
+            size="sm"
             className="p-2 rounded-full hover:bg-gray-100"
             aria-label="More options"
-            tooltip="More options"
           >
             <MoreHorizontal className="w-5 h-5 text-gray-600" />
           </AccessibleButton>
-        </header>
+        </div>
 
         {/* Post Content */}
         <div className="px-4 pb-3">
-          <p className="text-gray-900 leading-relaxed" aria-label="Post content">
-            {post.content}
-          </p>
+          <p className="text-gray-900 leading-relaxed">{post.content}</p>
         </div>
 
         {/* Post Image */}
         {post.image && (
-          <div className="relative" {...touchHandlers}>
+          <div className="relative">
             <OptimizedImage
               src={post.image}
-              alt="Post image"
-              className="w-full h-96"
-              onLoad={() => console.log('Image loaded')}
+              alt="Post content"
+              className="w-full h-auto max-h-96 object-cover"
             />
           </div>
         )}
 
-        {/* Post Stats */}
-        <div className="px-4 py-3 border-b border-gray-100">
-          <div className="flex items-center justify-between text-gray-500 text-sm">
-            <div className="flex items-center space-x-1">
-              <div className="flex -space-x-1" aria-label="Reaction types">
-                <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-                  <Heart className="w-3 h-3 text-white fill-current" />
-                </div>
-                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs">❤️</span>
-                </div>
+        {/* Reaction Summary */}
+        <div className="px-4 py-2 flex items-center justify-between text-sm text-gray-500">
+          <div className="flex items-center space-x-1">
+            <div className="flex -space-x-1">
+              <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                <ThumbsUp className="w-3 h-3 text-white" />
               </div>
-              <span aria-label={`${likeCount} people liked this post`}>
-                {likeCount} {likeCount === 1 ? 'like' : 'likes'}
-              </span>
+              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                <Heart className="w-3 h-3 text-white" />
+              </div>
             </div>
-            <div className="flex space-x-4">
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                className="hover:underline p-0 h-auto font-normal text-sm text-gray-500"
-                onClick={handleToggleComments}
-                aria-label={`${post.comments} comments on this post`}
-                aria-expanded={showComments}
-              >
-                {post.comments} {post.comments === 1 ? 'comment' : 'comments'}
-              </AccessibleButton>
-              <span aria-label={`${post.shares} people shared this post`}>
-                {post.shares} {post.shares === 1 ? 'share' : 'shares'}
-              </span>
-            </div>
+            <span>{likesCount}</span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <span>{post.comments} comments</span>
+            <span>{post.shares} shares</span>
           </div>
         </div>
 
-        {/* Post Actions */}
-        <div className="px-4 py-2" role="toolbar" aria-label="Post actions">
-          <div className="flex items-center justify-between">
+        {/* Action Buttons */}
+        <div className="border-t border-gray-100 px-4 py-2">
+          <div className="flex justify-around">
             <AccessibleButton
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-colors ${
-                liked ? 'text-blue-600 hover:bg-blue-50' : 'text-gray-600 hover:bg-gray-100'
-              }`}
               onClick={handleLike}
-              aria-label={liked ? 'Unlike this post' : 'Like this post'}
-              aria-pressed={liked}
+              className={`flex-1 flex items-center justify-center space-x-2 py-3 rounded-lg transition-colors ${
+                isLiked 
+                  ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+              aria-label={isLiked ? 'Unlike post' : 'Like post'}
+              aria-pressed={isLiked}
             >
-              <Heart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
+              <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
               <span className="font-medium">Like</span>
             </AccessibleButton>
-            
-            <AccessibleButton 
-              variant="ghost" 
-              size="sm" 
-              className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-6 py-3 rounded-lg"
-              onClick={handleToggleComments}
-              aria-label={showComments ? 'Hide comments' : 'Show comments'}
-              aria-expanded={showComments}
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              className="flex-1 flex items-center justify-center space-x-2 py-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+              aria-label="Comment on post"
             >
               <MessageCircle className="w-5 h-5" />
               <span className="font-medium">Comment</span>
             </AccessibleButton>
-            
-            <AccessibleButton 
-              variant="ghost" 
-              size="sm" 
-              className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-6 py-3 rounded-lg"
-              onClick={handleShare}
-              aria-label="Share this post"
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              className="flex-1 flex items-center justify-center space-x-2 py-3 text-gray-600 hover:bg-gray-50 rounded-lg"
+              aria-label="Share post"
             >
               <Share className="w-5 h-5" />
               <span className="font-medium">Share</span>
             </AccessibleButton>
           </div>
         </div>
-
-        {/* Comments Section */}
-        <CommentsSection postId={post.id} isVisible={showComments} />
       </CardContent>
     </Card>
   );
-});
-
-Post.displayName = 'Post';
+};
 
 export default Post;
