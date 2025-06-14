@@ -1,151 +1,122 @@
 
 import React, { useState } from 'react';
-import { Users, Camera, Globe, Lock, Eye } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Users, Image, Globe, Lock } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import AccessibleButton from './AccessibleButton';
 
-interface CreateGroupProps {
-  onClose: () => void;
-}
+const CreateGroup = () => {
+  const [groupData, setGroupData] = useState({
+    name: '',
+    description: '',
+    privacy: 'Public',
+    category: 'General'
+  });
 
-const CreateGroup = ({ onClose }: CreateGroupProps) => {
-  const [groupName, setGroupName] = useState('');
-  const [description, setDescription] = useState('');
-  const [privacy, setPrivacy] = useState('public');
-  const [category, setCategory] = useState('');
-
-  const handleCreateGroup = () => {
-    if (!groupName.trim()) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!groupData.name) {
       toast.error('Please enter a group name');
       return;
     }
     
-    console.log('Creating group:', { groupName, description, privacy, category });
+    console.log('Creating group:', groupData);
     toast.success('Group created successfully!');
-    onClose();
+    setGroupData({
+      name: '',
+      description: '',
+      privacy: 'Public',
+      category: 'General'
+    });
   };
 
+  const categories = ['General', 'Technology', 'Gaming', 'Sports', 'Music', 'Photography', 'Travel', 'Food'];
+
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Users className="w-5 h-5" />
-          <span>Create New Group</span>
+          <Users className="w-6 h-6 text-blue-600" />
+          <span>Create Group</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="text-center">
-          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2 cursor-pointer hover:bg-gray-200">
-            <Camera className="w-8 h-8 text-gray-400" />
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Group Name *</label>
+            <Input
+              value={groupData.name}
+              onChange={(e) => setGroupData({...groupData, name: e.target.value})}
+              placeholder="Choose a name for your group"
+              required
+            />
           </div>
-          <p className="text-sm text-gray-500">Add group photo</p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Group Name *
-          </label>
-          <Input
-            placeholder="Enter group name"
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description
-          </label>
-          <Textarea
-            placeholder="What's this group about?"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Privacy
-          </label>
-          <Select value={privacy} onValueChange={setPrivacy}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="public">
-                <div className="flex items-center space-x-2">
-                  <Globe className="w-4 h-4" />
-                  <div>
-                    <div className="font-medium">Public</div>
-                    <div className="text-xs text-gray-500">Anyone can see the group</div>
-                  </div>
-                </div>
-              </SelectItem>
-              <SelectItem value="private">
-                <div className="flex items-center space-x-2">
-                  <Lock className="w-4 h-4" />
-                  <div>
-                    <div className="font-medium">Private</div>
-                    <div className="text-xs text-gray-500">Only members can see posts</div>
-                  </div>
-                </div>
-              </SelectItem>
-              <SelectItem value="hidden">
-                <div className="flex items-center space-x-2">
-                  <Eye className="w-4 h-4" />
-                  <div>
-                    <div className="font-medium">Hidden</div>
-                    <div className="text-xs text-gray-500">Only members can find the group</div>
-                  </div>
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Category
-          </label>
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="technology">Technology</SelectItem>
-              <SelectItem value="business">Business</SelectItem>
-              <SelectItem value="hobbies">Hobbies & Interests</SelectItem>
-              <SelectItem value="sports">Sports</SelectItem>
-              <SelectItem value="education">Education</SelectItem>
-              <SelectItem value="travel">Travel</SelectItem>
-              <SelectItem value="entertainment">Entertainment</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex space-x-3 pt-4">
-          <AccessibleButton
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Cancel
-          </AccessibleButton>
-          <AccessibleButton
-            onClick={handleCreateGroup}
-            disabled={!groupName.trim()}
-            className="flex-1 bg-blue-600 hover:bg-blue-700"
-          >
-            Create Group
-          </AccessibleButton>
-        </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Description</label>
+            <Textarea
+              value={groupData.description}
+              onChange={(e) => setGroupData({...groupData, description: e.target.value})}
+              placeholder="What's your group about?"
+              rows={3}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Category</label>
+            <select
+              value={groupData.category}
+              onChange={(e) => setGroupData({...groupData, category: e.target.value})}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Privacy</label>
+            <div className="grid grid-cols-2 gap-2">
+              <AccessibleButton
+                type="button"
+                variant={groupData.privacy === 'Public' ? 'default' : 'outline'}
+                onClick={() => setGroupData({...groupData, privacy: 'Public'})}
+                className="flex items-center justify-center space-x-2 p-3"
+              >
+                <Globe className="w-4 h-4" />
+                <span>Public</span>
+              </AccessibleButton>
+              <AccessibleButton
+                type="button"
+                variant={groupData.privacy === 'Private' ? 'default' : 'outline'}
+                onClick={() => setGroupData({...groupData, privacy: 'Private'})}
+                className="flex items-center justify-center space-x-2 p-3"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Private</span>
+              </AccessibleButton>
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-center pt-4">
+            <AccessibleButton
+              type="button"
+              variant="outline"
+              className="flex items-center space-x-2"
+            >
+              <Image className="w-4 h-4" />
+              <span>Add Cover Photo</span>
+            </AccessibleButton>
+            
+            <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+              Create Group
+            </Button>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );

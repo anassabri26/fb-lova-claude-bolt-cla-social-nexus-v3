@@ -1,168 +1,120 @@
 
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Users, Camera } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Calendar, MapPin, Clock, Users, Image } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import AccessibleButton from './AccessibleButton';
 
-interface CreateEventProps {
-  onClose: () => void;
-}
+const CreateEvent = () => {
+  const [eventData, setEventData] = useState({
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    location: '',
+    privacy: 'Public'
+  });
 
-const CreateEvent = ({ onClose }: CreateEventProps) => {
-  const [eventName, setEventName] = useState('');
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [location, setLocation] = useState('');
-  const [category, setCategory] = useState('');
-  const [privacy, setPrivacy] = useState('public');
-
-  const handleCreateEvent = () => {
-    if (!eventName.trim() || !date || !time) {
-      toast.error('Please fill in all required fields');
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!eventData.title || !eventData.date) {
+      toast.error('Please fill in required fields');
       return;
     }
     
-    console.log('Creating event:', { eventName, description, date, time, location, category, privacy });
+    console.log('Creating event:', eventData);
     toast.success('Event created successfully!');
-    onClose();
+    setEventData({
+      title: '',
+      description: '',
+      date: '',
+      time: '',
+      location: '',
+      privacy: 'Public'
+    });
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Calendar className="w-5 h-5" />
+          <Calendar className="w-6 h-6 text-blue-600" />
           <span>Create Event</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="text-center">
-          <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-2 cursor-pointer hover:bg-gray-200">
-            <Camera className="w-8 h-8 text-gray-400" />
-          </div>
-          <p className="text-sm text-gray-500">Add event cover</p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Event Name *
-          </label>
-          <Input
-            placeholder="Enter event name"
-            value={eventName}
-            onChange={(e) => setEventName(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description
-          </label>
-          <Textarea
-            placeholder="What's this event about?"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date *
-            </label>
+            <label className="block text-sm font-medium mb-1">Event Title *</label>
             <Input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              value={eventData.title}
+              onChange={(e) => setEventData({...eventData, title: e.target.value})}
+              placeholder="What's your event called?"
+              required
             />
           </div>
+          
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Time *
-            </label>
-            <Input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
+            <label className="block text-sm font-medium mb-1">Description</label>
+            <Textarea
+              value={eventData.description}
+              onChange={(e) => setEventData({...eventData, description: e.target.value})}
+              placeholder="Tell people more about your event"
+              rows={3}
             />
           </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Location
-          </label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              placeholder="Add location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="pl-10"
-            />
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Date *</label>
+              <Input
+                type="date"
+                value={eventData.date}
+                onChange={(e) => setEventData({...eventData, date: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Time</label>
+              <Input
+                type="time"
+                value={eventData.time}
+                onChange={(e) => setEventData({...eventData, time: e.target.value})}
+              />
+            </div>
           </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Category
-          </label>
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="conference">Conference</SelectItem>
-              <SelectItem value="workshop">Workshop</SelectItem>
-              <SelectItem value="meetup">Meetup</SelectItem>
-              <SelectItem value="party">Party</SelectItem>
-              <SelectItem value="sports">Sports</SelectItem>
-              <SelectItem value="music">Music</SelectItem>
-              <SelectItem value="art">Art & Culture</SelectItem>
-              <SelectItem value="food">Food & Drink</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Privacy
-          </label>
-          <Select value={privacy} onValueChange={setPrivacy}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="public">Public - Anyone can join</SelectItem>
-              <SelectItem value="private">Private - Invite only</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex space-x-3 pt-4">
-          <AccessibleButton
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Cancel
-          </AccessibleButton>
-          <AccessibleButton
-            onClick={handleCreateEvent}
-            disabled={!eventName.trim() || !date || !time}
-            className="flex-1 bg-blue-600 hover:bg-blue-700"
-          >
-            Create Event
-          </AccessibleButton>
-        </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Location</label>
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                value={eventData.location}
+                onChange={(e) => setEventData({...eventData, location: e.target.value})}
+                placeholder="Where is your event?"
+                className="pl-10"
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-center pt-4">
+            <AccessibleButton
+              type="button"
+              variant="outline"
+              onClick={() => setEventData({...eventData, privacy: eventData.privacy === 'Public' ? 'Private' : 'Public'})}
+            >
+              <Users className="w-4 h-4 mr-2" />
+              {eventData.privacy}
+            </AccessibleButton>
+            
+            <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+              Create Event
+            </Button>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );

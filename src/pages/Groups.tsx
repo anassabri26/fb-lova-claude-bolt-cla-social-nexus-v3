@@ -1,144 +1,120 @@
 
 import React, { useState } from 'react';
-import { Users, Plus, Search, Settings } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Users, Plus, Search } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
+import RightSidebar from '../components/RightSidebar';
 import MobileNavigation from '../components/MobileNavigation';
 import CreateGroup from '../components/CreateGroup';
 import AccessibleButton from '../components/AccessibleButton';
 
 interface Group {
-  id: number;
+  id: string;
   name: string;
-  image: string;
   members: number;
-  category: string;
-  privacy: 'public' | 'private' | 'hidden';
+  image: string;
+  description: string;
   isJoined: boolean;
-  lastActivity: string;
 }
 
 const Groups = () => {
+  const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState('your-groups');
-
-  const yourGroups: Group[] = [
+  const [groups, setGroups] = useState<Group[]>([
     {
-      id: 1,
+      id: '1',
       name: 'React Developers',
+      members: 15420,
       image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=400&fit=crop',
-      members: 15234,
-      category: 'Technology',
-      privacy: 'public',
-      isJoined: true,
-      lastActivity: '2 hours ago'
+      description: 'A community for React developers to share knowledge and help each other',
+      isJoined: true
     },
     {
-      id: 2,
+      id: '2',
       name: 'Web Design Community',
+      members: 8750,
       image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=400&fit=crop',
-      members: 8765,
-      category: 'Business',
-      privacy: 'public',
-      isJoined: true,
-      lastActivity: '1 day ago'
-    }
-  ];
-
-  const suggestedGroups: Group[] = [
-    {
-      id: 3,
-      name: 'JavaScript Masters',
-      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=400&fit=crop',
-      members: 23456,
-      category: 'Technology',
-      privacy: 'public',
-      isJoined: false,
-      lastActivity: '3 hours ago'
+      description: 'Share your designs, get feedback, and learn from other designers',
+      isJoined: false
     },
     {
-      id: 4,
-      name: 'Startup Founders',
-      image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop',
-      members: 12890,
-      category: 'Business',
-      privacy: 'private',
-      isJoined: false,
-      lastActivity: '5 hours ago'
+      id: '3',
+      name: 'Photography Enthusiasts',
+      members: 12340,
+      image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop',
+      description: 'Capture and share amazing moments with fellow photographers',
+      isJoined: true
     }
-  ];
+  ]);
 
-  const currentGroups = activeTab === 'your-groups' ? yourGroups : suggestedGroups;
-  
-  const filteredGroups = currentGroups.filter(group =>
+  const toggleJoinGroup = (groupId: string) => {
+    setGroups(groups.map(group => 
+      group.id === groupId 
+        ? { ...group, isJoined: !group.isJoined, members: group.isJoined ? group.members - 1 : group.members + 1 }
+        : group
+    ));
+  };
+
+  const filteredGroups = groups.filter(group =>
     group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    group.category.toLowerCase().includes(searchQuery.toLowerCase())
+    group.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleJoinGroup = (groupId: number) => {
-    console.log('Joining group:', groupId);
-    // Handle join group logic
-  };
+  if (showCreateGroup) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+        <Header />
+        <div className="flex max-w-7xl mx-auto">
+          <Sidebar />
+          <main className="flex-1 px-4 py-6">
+            <div className="mb-4">
+              <AccessibleButton
+                variant="ghost"
+                onClick={() => setShowCreateGroup(false)}
+                className="text-blue-600"
+              >
+                ← Back to Groups
+              </AccessibleButton>
+            </div>
+            <CreateGroup />
+          </main>
+          <RightSidebar />
+        </div>
+        <MobileNavigation />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       <Header />
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar */}
-          <div className="lg:w-80">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Groups</span>
-                  <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-                    <DialogTrigger asChild>
-                      <AccessibleButton size="sm" className="bg-blue-600 hover:bg-blue-700">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create
-                      </AccessibleButton>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <CreateGroup onClose={() => setShowCreateDialog(false)} />
-                    </DialogContent>
-                  </Dialog>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <AccessibleButton
-                    variant={activeTab === 'your-groups' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => setActiveTab('your-groups')}
-                  >
-                    <Users className="w-4 h-4 mr-2" />
-                    Your Groups
-                  </AccessibleButton>
-                  <AccessibleButton
-                    variant={activeTab === 'discover' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => setActiveTab('discover')}
-                  >
-                    <Search className="w-4 h-4 mr-2" />
-                    Discover
-                  </AccessibleButton>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+      <div className="flex max-w-7xl mx-auto">
+        <Sidebar />
+        <main className="flex-1 px-4 py-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <Users className="w-8 h-8 text-blue-600" />
+                <h1 className="text-2xl font-bold text-gray-900">Groups</h1>
+              </div>
+              <Button 
+                onClick={() => setShowCreateGroup(true)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Group
+              </Button>
+            </div>
 
-          {/* Main Content */}
-          <div className="flex-1">
             <div className="mb-6">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <Input
-                  placeholder="Search groups"
+                  placeholder="Search groups..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -146,62 +122,47 @@ const Groups = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid gap-6 md:grid-cols-2">
               {filteredGroups.map((group) => (
-                <Card key={group.id} className="hover:shadow-md transition-shadow">
+                <Card key={group.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <CardContent className="p-0">
                     <img
                       src={group.image}
                       alt={group.name}
-                      className="w-full h-48 object-cover rounded-t-lg"
+                      className="w-full h-32 object-cover"
                     />
                     <div className="p-4">
-                      <h3 className="font-semibold text-lg mb-2">{group.name}</h3>
-                      <div className="space-y-2 text-sm text-gray-600">
-                        <p>{group.members.toLocaleString()} members</p>
-                        <p>Category: {group.category}</p>
-                        <p>Last activity: {group.lastActivity}</p>
-                        <div className="flex items-center space-x-1">
-                          <span className={`w-2 h-2 rounded-full ${
-                            group.privacy === 'public' ? 'bg-green-500' : 
-                            group.privacy === 'private' ? 'bg-yellow-500' : 'bg-red-500'
-                          }`} />
-                          <span className="capitalize">{group.privacy}</span>
+                      <div className="flex items-start space-x-3 mb-3">
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src={group.image} />
+                          <AvatarFallback>{group.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-lg">{group.name}</h3>
+                          <p className="text-sm text-gray-600">{group.members.toLocaleString()} members</p>
                         </div>
                       </div>
-                      <div className="mt-4">
-                        {group.isJoined ? (
-                          <AccessibleButton
-                            variant="outline"
-                            className="w-full"
-                            onClick={() => console.log('View group:', group.id)}
-                          >
-                            View Group
-                          </AccessibleButton>
-                        ) : (
-                          <AccessibleButton
-                            className="w-full bg-blue-600 hover:bg-blue-700"
-                            onClick={() => handleJoinGroup(group.id)}
-                          >
-                            Join Group
-                          </AccessibleButton>
-                        )}
-                      </div>
+                      
+                      <p className="text-gray-700 text-sm mb-4">{group.description}</p>
+                      
+                      <AccessibleButton
+                        onClick={() => toggleJoinGroup(group.id)}
+                        className={`w-full ${
+                          group.isJoined 
+                            ? 'bg-gray-600 hover:bg-gray-700' 
+                            : 'bg-blue-600 hover:bg-blue-700'
+                        }`}
+                      >
+                        {group.isJoined ? 'Leave Group' : 'Join Group'}
+                      </AccessibleButton>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
-
-            {filteredGroups.length === 0 && (
-              <div className="text-center py-12">
-                <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">No groups found</h3>
-                <p className="text-gray-500">Try adjusting your search or create a new group</p>
-              </div>
-            )}
           </div>
-        </div>
+        </main>
+        <RightSidebar />
       </div>
       <MobileNavigation />
     </div>

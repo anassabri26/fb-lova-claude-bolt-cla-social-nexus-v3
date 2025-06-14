@@ -1,230 +1,154 @@
 
 import React, { useState } from 'react';
-import { Calendar, Plus, Search, MapPin, Clock, Users } from 'lucide-react';
+import { Calendar, Plus, MapPin, Clock, Users } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
+import RightSidebar from '../components/RightSidebar';
 import MobileNavigation from '../components/MobileNavigation';
 import CreateEvent from '../components/CreateEvent';
 import AccessibleButton from '../components/AccessibleButton';
 
 interface Event {
-  id: number;
-  name: string;
-  image: string;
+  id: string;
+  title: string;
   date: string;
   time: string;
   location: string;
   attendees: number;
-  category: string;
-  isAttending: boolean;
-  organizer: string;
+  image: string;
+  isGoing: boolean;
 }
 
 const Events = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState('upcoming');
-
-  const events: Event[] = [
+  const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [events, setEvents] = useState<Event[]>([
     {
-      id: 1,
-      name: 'React Conference 2024',
-      image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop',
-      date: 'March 15, 2024',
-      time: '9:00 AM',
-      location: 'San Francisco, CA',
-      attendees: 250,
-      category: 'Technology',
-      isAttending: true,
-      organizer: 'Tech Community'
+      id: '1',
+      title: 'Tech Meetup 2024',
+      date: '2024-06-20',
+      time: '18:00',
+      location: 'Downtown Conference Center',
+      attendees: 156,
+      image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=400&fit=crop',
+      isGoing: true
     },
     {
-      id: 2,
-      name: 'Web Design Workshop',
-      image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=600&fit=crop',
-      date: 'March 20, 2024',
-      time: '2:00 PM',
-      location: 'Online',
-      attendees: 150,
-      category: 'Design',
-      isAttending: false,
-      organizer: 'Design Academy'
-    },
-    {
-      id: 3,
-      name: 'Startup Networking Event',
-      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop',
-      date: 'March 25, 2024',
-      time: '6:00 PM',
-      location: 'New York, NY',
-      attendees: 100,
-      category: 'Business',
-      isAttending: true,
-      organizer: 'Startup Hub'
+      id: '2',
+      title: 'Photography Workshop',
+      date: '2024-06-25',
+      time: '14:00',
+      location: 'City Park',
+      attendees: 43,
+      image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=400&fit=crop',
+      isGoing: false
     }
-  ];
+  ]);
 
-  const filteredEvents = events.filter(event =>
-    event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    event.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    event.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleAttendEvent = (eventId: number) => {
-    console.log('Attending event:', eventId);
-    // Handle attend event logic
+  const toggleAttendance = (eventId: string) => {
+    setEvents(events.map(event => 
+      event.id === eventId 
+        ? { ...event, isGoing: !event.isGoing, attendees: event.isGoing ? event.attendees - 1 : event.attendees + 1 }
+        : event
+    ));
   };
+
+  if (showCreateEvent) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+        <Header />
+        <div className="flex max-w-7xl mx-auto">
+          <Sidebar />
+          <main className="flex-1 px-4 py-6">
+            <div className="mb-4">
+              <AccessibleButton
+                variant="ghost"
+                onClick={() => setShowCreateEvent(false)}
+                className="text-blue-600"
+              >
+                ← Back to Events
+              </AccessibleButton>
+            </div>
+            <CreateEvent />
+          </main>
+          <RightSidebar />
+        </div>
+        <MobileNavigation />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       <Header />
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar */}
-          <div className="lg:w-80">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Events</span>
-                  <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-                    <DialogTrigger asChild>
-                      <AccessibleButton size="sm" className="bg-blue-600 hover:bg-blue-700">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create
-                      </AccessibleButton>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <CreateEvent onClose={() => setShowCreateDialog(false)} />
-                    </DialogContent>
-                  </Dialog>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <AccessibleButton
-                    variant={activeTab === 'upcoming' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => setActiveTab('upcoming')}
-                  >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Upcoming Events
-                  </AccessibleButton>
-                  <AccessibleButton
-                    variant={activeTab === 'attending' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => setActiveTab('attending')}
-                  >
-                    <Users className="w-4 h-4 mr-2" />
-                    Events I'm Attending
-                  </AccessibleButton>
-                  <AccessibleButton
-                    variant={activeTab === 'discover' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => setActiveTab('discover')}
-                  >
-                    <Search className="w-4 h-4 mr-2" />
-                    Discover
-                  </AccessibleButton>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Main Content */}
-          <div className="flex-1">
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
-                  placeholder="Search events"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+      <div className="flex max-w-7xl mx-auto">
+        <Sidebar />
+        <main className="flex-1 px-4 py-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <Calendar className="w-8 h-8 text-blue-600" />
+                <h1 className="text-2xl font-bold text-gray-900">Events</h1>
               </div>
+              <Button 
+                onClick={() => setShowCreateEvent(true)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Event
+              </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredEvents.map((event) => (
-                <Card key={event.id} className="hover:shadow-md transition-shadow">
+            <div className="grid gap-6 md:grid-cols-2">
+              {events.map((event) => (
+                <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <CardContent className="p-0">
                     <img
                       src={event.image}
-                      alt={event.name}
-                      className="w-full h-48 object-cover rounded-t-lg"
+                      alt={event.title}
+                      className="w-full h-48 object-cover"
                     />
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <h3 className="font-semibold text-lg mb-1">{event.name}</h3>
-                          <p className="text-sm text-gray-600">by {event.organizer}</p>
-                        </div>
-                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                          {event.category}
-                        </span>
-                      </div>
+                    <div className="p-4">
+                      <h3 className="font-bold text-lg mb-2">{event.title}</h3>
                       
-                      <div className="space-y-2 text-sm text-gray-600 mb-4">
-                        <div className="flex items-center space-x-2">
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center space-x-2 text-gray-600">
                           <Calendar className="w-4 h-4" />
-                          <span>{event.date}</span>
+                          <span className="text-sm">{new Date(event.date).toLocaleDateString()}</span>
+                          <Clock className="w-4 h-4 ml-2" />
+                          <span className="text-sm">{event.time}</span>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Clock className="w-4 h-4" />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
+                        
+                        <div className="flex items-center space-x-2 text-gray-600">
                           <MapPin className="w-4 h-4" />
-                          <span>{event.location}</span>
+                          <span className="text-sm">{event.location}</span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        
+                        <div className="flex items-center space-x-2 text-gray-600">
                           <Users className="w-4 h-4" />
-                          <span>{event.attendees} attending</span>
+                          <span className="text-sm">{event.attendees} attending</span>
                         </div>
                       </div>
                       
-                      <div className="flex space-x-3">
-                        {event.isAttending ? (
-                          <AccessibleButton
-                            variant="outline"
-                            className="flex-1"
-                            onClick={() => console.log('View event:', event.id)}
-                          >
-                            Going
-                          </AccessibleButton>
-                        ) : (
-                          <AccessibleButton
-                            className="flex-1 bg-blue-600 hover:bg-blue-700"
-                            onClick={() => handleAttendEvent(event.id)}
-                          >
-                            Attend
-                          </AccessibleButton>
-                        )}
-                        <AccessibleButton
-                          variant="outline"
-                          onClick={() => console.log('Share event:', event.id)}
-                        >
-                          Share
-                        </AccessibleButton>
-                      </div>
+                      <AccessibleButton
+                        onClick={() => toggleAttendance(event.id)}
+                        className={`w-full ${
+                          event.isGoing 
+                            ? 'bg-green-600 hover:bg-green-700' 
+                            : 'bg-blue-600 hover:bg-blue-700'
+                        }`}
+                      >
+                        {event.isGoing ? 'Going' : 'Join Event'}
+                      </AccessibleButton>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
-
-            {filteredEvents.length === 0 && (
-              <div className="text-center py-12">
-                <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">No events found</h3>
-                <p className="text-gray-500">Try adjusting your search or create a new event</p>
-              </div>
-            )}
           </div>
-        </div>
+        </main>
+        <RightSidebar />
       </div>
       <MobileNavigation />
     </div>
