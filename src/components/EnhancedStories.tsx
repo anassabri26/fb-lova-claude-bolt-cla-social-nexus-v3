@@ -5,43 +5,50 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import AccessibleButton from './AccessibleButton';
 import StoryCreationModal from './StoryCreationModal';
+import StoryModal from './StoryModal';
 import { toast } from 'sonner';
 
 const EnhancedStories = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
 
   const stories = [
     {
-      id: 1,
+      id: '1',
       user: {
         name: 'Sarah Johnson',
         avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
       },
       image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=600&fit=crop',
-      timestamp: '2h ago'
+      timestamp: '2h ago',
+      duration: 15
     },
     {
-      id: 2,
+      id: '2',
       user: {
         name: 'Mike Chen',
         avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
       },
       image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=600&fit=crop',
-      timestamp: '4h ago'
+      timestamp: '4h ago',
+      duration: 10
     },
     {
-      id: 3,
+      id: '3',
       user: {
         name: 'Emma Wilson',
         avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face'
       },
       image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=600&fit=crop',
-      timestamp: '6h ago'
+      timestamp: '6h ago',
+      duration: 12
     }
   ];
 
-  const handleStoryClick = (story: any) => {
-    toast.info(`Opening ${story.user.name}'s story`);
+  const handleStoryClick = (story: any, index: number) => {
+    setSelectedStoryIndex(index);
+    setIsStoryModalOpen(true);
     console.log('Story clicked:', story);
   };
 
@@ -66,11 +73,11 @@ const EnhancedStories = () => {
         </Card>
 
         {/* Story Cards */}
-        {stories.map((story) => (
+        {stories.map((story, index) => (
           <Card 
             key={story.id} 
             className="flex-shrink-0 w-28 h-44 cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden"
-            onClick={() => handleStoryClick(story)}
+            onClick={() => handleStoryClick(story, index)}
           >
             <CardContent className="p-0 h-full relative">
               <div className="absolute inset-0">
@@ -114,6 +121,13 @@ const EnhancedStories = () => {
       <StoryCreationModal 
         isOpen={isCreateModalOpen} 
         onClose={() => setIsCreateModalOpen(false)} 
+      />
+
+      <StoryModal
+        isOpen={isStoryModalOpen}
+        onClose={() => setIsStoryModalOpen(false)}
+        stories={stories}
+        currentStoryIndex={selectedStoryIndex}
       />
     </>
   );

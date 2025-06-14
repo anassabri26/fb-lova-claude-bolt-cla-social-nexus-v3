@@ -4,9 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EnhancedIndex from "./pages/EnhancedIndex";
-import Profile from "./pages/Profile";
+import EnhancedProfile from "./pages/EnhancedProfile";
 import Groups from "./pages/Groups";
-import Friends from "./pages/Friends";
+import EnhancedFriends from "./pages/EnhancedFriends";
 import EnhancedMessages from "./pages/EnhancedMessages";
 import Notifications from "./pages/Notifications";
 import Watch from "./pages/Watch";
@@ -24,9 +24,9 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<EnhancedIndex />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<EnhancedProfile />} />
             <Route path="/groups" element={<Groups />} />
-            <Route path="/friends" element={<Friends />} />
+            <Route path="/friends" element={<EnhancedFriends />} />
             <Route path="/messages" element={<EnhancedMessages />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/watch" element={<Watch />} />
