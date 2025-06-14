@@ -15,7 +15,14 @@ interface Story {
     name: string;
     avatar: string;
   };
-  image: string;
+  content: {
+    type: 'image' | 'video' | 'text';
+    url?: string;
+    text?: string;
+    backgroundColor?: string;
+  };
+  timestamp: string;
+  views: number;
   isViewed: boolean;
 }
 
@@ -27,7 +34,12 @@ const Stories = () => {
         name: 'Sarah Johnson',
         avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
       },
-      image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=600&fit=crop',
+      content: {
+        type: 'image',
+        url: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=600&fit=crop'
+      },
+      timestamp: '2 hours ago',
+      views: 127,
       isViewed: false
     },
     {
@@ -36,7 +48,12 @@ const Stories = () => {
         name: 'Mike Chen',
         avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
       },
-      image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=600&fit=crop',
+      content: {
+        type: 'image',
+        url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=600&fit=crop'
+      },
+      timestamp: '4 hours ago',
+      views: 85,
       isViewed: true
     },
     {
@@ -45,12 +62,17 @@ const Stories = () => {
         name: 'Emma Wilson',
         avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face'
       },
-      image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=600&fit=crop',
+      content: {
+        type: 'image',
+        url: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=600&fit=crop'
+      },
+      timestamp: '6 hours ago',
+      views: 203,
       isViewed: false
     }
   ]);
 
-  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [showStoryViewer, setShowStoryViewer] = useState(false);
 
   const handleCreateStory = () => {
@@ -58,15 +80,28 @@ const Stories = () => {
     console.log('Create story clicked');
   };
 
-  const handleStoryClick = (story: Story) => {
-    setSelectedStory(story);
+  const handleStoryClick = (storyIndex: number) => {
+    setCurrentStoryIndex(storyIndex);
     setShowStoryViewer(true);
-    console.log('Story clicked:', story.user.name);
+    console.log('Story clicked:', stories[storyIndex].user.name);
   };
 
   const handleCloseStoryViewer = () => {
     setShowStoryViewer(false);
-    setSelectedStory(null);
+  };
+
+  const handleNextStory = () => {
+    if (currentStoryIndex < stories.length - 1) {
+      setCurrentStoryIndex(currentStoryIndex + 1);
+    } else {
+      setShowStoryViewer(false);
+    }
+  };
+
+  const handlePreviousStory = () => {
+    if (currentStoryIndex > 0) {
+      setCurrentStoryIndex(currentStoryIndex - 1);
+    }
   };
 
   return (
@@ -90,15 +125,15 @@ const Stories = () => {
           </div>
 
           {/* Story Cards */}
-          {stories.map((story) => (
+          {stories.map((story, index) => (
             <div key={story.id} className="flex-shrink-0">
               <Card 
                 className="w-24 h-40 cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden"
-                onClick={() => handleStoryClick(story)}
+                onClick={() => handleStoryClick(index)}
               >
                 <div className="relative h-full">
                   <img
-                    src={story.image}
+                    src={story.content.url}
                     alt={`${story.user.name}'s story`}
                     className="w-full h-full object-cover"
                   />
@@ -135,12 +170,13 @@ const Stories = () => {
       {/* Story Viewer */}
       <Dialog open={showStoryViewer} onOpenChange={setShowStoryViewer}>
         <DialogContent className="max-w-md h-[80vh] p-0">
-          {selectedStory && (
-            <StoryViewer
-              story={selectedStory}
-              onClose={handleCloseStoryViewer}
-            />
-          )}
+          <StoryViewer
+            stories={stories}
+            currentIndex={currentStoryIndex}
+            onClose={handleCloseStoryViewer}
+            onNext={handleNextStory}
+            onPrevious={handlePreviousStory}
+          />
         </DialogContent>
       </Dialog>
     </>
