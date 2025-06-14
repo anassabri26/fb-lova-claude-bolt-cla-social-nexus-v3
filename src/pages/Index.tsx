@@ -10,6 +10,7 @@ import PerformanceMetrics from '../components/PerformanceMetrics';
 import Stories from '../components/Stories';
 import CreatePost from '../components/CreatePost';
 import usePerformanceMonitoring from '../hooks/usePerformanceMonitoring';
+import { toast } from 'sonner';
 
 const Index = () => {
   const { trackRenderStart, trackRenderEnd } = usePerformanceMonitoring('Index');
@@ -17,7 +18,16 @@ const Index = () => {
   React.useEffect(() => {
     trackRenderStart();
     trackRenderEnd();
-  });
+    
+    // Welcome message for first-time visitors
+    const hasVisited = localStorage.getItem('has-visited');
+    if (!hasVisited) {
+      setTimeout(() => {
+        toast.success('Welcome to Facebook! Explore all the features.');
+        localStorage.setItem('has-visited', 'true');
+      }, 1000);
+    }
+  }, [trackRenderStart, trackRenderEnd]);
 
   return (
     <ErrorBoundary>

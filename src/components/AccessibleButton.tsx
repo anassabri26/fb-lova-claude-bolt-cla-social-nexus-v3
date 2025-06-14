@@ -9,10 +9,40 @@ interface AccessibleButtonProps extends ButtonProps {
   'aria-pressed'?: boolean;
   role?: string;
   tooltip?: string;
+  loading?: boolean;
+  loadingText?: string;
 }
 
 const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
-  ({ children, className = '', tooltip, ...props }, ref) => {
+  ({ 
+    children, 
+    className = '', 
+    tooltip, 
+    loading = false, 
+    loadingText = 'Loading...',
+    disabled,
+    onClick,
+    ...props 
+  }, ref) => {
+    
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (loading || disabled) {
+        e.preventDefault();
+        return;
+      }
+      
+      // Add visual feedback
+      const button = e.currentTarget;
+      button.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        button.style.transform = 'scale(1)';
+      }, 100);
+      
+      if (onClick) {
+        onClick(e);
+      }
+    };
+
     return (
       <Button
         ref={ref}
@@ -20,12 +50,22 @@ const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
           focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 
           focus:outline-none transition-all duration-200
           min-h-[44px] min-w-[44px] // Touch target size for mobile
+          ${loading ? 'cursor-not-allowed opacity-70' : ''}
           ${className}
         `}
         title={tooltip}
+        disabled={disabled || loading}
+        onClick={handleClick}
         {...props}
       >
-        {children}
+        {loading ? (
+          <div className="flex items-center space-x-2">
+            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+            <span>{loadingText}</span>
+          </div>
+        ) : (
+          children
+        )}
       </Button>
     );
   }
