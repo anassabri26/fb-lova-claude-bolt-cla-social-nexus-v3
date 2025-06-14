@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,7 +36,7 @@ const PeopleYouMayKnow = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-base font-semibold">
             <Users className="w-5 h-5" />
             <span>People You May Know</span>
           </CardTitle>
@@ -53,7 +52,7 @@ const PeopleYouMayKnow = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-base font-semibold">
             <Users className="w-5 h-5" />
             <span>People You May Know</span>
           </CardTitle>
@@ -68,7 +67,7 @@ const PeopleYouMayKnow = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
+        <CardTitle className="flex items-center space-x-2 text-base font-semibold">
           <Users className="w-5 h-5" />
           <span>People You May Know</span>
         </CardTitle>
@@ -82,8 +81,8 @@ const PeopleYouMayKnow = () => {
                 <AvatarFallback>{person.full_name?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold">{person.full_name || 'Unknown User'}</p>
-                <p className="text-sm text-gray-500">Suggested friend</p>
+                <p className="font-semibold text-sm text-gray-900">{person.full_name || 'Unknown User'}</p>
+                <p className="text-xs text-gray-500">Suggested friend</p>
               </div>
             </div>
             <Button
