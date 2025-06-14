@@ -19,55 +19,89 @@ const RealPost = ({ post }: RealPostProps) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isLiked, setIsLiked] = useState(post.user_has_liked || false);
+  const [likesCount, setLikesCount] = useState(post.likes_count || 0);
   const { user } = useAuth();
   const likeMutation = useLikePost();
-  const { data: comments } = useComments(post.id);
+  const { data: comments, isLoading: commentsLoading } = useComments(post.id);
   const createCommentMutation = useCreateComment();
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    likeMutation.mutate({ postId: post.id, isLiked });
+  const handleLike = async () => {
+    const newIsLiked = !isLiked;
+    setIsLiked(newIsLiked);
+    setLikesCount(prev => newIsLiked ? prev + 1 : prev - 1);
+    
+    try {
+      await likeMutation.mutateAsync({ postId: post.id, isLiked });
+    } catch (error) {
+      // Revert optimistic update on error
+      setIsLiked(isLiked);
+      setLikesCount(post.likes_count || 0);
+    }
   };
 
   const handleShare = () => {
-    toast.success('Post shared!');
+    if (navigator.share) {
+      navigator.share({
+        title: `Post by ${post.profiles?.full_name}`,
+        text: post.content,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Link copied to clipboard!');
+    }
   };
 
-  const handleComment = () => {
+  const handleComment = async () => {
     if (newComment.trim()) {
-      createCommentMutation.mutate({ 
-        postId: post.id, 
-        content: newComment.trim() 
-      });
-      setNewComment('');
+      try {
+        await createCommentMutation.mutateAsync({ 
+          postId: post.id, 
+          content: newComment.trim() 
+        });
+        setNewComment('');
+      } catch (error) {
+        toast.error('Failed to post comment');
+      }
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleComment();
     }
   };
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-0">
         {/* Post Header */}
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="w-10 h-10">
               <AvatarImage src={post.profiles?.avatar_url} />
-              <AvatarFallback>{post.profiles?.full_name?.charAt(0) || 'U'}</AvatarFallback>
+              <AvatarFallback className="bg-blue-500 text-white">
+                {post.profiles?.full_name?.charAt(0) || 'U'}
+              </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-semibold text-gray-900">{post.profiles?.full_name || 'User'}</h3>
+              <h3 className="font-semibold text-gray-900 hover:underline cursor-pointer">
+                {post.profiles?.full_name || 'Anonymous User'}
+              </h3>
               <p className="text-sm text-gray-500">
                 {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
               </p>
             </div>
           </div>
-          <AccessibleButton variant="ghost" size="sm">
+          <AccessibleButton variant="ghost" size="sm" className="hover:bg-gray-100">
             <MoreHorizontal className="w-5 h-5 text-gray-500" />
           </AccessibleButton>
         </div>
 
         {/* Post Content */}
         <div className="px-4 pb-3">
-          <p className="text-gray-900">{post.content}</p>
+          <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">{post.content}</p>
         </div>
 
         {/* Post Image */}
@@ -76,107 +110,132 @@ const RealPost = ({ post }: RealPostProps) => {
             <img
               src={post.image_url}
               alt="Post content"
-              className="w-full h-auto max-h-96 object-cover"
+              className="w-full h-auto max-h-96 object-cover cursor-pointer hover:opacity-95 transition-opacity"
+              onClick={() => window.open(post.image_url, '_blank')}
             />
           </div>
         )}
 
         {/* Reaction Summary */}
-        <div className="px-4 py-3 flex items-center justify-between text-sm text-gray-500">
+        <div className="px-4 py-3 flex items-center justify-between text-sm text-gray-500 border-b border-gray-100">
           <div className="flex items-center space-x-1">
-            <div className="flex -space-x-1">
-              <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-                <ThumbsUp className="w-3 h-3 text-white" />
-              </div>
-            </div>
-            <span>{post.likes_count || 0}</span>
+            {likesCount > 0 && (
+              <>
+                <div className="flex -space-x-1">
+                  <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                    <ThumbsUp className="w-3 h-3 text-white" />
+                  </div>
+                </div>
+                <span className="hover:underline cursor-pointer">
+                  {likesCount} {likesCount === 1 ? 'like' : 'likes'}
+                </span>
+              </>
+            )}
           </div>
           <div className="flex space-x-4">
-            <span>{comments?.length || 0} comments</span>
+            <span className="hover:underline cursor-pointer" onClick={() => setShowComments(!showComments)}>
+              {comments?.length || 0} {comments?.length === 1 ? 'comment' : 'comments'}
+            </span>
             <span>0 shares</span>
           </div>
         </div>
-
-        <hr className="border-gray-200" />
 
         {/* Action Buttons */}
         <div className="px-4 py-2 flex items-center justify-between">
           <AccessibleButton
             variant="ghost"
-            className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
-              isLiked ? 'text-blue-600 bg-blue-50' : 'text-gray-600 hover:bg-gray-100'
+            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+              isLiked 
+                ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
+                : 'text-gray-600 hover:bg-gray-100'
             }`}
             onClick={handleLike}
             disabled={likeMutation.isPending}
           >
             <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-            <span>Like</span>
+            <span className="font-medium">Like</span>
           </AccessibleButton>
 
           <AccessibleButton
             variant="ghost"
-            className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100"
+            className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
             onClick={() => setShowComments(!showComments)}
           >
             <MessageCircle className="w-5 h-5" />
-            <span>Comment</span>
+            <span className="font-medium">Comment</span>
           </AccessibleButton>
 
           <AccessibleButton
             variant="ghost"
-            className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100"
+            className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
             onClick={handleShare}
           >
             <Share className="w-5 h-5" />
-            <span>Share</span>
+            <span className="font-medium">Share</span>
           </AccessibleButton>
         </div>
 
         {/* Comments Section */}
         {showComments && (
-          <div className="border-t border-gray-200">
+          <div className="border-t border-gray-200 bg-gray-50">
             {/* Existing Comments */}
-            {comments && comments.length > 0 && (
-              <div className="px-4 py-2 space-y-3">
+            {commentsLoading ? (
+              <div className="px-4 py-4 text-center text-gray-500">
+                Loading comments...
+              </div>
+            ) : comments && comments.length > 0 ? (
+              <div className="px-4 py-3 space-y-3 max-h-64 overflow-y-auto">
                 {comments.map((comment) => (
                   <div key={comment.id} className="flex space-x-3">
-                    <Avatar className="w-8 h-8">
+                    <Avatar className="w-8 h-8 flex-shrink-0">
                       <AvatarImage src={comment.profiles?.avatar_url} />
-                      <AvatarFallback>{comment.profiles?.full_name?.charAt(0) || 'U'}</AvatarFallback>
+                      <AvatarFallback className="bg-gray-400 text-white text-xs">
+                        {comment.profiles?.full_name?.charAt(0) || 'U'}
+                      </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
-                      <div className="bg-gray-100 rounded-lg px-3 py-2">
-                        <p className="font-semibold text-sm">{comment.profiles?.full_name || 'User'}</p>
-                        <p className="text-gray-900">{comment.content}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="bg-white rounded-lg px-3 py-2 shadow-sm">
+                        <p className="font-semibold text-sm text-gray-900">
+                          {comment.profiles?.full_name || 'Anonymous User'}
+                        </p>
+                        <p className="text-gray-800 break-words">{comment.content}</p>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 mt-1 px-3">
                         {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                       </p>
                     </div>
                   </div>
                 ))}
               </div>
+            ) : (
+              <div className="px-4 py-3 text-center text-gray-500 text-sm">
+                No comments yet. Be the first to comment!
+              </div>
             )}
             
             {/* Add Comment */}
-            <div className="px-4 py-4">
+            <div className="px-4 py-4 border-t border-gray-200 bg-white">
               <div className="flex space-x-3">
-                <Avatar className="w-8 h-8">
+                <Avatar className="w-8 h-8 flex-shrink-0">
                   <AvatarImage src={user?.user_metadata?.avatar_url} />
-                  <AvatarFallback>{user?.user_metadata?.full_name?.charAt(0) || 'U'}</AvatarFallback>
+                  <AvatarFallback className="bg-blue-500 text-white text-xs">
+                    {user?.user_metadata?.full_name?.charAt(0) || 'U'}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 flex space-x-2">
                   <Input
                     placeholder="Write a comment..."
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleComment()}
-                    className="rounded-full"
+                    onKeyPress={handleKeyPress}
+                    className="rounded-full border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    disabled={createCommentMutation.isPending}
                   />
                   <Button 
                     onClick={handleComment} 
                     size="sm"
                     disabled={!newComment.trim() || createCommentMutation.isPending}
+                    className="rounded-full px-4"
                   >
                     {createCommentMutation.isPending ? 'Posting...' : 'Post'}
                   </Button>

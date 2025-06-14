@@ -19,33 +19,31 @@ export const useComments = (postId: string) => {
   return useQuery({
     queryKey: ['comments', postId],
     queryFn: async () => {
-      // First, get comments
+      console.log('Fetching comments for post:', postId);
+      
+      // Get comments with profile information
       const { data: comments, error } = await supabase
         .from('comments')
-        .select('*')
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            avatar_url
+          )
+        `)
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching comments:', error);
+        throw error;
+      }
 
-      // Then, get profiles for each comment
-      const commentsWithProfiles = await Promise.all(
-        (comments || []).map(async (comment) => {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('full_name, avatar_url')
-            .eq('id', comment.user_id)
-            .maybeSingle();
-
-          return {
-            ...comment,
-            profiles: profile
-          };
-        })
-      );
-
-      return commentsWithProfiles as Comment[];
-    }
+      console.log('Comments fetched:', comments);
+      return (comments || []) as Comment[];
+    },
+    enabled: !!postId,
+    staleTime: 30000,
   });
 };
 
@@ -54,40 +52,81 @@ export const useCreateComment = () => {
   
   return useMutation({
     mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error('User not authenticated');
+      }
+
       const { data, error } = await supabase
         .from('comments')
         .insert([
           {
             post_id: postId,
-            content,
-            user_id: (await supabase.auth.getUser()).data.user?.id
+            content: content.trim(),
+            user_id: user.id
           }
         ])
-        .select()
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            avatar_url
+          )
+        `)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating comment:', error);
+        throw error;
+      }
 
-      // Get profile data for the new comment
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name, avatar_url')
-        .eq('id', data.user_id)
-        .maybeSingle();
-
-      return {
-        ...data,
-        profiles: profile
-      };
+      return data as Comment;
     },
     onSuccess: (data) => {
+      // Invalidate comments for this specific post
       queryClient.invalidateQueries({ queryKey: ['comments', data.post_id] });
+      // Also invalidate posts to update comment counts
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       toast.success('Comment added!');
     },
     onError: (error) => {
-      toast.error('Failed to add comment');
       console.error('Error creating comment:', error);
+      toast.error('Failed to add comment. Please try again.');
+    }
+  });
+};
+
+export const useDeleteComment = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ commentId, postId }: { commentId: string; postId: string }) => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error('User not authenticated');
+      }
+
+      const { error } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_id', user.id); // Ensure user can only delete their own comments
+
+      if (error) {
+        console.error('Error deleting comment:', error);
+        throw error;
+      }
+
+      return { commentId, postId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['comments', data.postId] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      toast.success('Comment deleted!');
+    },
+    onError: (error) => {
+      console.error('Error deleting comment:', error);
+      toast.error('Failed to delete comment. Please try again.');
     }
   });
 };
