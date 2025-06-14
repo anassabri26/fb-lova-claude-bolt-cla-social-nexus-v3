@@ -6,23 +6,28 @@ import { Calendar, TrendingUp, Users, MessageSquare, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AccessibleButton from './AccessibleButton';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const RightSidebar = () => {
+  const navigate = useNavigate();
+
   const sponsoredAds = [
     {
       id: 1,
       title: 'Learn React Development',
       description: 'Master modern React with our comprehensive course',
       image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop',
-      sponsor: 'TechEdu'
+      sponsor: 'TechEdu',
+      url: 'https://example.com/react-course'
     },
     {
       id: 2,
       title: 'Premium Design Tools',
       description: 'Create stunning designs with our professional toolkit',
       image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=300&fit=crop',
-      sponsor: 'DesignPro'
+      sponsor: 'DesignPro',
+      url: 'https://example.com/design-tools'
     }
   ];
 
@@ -56,7 +61,8 @@ const RightSidebar = () => {
 
   const handleAdClick = (ad: any) => {
     toast.success(`Opening ${ad.title}`);
-    console.log('Ad clicked:', ad.title);
+    console.log('Ad clicked:', ad.title, 'URL:', ad.url);
+    // In a real app, this would open the ad URL
   };
 
   const handleBirthdayWish = (friend: any) => {
@@ -70,8 +76,27 @@ const RightSidebar = () => {
   };
 
   const handleCreateEvent = () => {
-    toast.success('Create event opened');
-    console.log('Create event clicked');
+    navigate('/events');
+    toast.success('Navigate to Events page');
+    console.log('Create event clicked - navigating to events');
+  };
+
+  const handleTrendingClick = (topic: string) => {
+    navigate('/trending');
+    toast.success(`Exploring ${topic}`);
+    console.log('Trending topic clicked:', topic);
+  };
+
+  const handleFindFriends = () => {
+    navigate('/friends');
+    toast.success('Navigate to Friends page');
+    console.log('Quick action: Find friends');
+  };
+
+  const handleStartMessage = () => {
+    navigate('/messages');
+    toast.success('Navigate to Messages');
+    console.log('Quick action: Start conversation');
   };
 
   return (
@@ -185,10 +210,7 @@ const RightSidebar = () => {
                 key={index}
                 variant="ghost"
                 className="w-full justify-start text-xs lg:text-sm text-blue-600 hover:bg-blue-50"
-                onClick={() => {
-                  toast.success(`Exploring ${topic}`);
-                  console.log('Trending topic clicked:', topic);
-                }}
+                onClick={() => handleTrendingClick(topic)}
               >
                 {topic}
               </AccessibleButton>
@@ -204,10 +226,7 @@ const RightSidebar = () => {
               variant="outline"
               size="sm"
               className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
-              onClick={() => {
-                toast.success('Find friends opened');
-                console.log('Quick action: Find friends');
-              }}
+              onClick={handleFindFriends}
             >
               <Users className="w-3 h-3 lg:w-4 lg:h-4" />
               <span className="text-xs">Find Friends</span>
@@ -216,10 +235,7 @@ const RightSidebar = () => {
               variant="outline"
               size="sm"
               className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
-              onClick={() => {
-                toast.success('Start conversation opened');
-                console.log('Quick action: Start conversation');
-              }}
+              onClick={handleStartMessage}
             >
               <MessageSquare className="w-3 h-3 lg:w-4 lg:h-4" />
               <span className="text-xs">Message</span>

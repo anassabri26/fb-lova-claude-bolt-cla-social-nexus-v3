@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Home, Users, Bookmark, Clock, Calendar, Store, Video, MessageCircle, Flag, ChevronDown, UsersRound, Settings, TrendingUp } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -48,14 +47,9 @@ const Sidebar = () => {
   ];
 
   const handleNavigation = (path: string, label: string) => {
-    if (path.startsWith('/')) {
-      navigate(path);
-      toast.success(`Navigated to ${label}`);
-      console.log(`Sidebar navigation: ${label} - ${path}`);
-    } else {
-      toast.info(`${label} feature coming soon!`);
-      console.log(`Feature coming soon: ${path}`);
-    }
+    navigate(path);
+    toast.success(`Navigated to ${label}`);
+    console.log(`Sidebar navigation: ${label} - ${path}`);
   };
 
   const handleProfileClick = () => {
@@ -178,6 +172,7 @@ const Sidebar = () => {
               size="sm"
               className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
               onClick={() => {
+                navigate('/');
                 toast.success('Create post opened');
                 console.log('Quick action: Create post');
               }}
@@ -190,6 +185,7 @@ const Sidebar = () => {
               size="sm"
               className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
               onClick={() => {
+                navigate('/events');
                 toast.success('Create event opened');
                 console.log('Quick action: Create event');
               }}

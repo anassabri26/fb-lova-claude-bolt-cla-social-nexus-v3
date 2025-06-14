@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Home, Users, MessageCircle, Bell, Menu, Search, Plus, Video, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,18 +22,23 @@ const Header = () => {
     { id: 'messages', icon: MessageCircle, path: '/messages', label: 'Messages' },
   ];
 
-  const handleNavigation = (path: string) => {
+  const handleNavigation = (path: string, label: string) => {
     navigate(path);
-    console.log(`Navigating to ${path}`);
+    toast.success(`Navigated to ${label}`);
+    console.log(`Header navigation: ${label} - ${path}`);
   };
 
   const handleProfileClick = () => {
     navigate('/profile');
+    toast.success('Navigated to Profile');
     console.log('Profile clicked');
   };
 
   const handleNotificationsClick = () => {
     setIsNotificationsOpen(!isNotificationsOpen);
+    if (!isNotificationsOpen) {
+      navigate('/notifications');
+    }
     console.log('Notifications toggled');
   };
 
@@ -43,11 +47,13 @@ const Header = () => {
     if (searchQuery.trim()) {
       toast.success(`Searching for: ${searchQuery}`);
       console.log(`Search query: ${searchQuery}`);
+      // In a real app, this would navigate to search results
     }
   };
 
   const handleCreatePost = () => {
-    toast.success('Create post modal opened');
+    navigate('/');
+    toast.success('Create post focused');
     console.log('Create post clicked');
   };
 
@@ -60,7 +66,7 @@ const Header = () => {
             <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
               <div 
                 className="flex items-center space-x-1 sm:space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() => handleNavigation('/')}
+                onClick={() => handleNavigation('/', 'Home')}
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-lg sm:text-xl">f</span>
@@ -95,7 +101,7 @@ const Header = () => {
                       className={`relative px-4 sm:px-6 py-2 sm:py-3 hover:bg-gray-100 rounded-xl transition-colors ${
                         isActive ? 'text-blue-600' : 'text-gray-600'
                       }`}
-                      onClick={() => handleNavigation(item.path)}
+                      onClick={() => handleNavigation(item.path, item.label)}
                       aria-label={item.label}
                     >
                       <item.icon className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -177,7 +183,7 @@ const Header = () => {
                     variant="ghost"
                     className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start"
                     onClick={() => {
-                      handleNavigation(item.path);
+                      handleNavigation(item.path, item.label);
                       setIsMenuOpen(false);
                     }}
                   >

@@ -15,6 +15,9 @@ import EnhancedEvents from "./pages/EnhancedEvents";
 import Saved from "./pages/Saved";
 import EnhancedMemories from "./pages/EnhancedMemories";
 import TrendingPage from "./components/TrendingPage";
+import Recent from "./pages/Recent";
+import Pages from "./pages/Pages";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -36,6 +39,9 @@ function App() {
             <Route path="/events" element={<EnhancedEvents />} />
             <Route path="/saved" element={<Saved />} />
             <Route path="/memories" element={<EnhancedMemories />} />
+            <Route path="/recent" element={<Recent />} />
+            <Route path="/pages" element={<Pages />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

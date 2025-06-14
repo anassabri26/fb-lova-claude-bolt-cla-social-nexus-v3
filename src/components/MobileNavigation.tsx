@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Users, MessageCircle, Video, Store, Calendar, Bookmark, UsersRound } from 'lucide-react';
+import { Home, Users, MessageCircle, Video, Store, Calendar, Bookmark, UsersRound, Settings, TrendingUp } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AccessibleButton from './AccessibleButton';
 import { useIsMobile } from '@/hooks/use-mobile';
