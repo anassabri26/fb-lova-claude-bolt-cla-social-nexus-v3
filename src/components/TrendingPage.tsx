@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { TrendingUp, Fire, Music, GamepadIcon, Trophy, Globe, Clock, Eye, ThumbsUp } from 'lucide-react';
+import { TrendingUp, Flame, Music, GamepadIcon, Trophy, Globe, Clock, Eye, ThumbsUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -139,7 +139,7 @@ const TrendingPage: React.FC = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-lg text-white p-6">
         <div className="flex items-center space-x-3 mb-2">
-          <Fire className="w-8 h-8" />
+          <Flame className="w-8 h-8" />
           <h1 className="text-3xl font-bold">Trending</h1>
         </div>
         <p className="text-lg opacity-90">
@@ -207,7 +207,7 @@ const TrendingPage: React.FC = () => {
                   </div>
                   <div className="absolute top-2 left-2">
                     <Badge className="bg-red-500 text-white animate-pulse">
-                      <Fire className="w-3 h-3 mr-1" />
+                      <Flame className="w-3 h-3 mr-1" />
                       TRENDING
                     </Badge>
                   </div>
