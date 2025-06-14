@@ -6,6 +6,7 @@ import VirtualizedNewsFeed from '../components/VirtualizedNewsFeed';
 import RightSidebar from '../components/RightSidebar';
 import MobileNavigation from '../components/MobileNavigation';
 import ErrorBoundary from '../components/ErrorBoundary';
+import PerformanceMetrics from '../components/PerformanceMetrics';
 import usePerformanceMonitoring from '../hooks/usePerformanceMonitoring';
 
 const Index = () => {
@@ -34,6 +35,7 @@ const Index = () => {
           <RightSidebar />
         </div>
         <MobileNavigation />
+        <PerformanceMetrics />
       </div>
     </ErrorBoundary>
   );
