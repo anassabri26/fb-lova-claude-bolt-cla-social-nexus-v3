@@ -26,7 +26,7 @@ export const usePosts = () => {
         .from('posts')
         .select(`
           *,
-          profiles:user_id (full_name, avatar_url),
+          profiles!posts_user_id_fkey (full_name, avatar_url),
           likes (count),
           comments (count)
         `)
