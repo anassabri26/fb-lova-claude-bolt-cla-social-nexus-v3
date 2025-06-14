@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import NotificationsDropdown from './NotificationsDropdown';
-import SearchDropdown from './SearchDropdown';
 import EnhancedSearch from './EnhancedSearch';
 
 const Header = () => {
@@ -29,11 +28,7 @@ const Header = () => {
   };
 
   const handleNotificationsClick = () => {
-    if (isNotificationsOpen) {
-      setIsNotificationsOpen(false);
-    } else {
-      navigate('/notifications');
-    }
+    setIsNotificationsOpen(!isNotificationsOpen);
   };
 
   return (
@@ -119,7 +114,7 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Dropdowns */}
+      {/* Notifications Dropdown */}
       <NotificationsDropdown 
         isOpen={isNotificationsOpen} 
         onClose={() => setIsNotificationsOpen(false)} 
