@@ -25,20 +25,26 @@ const Watch = () => {
       title: 'Live Coding Session - Building a React App',
       streamer: {
         name: 'Code Master',
-        avatar: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face'
+        avatar: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face',
+        verified: true
       },
       viewers: 1247,
-      thumbnail: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop'
+      thumbnail: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop',
+      duration: '2:30:15',
+      category: 'Technology'
     },
     {
       id: '2',
       title: 'Gaming Stream - Latest RPG Adventure',
       streamer: {
         name: 'GamePlayer Pro',
-        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face',
+        verified: false
       },
       viewers: 3421,
-      thumbnail: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&h=400&fit=crop'
+      thumbnail: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&h=400&fit=crop',
+      duration: '1:45:22',
+      category: 'Gaming'
     }
   ];
 
