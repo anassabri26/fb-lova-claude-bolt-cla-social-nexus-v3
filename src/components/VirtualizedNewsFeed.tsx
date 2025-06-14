@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import CreatePost from './CreatePost';
@@ -141,9 +140,10 @@ const VirtualizedNewsFeed = () => {
         <CreatePost />
       </div>
       
-      <div className="h-[calc(100vh-200px)]" role="feed" aria-label="News feed">
+      <div className="h-[calc(100vh-200px)] w-full" role="feed" aria-label="News feed">
         <List
           height={window.innerHeight - 200}
+          width="100%"
           itemCount={itemCount}
           itemSize={400}
           overscanCount={2}
