@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Home, Users, Bookmark, Clock, Calendar, Store, Video, MessageCircle, Flag, ChevronDown } from 'lucide-react';
+import { Home, Users, Bookmark, Clock, Calendar, Store, Video, MessageCircle, Flag, ChevronDown, UsersRound } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -17,6 +17,7 @@ const Sidebar = () => {
     { icon: MessageCircle, label: 'Messenger', path: '/messages' },
     { icon: Video, label: 'Watch', path: '/watch' },
     { icon: Store, label: 'Marketplace', path: '/marketplace' },
+    { icon: UsersRound, label: 'Groups', path: '/groups' },
     { icon: Bookmark, label: 'Saved', path: '/saved' },
     { icon: Calendar, label: 'Events', path: '/events' },
     { icon: Clock, label: 'Memories', path: '/memories' },
@@ -29,7 +30,7 @@ const Sidebar = () => {
   ];
 
   const handleNavigation = (path: string) => {
-    if (path === '/' || path === '/profile' || path === '/friends' || path === '/messages' || path === '/watch' || path === '/marketplace' || path === '/saved' || path === '/events' || path === '/memories') {
+    if (path === '/' || path === '/profile' || path === '/friends' || path === '/messages' || path === '/watch' || path === '/marketplace' || path === '/saved' || path === '/events' || path === '/memories' || path === '/groups') {
       navigate(path);
     } else {
       // For routes that don't exist yet, show in console

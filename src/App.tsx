@@ -5,15 +5,15 @@ import { QueryProvider } from "@/providers/QueryProvider";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EnhancedIndex from "./pages/EnhancedIndex";
 import EnhancedProfile from "./pages/EnhancedProfile";
-import Groups from "./pages/Groups";
+import EnhancedGroups from "./pages/EnhancedGroups";
 import EnhancedFriends from "./pages/EnhancedFriends";
 import EnhancedMessages from "./pages/EnhancedMessages";
 import Notifications from "./pages/Notifications";
 import Watch from "./pages/Watch";
-import Marketplace from "./pages/Marketplace";
+import EnhancedMarketplace from "./pages/EnhancedMarketplace";
 import EnhancedEvents from "./pages/EnhancedEvents";
 import Saved from "./pages/Saved";
-import Memories from "./pages/Memories";
+import EnhancedMemories from "./pages/EnhancedMemories";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -25,15 +25,15 @@ function App() {
           <Routes>
             <Route path="/" element={<EnhancedIndex />} />
             <Route path="/profile" element={<EnhancedProfile />} />
-            <Route path="/groups" element={<Groups />} />
+            <Route path="/groups" element={<EnhancedGroups />} />
             <Route path="/friends" element={<EnhancedFriends />} />
             <Route path="/messages" element={<EnhancedMessages />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/watch" element={<Watch />} />
-            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/marketplace" element={<EnhancedMarketplace />} />
             <Route path="/events" element={<EnhancedEvents />} />
             <Route path="/saved" element={<Saved />} />
-            <Route path="/memories" element={<Memories />} />
+            <Route path="/memories" element={<EnhancedMemories />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

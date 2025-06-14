@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Home, Users, MessageCircle, Bell, User } from 'lucide-react';
+import { Home, Users, MessageCircle, Bell, User, UsersRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -17,7 +17,7 @@ const MobileNavigation = () => {
   const navItems = [
     { id: 'home', icon: Home, label: 'Home', path: '/' },
     { id: 'friends', icon: Users, label: 'Friends', path: '/friends' },
-    { id: 'messages', icon: MessageCircle, label: 'Messages', path: '/messages' },
+    { id: 'groups', icon: UsersRound, label: 'Groups', path: '/groups' },
     { id: 'notifications', icon: Bell, label: 'Notifications', path: '/notifications' },
     { id: 'profile', icon: User, label: 'Profile', path: '/profile' },
   ];
