@@ -1,25 +1,88 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import MobileNavigation from '../components/MobileNavigation';
 import FriendRequests from '../components/FriendRequests';
 import FriendsList from '../components/FriendsList';
+import FriendSuggestions from "../components/FriendSuggestions";
 import { Users, UserPlus, UserCheck, Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import AccessibleButton from '../components/AccessibleButton';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 const Friends = () => {
   const [activeTab, setActiveTab] = useState<'requests' | 'all' | 'suggestions'>('requests');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterActive, setFilterActive] = useState(false);
 
+  // NEW: State for tab counts
+  const [requestsCount, setRequestsCount] = useState(0);
+  const [allFriendsCount, setAllFriendsCount] = useState(0);
+  const [suggestionsCount, setSuggestionsCount] = useState(0);
+
+  // Fetch request, friends, and suggestion counts (with loading)
+  React.useEffect(() => {
+    const fetchCounts = async () => {
+      // Requests count
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) return;
+      const { data: reqs } = await supabase
+        .from("friendships")
+        .select("id")
+        .eq("addressee_id", user.data.user.id)
+        .eq("status", "pending");
+      setRequestsCount(reqs?.length || 0);
+
+      // Friends count
+      const { data: frns } = await supabase
+        .from("friendships")
+        .select("id")
+        .or(
+          `requester_id.eq.${user.data.user.id},addressee_id.eq.${user.data.user.id}`
+        )
+        .eq("status", "accepted");
+      setAllFriendsCount(frns?.length || 0);
+
+      // Suggestions count
+      const { data: allUsers } = await supabase
+        .from("profiles")
+        .select("id")
+        .neq("id", user.data.user.id);
+
+      const { data: friendships } = await supabase
+        .from("friendships")
+        .select("requester_id, addressee_id, status")
+        .or(
+          `requester_id.eq.${user.data.user.id},addressee_id.eq.${user.data.user.id}`
+        );
+
+      const connectedIds = new Set<string>();
+      if (friendships) {
+        friendships.forEach((f) => {
+          if (
+            f.status === "accepted" ||
+            f.status === "pending"
+          ) {
+            connectedIds.add(f.requester_id);
+            connectedIds.add(f.addressee_id);
+          }
+        });
+      }
+      connectedIds.add(user.data.user.id);
+
+      setSuggestionsCount(
+        (allUsers?.filter((person) => !connectedIds.has(person.id)).length || 0)
+      );
+    };
+    fetchCounts();
+  }, [activeTab]);
+
   const tabs = [
-    { id: 'requests', label: 'Friend Requests', icon: UserPlus, count: 3 },
-    { id: 'all', label: 'All Friends', icon: Users, count: 156 },
-    { id: 'suggestions', label: 'Suggestions', icon: UserCheck, count: 12 },
+    { id: 'requests', label: 'Friend Requests', icon: UserPlus, count: requestsCount },
+    { id: 'all', label: 'All Friends', icon: Users, count: allFriendsCount },
+    { id: 'suggestions', label: 'Suggestions', icon: UserCheck, count: suggestionsCount },
   ];
 
   const handleTabChange = (tabId: string) => {
@@ -49,16 +112,7 @@ const Friends = () => {
       case 'all':
         return <FriendsList />;
       case 'suggestions':
-        return (
-          <div className="text-center py-12">
-            <UserCheck className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">Friend Suggestions</h3>
-            <p className="text-gray-500">Discover people you may know</p>
-            <Button className="mt-4" onClick={() => toast.info('Loading suggestions...')}>
-              Find Friends
-            </Button>
-          </div>
-        );
+        return <FriendSuggestions />;
       default:
         return null;
     }
@@ -115,10 +169,11 @@ const Friends = () => {
                       : 'text-gray-600 hover:bg-gray-50'
                   }`}
                   onClick={() => handleTabChange(tab.id)}
+                  aria-current={activeTab === tab.id}
                 >
                   <tab.icon className="w-5 h-5" />
                   <span className="font-medium">{tab.label}</span>
-                  {tab.count > 0 && (
+                  {typeof tab.count === "number" && tab.count > 0 && (
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       activeTab === tab.id 
                         ? 'bg-blue-100 text-blue-600' 
