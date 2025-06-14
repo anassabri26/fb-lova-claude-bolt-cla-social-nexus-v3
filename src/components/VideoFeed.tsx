@@ -1,9 +1,9 @@
+
 import React, { useState } from 'react';
-import { Play, Heart, MessageCircle, Share, MoreHorizontal, Clock } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Heart, MessageCircle, Share, MoreHorizontal } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import AccessibleButton from './AccessibleButton';
-import LiveStreamCard from './LiveStreamCard';
 import { toast } from 'sonner';
 
 interface Video {
@@ -12,240 +12,211 @@ interface Video {
   creator: {
     name: string;
     avatar: string;
-    verified: boolean;
+    followers: string;
   };
   thumbnail: string;
-  duration: string;
-  views: number;
+  videoUrl?: string;
+  views: string;
   timestamp: string;
   likes: number;
   comments: number;
-  isLive?: boolean;
+  shares: number;
+  description: string;
 }
 
 const VideoFeed = () => {
   const [videos] = useState<Video[]>([
     {
       id: '1',
-      title: 'Building Amazing React Applications - Full Tutorial',
+      title: 'Amazing React Tips and Tricks',
       creator: {
-        name: 'Tech Academy',
-        avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face',
-        verified: true
+        name: 'Tech Channel',
+        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face',
+        followers: '125K'
       },
-      thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=450&fit=crop',
-      duration: '45:32',
-      views: 125000,
-      timestamp: '2 days ago',
-      likes: 4200,
-      comments: 342,
-      isLive: false
+      thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop',
+      views: '45K',
+      timestamp: '2 hours ago',
+      likes: 1234,
+      comments: 89,
+      shares: 45,
+      description: 'Learn the latest React development techniques and best practices!'
     },
     {
       id: '2',
-      title: 'Live Coding Session: Building a Social Media App',
+      title: 'Beautiful Nature Documentary',
       creator: {
-        name: 'Code with Sarah',
-        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face',
-        verified: true
+        name: 'Nature World',
+        avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face',
+        followers: '890K'
       },
-      thumbnail: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=450&fit=crop',
-      duration: '2:15:45',
-      views: 8500,
-      timestamp: 'Live now',
-      likes: 890,
-      comments: 156,
-      isLive: true
+      thumbnail: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
+      views: '123K',
+      timestamp: '5 hours ago',
+      likes: 2567,
+      comments: 234,
+      shares: 123,
+      description: 'Explore the wonders of nature in this stunning documentary series.'
     },
     {
       id: '3',
-      title: 'Web Design Trends 2024 - What You Need to Know',
+      title: 'Cooking Masterclass',
       creator: {
-        name: 'Design Hub',
+        name: 'Chef Masters',
         avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face',
-        verified: false
+        followers: '567K'
       },
-      thumbnail: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=450&fit=crop',
-      duration: '28:15',
-      views: 67000,
-      timestamp: '1 week ago',
-      likes: 2100,
-      comments: 89,
-      isLive: false
+      thumbnail: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=600&fit=crop',
+      views: '78K',
+      timestamp: '1 day ago',
+      likes: 1890,
+      comments: 156,
+      shares: 67,
+      description: 'Learn professional cooking techniques from world-class chefs.'
     }
   ]);
 
-  const liveStreams = [
-    {
-      id: 'live1',
-      title: 'React Live Coding - Building a Dashboard',
-      streamer: {
-        name: 'DevStreamer',
-        avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
-      },
-      thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=450&fit=crop',
-      viewerCount: 2340,
-      duration: '1:23:45',
-      category: 'Programming'
-    },
-    {
-      id: 'live2',
-      title: 'UI/UX Design Process - Creating Mobile App',
-      streamer: {
-        name: 'DesignMaster',
-        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
-      },
-      thumbnail: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=450&fit=crop',
-      viewerCount: 1560,
-      duration: '45:12',
-      category: 'Design'
-    }
-  ];
+  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+  const [likedVideos, setLikedVideos] = useState<Set<string>>(new Set());
 
-  const handleVideoClick = (video: Video) => {
-    toast.success(`Now playing: ${video.title}`);
+  const handlePlayVideo = (videoId: string) => {
+    setPlayingVideo(playingVideo === videoId ? null : videoId);
+    toast.info(playingVideo === videoId ? 'Video paused' : 'Video playing');
   };
 
-  const handleLike = (videoId: string) => {
-    toast.success('Video liked!');
+  const handleLikeVideo = (videoId: string) => {
+    const newLiked = new Set(likedVideos);
+    if (likedVideos.has(videoId)) {
+      newLiked.delete(videoId);
+      toast.info('Removed like');
+    } else {
+      newLiked.add(videoId);
+      toast.success('Video liked!');
+    }
+    setLikedVideos(newLiked);
   };
 
   const handleComment = (videoId: string) => {
-    toast.info('Comments feature coming soon!');
+    toast.info('Comment feature coming soon!');
   };
 
   const handleShare = (videoId: string) => {
-    toast.success('Link copied to clipboard!');
+    toast.success('Video shared!');
+  };
+
+  const handleFollow = (creatorName: string) => {
+    toast.success(`Now following ${creatorName}!`);
   };
 
   return (
-    <div className="space-y-8">
-      {/* Live Streams Section */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Live Now</h2>
-          <AccessibleButton variant="ghost" className="text-blue-600">
-            See All
-          </AccessibleButton>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {liveStreams.map((stream) => (
-            <LiveStreamCard key={stream.id} stream={stream} />
-          ))}
-        </div>
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Watch</h1>
+        <p className="text-gray-600">Discover videos from creators you follow and explore new content</p>
       </div>
 
-      {/* Regular Videos */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Recommended for You</h2>
-        <div className="space-y-6">
-          {videos.map((video) => (
-            <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <CardContent className="p-0">
-                <div className="md:flex">
-                  {/* Video Thumbnail */}
-                  <div className="relative md:w-80 cursor-pointer" onClick={() => handleVideoClick(video)}>
-                    <img
-                      src={video.thumbnail}
-                      alt={video.title}
-                      className="w-full h-48 md:h-full object-cover"
-                    />
-                    
-                    {video.isLive ? (
-                      <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
-                        LIVE
-                      </div>
-                    ) : (
-                      <div className="absolute bottom-3 right-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-                        {video.duration}
-                      </div>
-                    )}
-                    
-                    {/* Play button overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                      <div className="bg-white bg-opacity-90 rounded-full p-4">
-                        <Play className="w-8 h-8 text-black ml-1" />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Video Info */}
-                  <div className="flex-1 p-4">
-                    <div className="flex items-start space-x-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarImage src={video.creator.avatar} />
-                        <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 cursor-pointer hover:text-blue-600" onClick={() => handleVideoClick(video)}>
-                          {video.title}
-                        </h3>
-                        
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="text-sm font-medium text-gray-700">{video.creator.name}</span>
-                          {video.creator.verified && (
-                            <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs">✓</span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-                          <span>{video.views.toLocaleString()} views</span>
-                          <span>•</span>
-                          <span>{video.timestamp}</span>
-                        </div>
-                        
-                        {/* Action buttons */}
-                        <div className="flex items-center space-x-6">
-                          <AccessibleButton
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleLike(video.id)}
-                            className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
-                          >
-                            <Heart className="w-4 h-4" />
-                            <span>{video.likes.toLocaleString()}</span>
-                          </AccessibleButton>
-                          
-                          <AccessibleButton
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleComment(video.id)}
-                            className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
-                          >
-                            <MessageCircle className="w-4 h-4" />
-                            <span>{video.comments}</span>
-                          </AccessibleButton>
-                          
-                          <AccessibleButton
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleShare(video.id)}
-                            className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
-                          >
-                            <Share className="w-4 h-4" />
-                            <span>Share</span>
-                          </AccessibleButton>
-                          
-                          <AccessibleButton
-                            variant="ghost"
-                            size="sm"
-                            className="text-gray-600 hover:text-blue-600"
-                          >
-                            <MoreHorizontal className="w-4 h-4" />
-                          </AccessibleButton>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      {videos.map((video) => (
+        <div key={video.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
+          {/* Video Header */}
+          <div className="p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Avatar className="w-10 h-10">
+                <AvatarImage src={video.creator.avatar} />
+                <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="font-semibold text-gray-900">{video.creator.name}</h3>
+                <p className="text-sm text-gray-500">{video.creator.followers} followers • {video.timestamp}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleFollow(video.creator.name)}
+              >
+                Follow
+              </Button>
+              <AccessibleButton variant="ghost" size="sm">
+                <MoreHorizontal className="w-5 h-5" />
+              </AccessibleButton>
+            </div>
+          </div>
+
+          {/* Video Title and Description */}
+          <div className="px-4 pb-4">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">{video.title}</h2>
+            <p className="text-gray-600">{video.description}</p>
+          </div>
+
+          {/* Video Player */}
+          <div className="relative aspect-video bg-black">
+            <img
+              src={video.thumbnail}
+              alt={video.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <AccessibleButton
+                onClick={() => handlePlayVideo(video.id)}
+                className="bg-black bg-opacity-70 text-white rounded-full p-4 hover:bg-opacity-80 transition-all"
+              >
+                {playingVideo === video.id ? (
+                  <Pause className="w-8 h-8" />
+                ) : (
+                  <Play className="w-8 h-8" />
+                )}
+              </AccessibleButton>
+            </div>
+            
+            {/* Video Controls */}
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+              <div className="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                {video.views} views
+              </div>
+              <div className="flex items-center space-x-2">
+                <AccessibleButton className="text-white bg-black bg-opacity-50 p-2 rounded">
+                  <Volume2 className="w-5 h-5" />
+                </AccessibleButton>
+              </div>
+            </div>
+          </div>
+
+          {/* Video Actions */}
+          <div className="p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <AccessibleButton
+                variant="ghost"
+                className={`flex items-center space-x-2 ${
+                  likedVideos.has(video.id) ? 'text-red-500' : 'text-gray-600'
+                }`}
+                onClick={() => handleLikeVideo(video.id)}
+              >
+                <Heart className={`w-5 h-5 ${likedVideos.has(video.id) ? 'fill-current' : ''}`} />
+                <span>{video.likes + (likedVideos.has(video.id) ? 1 : 0)}</span>
+              </AccessibleButton>
+              
+              <AccessibleButton
+                variant="ghost"
+                className="flex items-center space-x-2 text-gray-600"
+                onClick={() => handleComment(video.id)}
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span>{video.comments}</span>
+              </AccessibleButton>
+              
+              <AccessibleButton
+                variant="ghost"
+                className="flex items-center space-x-2 text-gray-600"
+                onClick={() => handleShare(video.id)}
+              >
+                <Share className="w-5 h-5" />
+                <span>{video.shares}</span>
+              </AccessibleButton>
+            </div>
+          </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 };
