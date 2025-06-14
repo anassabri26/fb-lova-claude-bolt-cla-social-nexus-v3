@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import OptimizedImage from './OptimizedImage';
 import AccessibleButton from './AccessibleButton';
+import CommentSystem from './CommentSystem';
+import { toast } from 'sonner';
 
 interface PostProps {
   post: {
@@ -27,10 +29,20 @@ interface PostProps {
 const Post: React.FC<PostProps> = ({ post }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
+  const [showComments, setShowComments] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(post.comments);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
+  const handleComment = () => {
+    setShowComments(!showComments);
+  };
+
+  const handleShare = () => {
+    toast.success('Post shared!');
   };
 
   return (
@@ -95,7 +107,12 @@ const Post: React.FC<PostProps> = ({ post }) => {
             <span>{likesCount}</span>
           </div>
           <div className="flex items-center space-x-4">
-            <span>{post.comments} comments</span>
+            <button 
+              onClick={handleComment}
+              className="hover:underline"
+            >
+              {commentsCount} comments
+            </button>
             <span>{post.shares} shares</span>
           </div>
         </div>
@@ -121,6 +138,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
             <AccessibleButton
               variant="ghost"
               size="sm"
+              onClick={handleComment}
               className="flex-1 flex items-center justify-center space-x-2 py-3 text-gray-600 hover:bg-gray-50 rounded-lg"
               aria-label="Comment on post"
             >
@@ -130,6 +148,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
             <AccessibleButton
               variant="ghost"
               size="sm"
+              onClick={handleShare}
               className="flex-1 flex items-center justify-center space-x-2 py-3 text-gray-600 hover:bg-gray-50 rounded-lg"
               aria-label="Share post"
             >
@@ -138,6 +157,13 @@ const Post: React.FC<PostProps> = ({ post }) => {
             </AccessibleButton>
           </div>
         </div>
+
+        {/* Comments Section */}
+        <CommentSystem 
+          postId={post.id} 
+          isVisible={showComments} 
+          onClose={() => setShowComments(false)} 
+        />
       </CardContent>
     </Card>
   );

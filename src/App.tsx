@@ -10,6 +10,7 @@ import Friends from "./pages/Friends";
 import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Watch from "./pages/Watch";
+import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/messages" element={<Messages />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/watch" element={<Watch />} />
+            <Route path="/marketplace" element={<Marketplace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
