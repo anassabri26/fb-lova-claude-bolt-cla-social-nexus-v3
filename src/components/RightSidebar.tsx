@@ -32,30 +32,9 @@ const RightSidebar = () => {
     }
   ];
 
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Team Meeting",
-      date: "Today at 3:00 PM",
-      attendees: 12
-    },
-    {
-      id: 2,
-      title: "Birthday Party",
-      date: "Tomorrow at 7:00 PM",
-      attendees: 25
-    }
-  ];
-
-  const trendingTopics = [
-    { id: 1, topic: "#TechNews", posts: "2.3k posts" },
-    { id: 2, topic: "#Photography", posts: "1.8k posts" },
-    { id: 3, topic: "#Travel", posts: "1.2k posts" },
-  ];
-
   return (
-    <div className="w-80 bg-white h-full overflow-y-auto">
-      <div className="p-4 space-y-4">
+    <div className="w-80 bg-gray-50 h-full overflow-y-auto">
+      <div className="p-3 space-y-3">
         {/* Friend Requests */}
         <FriendRequestsPanel />
         
@@ -64,13 +43,13 @@ const RightSidebar = () => {
 
         {/* Online Friends */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900 flex items-center space-x-2">
-              <Users className="w-5 h-5 text-gray-600" />
+          <div className="p-3 border-b border-gray-100">
+            <h3 className="font-semibold text-gray-900 flex items-center space-x-2 text-sm">
+              <Users className="w-4 h-4 text-gray-600" />
               <span>Contacts ({friends?.length || 0})</span>
             </h3>
           </div>
-          <div className="p-2">
+          <div className="p-1">
             {onlineFriends.map((friend) => (
               <div key={friend.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
                 <div className="relative">
@@ -90,10 +69,10 @@ const RightSidebar = () => {
 
         {/* Your Pages and Profiles */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900">Your Pages and profiles</h3>
+          <div className="p-3 border-b border-gray-100">
+            <h3 className="font-semibold text-gray-900 text-sm">Your Pages and profiles</h3>
           </div>
-          <div className="p-2">
+          <div className="p-1">
             <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white text-xs font-bold">YP</span>
@@ -105,10 +84,10 @@ const RightSidebar = () => {
 
         {/* Group conversations */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900">Group conversations</h3>
+          <div className="p-3 border-b border-gray-100">
+            <h3 className="font-semibold text-gray-900 text-sm">Group conversations</h3>
           </div>
-          <div className="p-2">
+          <div className="p-1">
             <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
               <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
                 <Users className="w-4 h-4 text-white" />
