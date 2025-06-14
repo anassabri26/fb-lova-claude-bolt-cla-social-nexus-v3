@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import OptimizedImage from './OptimizedImage';
 import AccessibleButton from './AccessibleButton';
 import CommentSystem from './CommentSystem';
+import ReactionPicker, { ReactionType, reactions } from './ReactionPicker';
 import { toast } from 'sonner';
 
 interface PostProps {
@@ -27,14 +28,31 @@ interface PostProps {
 }
 
 const Post: React.FC<PostProps> = ({ post }) => {
-  const [isLiked, setIsLiked] = useState(false);
+  const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
   const [likesCount, setLikesCount] = useState(post.likes);
   const [showComments, setShowComments] = useState(false);
   const [commentsCount, setCommentsCount] = useState(post.comments);
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+  const handleReaction = (reactionType: ReactionType) => {
+    const wasLiked = userReaction !== null;
+    const newReaction = userReaction === reactionType ? null : reactionType;
+    
+    setUserReaction(newReaction);
+    setLikesCount(prev => {
+      if (wasLiked && !newReaction) return prev - 1;
+      if (!wasLiked && newReaction) return prev + 1;
+      return prev;
+    });
+
+    if (newReaction) {
+      const reaction = reactions.find(r => r.type === newReaction);
+      toast.success(`You ${reaction?.label.toLowerCase()}d this post!`);
+    }
+  };
+
+  const handleQuickLike = () => {
+    handleReaction('like');
   };
 
   const handleComment = () => {
@@ -43,6 +61,24 @@ const Post: React.FC<PostProps> = ({ post }) => {
 
   const handleShare = () => {
     toast.success('Post shared!');
+  };
+
+  const getUserReactionIcon = () => {
+    if (!userReaction) return ThumbsUp;
+    const reaction = reactions.find(r => r.type === userReaction);
+    return reaction?.icon || ThumbsUp;
+  };
+
+  const getUserReactionColor = () => {
+    if (!userReaction) return 'text-gray-600';
+    const reaction = reactions.find(r => r.type === userReaction);
+    return reaction?.color || 'text-gray-600';
+  };
+
+  const getUserReactionLabel = () => {
+    if (!userReaction) return 'Like';
+    const reaction = reactions.find(r => r.type === userReaction);
+    return reaction?.label || 'Like';
   };
 
   return (
@@ -120,21 +156,32 @@ const Post: React.FC<PostProps> = ({ post }) => {
         {/* Action Buttons */}
         <div className="border-t border-gray-100 px-4 py-2">
           <div className="flex justify-around">
-            <AccessibleButton
-              variant="ghost"
-              size="sm"
-              onClick={handleLike}
-              className={`flex-1 flex items-center justify-center space-x-2 py-3 rounded-lg transition-colors ${
-                isLiked 
-                  ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-              aria-label={isLiked ? 'Unlike post' : 'Like post'}
-              aria-pressed={isLiked}
-            >
-              <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-              <span className="font-medium">Like</span>
-            </AccessibleButton>
+            <div className="relative flex-1">
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                onClick={handleQuickLike}
+                onMouseEnter={() => setShowReactionPicker(true)}
+                onMouseLeave={() => setShowReactionPicker(false)}
+                className={`w-full flex items-center justify-center space-x-2 py-3 rounded-lg transition-colors ${
+                  userReaction 
+                    ? `${getUserReactionColor()} bg-blue-50 hover:bg-blue-100` 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+                aria-label={userReaction ? `${getUserReactionLabel()} post` : 'Like post'}
+                aria-pressed={!!userReaction}
+              >
+                {React.createElement(getUserReactionIcon(), { 
+                  className: `w-5 h-5 ${userReaction ? 'fill-current' : ''}` 
+                })}
+                <span className="font-medium">{getUserReactionLabel()}</span>
+              </AccessibleButton>
+              <ReactionPicker
+                isOpen={showReactionPicker}
+                onReactionSelect={handleReaction}
+                onClose={() => setShowReactionPicker(false)}
+              />
+            </div>
             <AccessibleButton
               variant="ghost"
               size="sm"
