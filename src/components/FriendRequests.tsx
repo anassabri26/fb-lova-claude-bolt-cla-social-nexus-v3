@@ -1,98 +1,97 @@
 
 import React, { useState } from 'react';
-import { UserPlus, X, Check } from 'lucide-react';
+import { UserPlus, UserCheck, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import AccessibleButton from './AccessibleButton';
+import { toast } from 'sonner';
 
 interface FriendRequest {
-  id: number;
+  id: string;
   name: string;
   avatar: string;
   mutualFriends: number;
-  timeAgo: string;
+  timestamp: string;
 }
 
 const FriendRequests = () => {
   const [requests, setRequests] = useState<FriendRequest[]>([
     {
-      id: 1,
+      id: '1',
       name: 'Alex Thompson',
       avatar: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face',
       mutualFriends: 5,
-      timeAgo: '2d',
+      timestamp: '2d'
     },
     {
-      id: 2,
-      name: 'Jessica Martinez',
+      id: '2',
+      name: 'Jessica Chen',
       avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face',
-      mutualFriends: 3,
-      timeAgo: '1w',
-    },
+      mutualFriends: 12,
+      timestamp: '1w'
+    }
   ]);
 
-  const handleAccept = (id: number) => {
-    setRequests(requests.filter(req => req.id !== id));
-    // Add to friends list logic here
+  const handleAccept = (requestId: string, name: string) => {
+    setRequests(prev => prev.filter(req => req.id !== requestId));
+    toast.success(`You are now friends with ${name}!`);
   };
 
-  const handleDecline = (id: number) => {
-    setRequests(requests.filter(req => req.id !== id));
+  const handleDecline = (requestId: string, name: string) => {
+    setRequests(prev => prev.filter(req => req.id !== requestId));
+    toast.info(`Friend request from ${name} declined`);
   };
-
-  if (requests.length === 0) return null;
 
   return (
-    <Card className="bg-white shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold flex items-center space-x-2">
-          <UserPlus className="w-5 h-5" />
-          <span>Friend Requests</span>
-          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{requests.length}</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {requests.map((request) => (
-          <div key={request.id} className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Avatar className="w-12 h-12">
-                <AvatarImage src={request.avatar} alt={`${request.name}'s profile`} />
-                <AvatarFallback>{request.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium text-gray-900">{request.name}</p>
-                <p className="text-sm text-gray-500">
-                  {request.mutualFriends} mutual friends • {request.timeAgo}
-                </p>
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <AccessibleButton
-                variant="default"
-                size="sm"
-                onClick={() => handleAccept(request.id)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4"
-                aria-label={`Accept friend request from ${request.name}`}
-              >
-                <Check className="w-4 h-4 mr-1" />
-                Accept
-              </AccessibleButton>
-              <AccessibleButton
-                variant="outline"
-                size="sm"
-                onClick={() => handleDecline(request.id)}
-                className="px-4"
-                aria-label={`Decline friend request from ${request.name}`}
-              >
-                <X className="w-4 h-4 mr-1" />
-                Decline
-              </AccessibleButton>
-            </div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <h2 className="text-xl font-bold text-gray-900">Friend Requests</h2>
+      
+      {requests.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          <UserPlus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+          <p>No friend requests</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {requests.map((request) => (
+            <Card key={request.id} className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="aspect-square relative">
+                  <img
+                    src={request.avatar}
+                    alt={request.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-1">{request.name}</h3>
+                  <p className="text-sm text-gray-500 mb-3">
+                    {request.mutualFriends} mutual friends • {request.timestamp}
+                  </p>
+                  <div className="flex space-x-2">
+                    <AccessibleButton
+                      onClick={() => handleAccept(request.id, request.name)}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <UserCheck className="w-4 h-4 mr-2" />
+                      Accept
+                    </AccessibleButton>
+                    <AccessibleButton
+                      variant="outline"
+                      onClick={() => handleDecline(request.id, request.name)}
+                      className="flex-1"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Decline
+                    </AccessibleButton>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
