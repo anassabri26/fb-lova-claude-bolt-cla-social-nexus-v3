@@ -211,7 +211,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
 
         {/* Comments Section */}
         <CommentSystem 
-          postId={post.id} 
+          postId={post.id.toString()} 
           isVisible={showComments} 
           onClose={handleCloseComments}
         />
