@@ -1,11 +1,9 @@
 
 import React, { useState } from 'react';
-import { Search, MapPin, Heart, MessageCircle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import AccessibleButton from './AccessibleButton';
 import { toast } from 'sonner';
+import MarketplaceItemCard from './MarketplaceItemCard';
+import MarketplaceSearch from './MarketplaceSearch';
+import MarketplaceCategories from './MarketplaceCategories';
 
 interface MarketplaceItem {
   id: string;
@@ -106,90 +104,27 @@ const MarketplaceGrid = () => {
     <div className="space-y-6">
       {/* Search and Filters */}
       <div className="space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Search Marketplace..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+        <MarketplaceSearch 
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
         
-        <div className="flex space-x-2 overflow-x-auto">
-          {categories.map(category => (
-            <AccessibleButton
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(category)}
-              className="whitespace-nowrap"
-            >
-              {category === 'all' ? 'All Categories' : category}
-            </AccessibleButton>
-          ))}
-        </div>
+        <MarketplaceCategories
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+        />
       </div>
 
       {/* Items Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredItems.map(item => (
-          <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-            <CardContent className="p-0">
-              <img 
-                src={item.image} 
-                alt={item.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold text-lg">${item.price}</h3>
-                  <AccessibleButton
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleSave(item)}
-                    className="p-1"
-                  >
-                    <Heart className="w-4 h-4" />
-                  </AccessibleButton>
-                </div>
-                
-                <h4 className="font-medium text-gray-900 mb-2">{item.title}</h4>
-                <p className="text-sm text-gray-600 mb-2">{item.description}</p>
-                
-                <div className="flex items-center space-x-1 text-sm text-gray-500 mb-3">
-                  <MapPin className="w-3 h-3" />
-                  <span>{item.location}</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage src={item.seller.avatar} />
-                      <AvatarFallback>{item.seller.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm text-gray-600">{item.seller.name}</span>
-                  </div>
-                  
-                  <AccessibleButton
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleContact(item.seller)}
-                    className="flex items-center space-x-1"
-                  >
-                    <MessageCircle className="w-3 h-3" />
-                    <span>Contact</span>
-                  </AccessibleButton>
-                </div>
-                
-                <div className="mt-2">
-                  <span className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
-                    {item.condition}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <MarketplaceItemCard
+            key={item.id}
+            item={item}
+            onContact={handleContact}
+            onSave={handleSave}
+          />
         ))}
       </div>
 
