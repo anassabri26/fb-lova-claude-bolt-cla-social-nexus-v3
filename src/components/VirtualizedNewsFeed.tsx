@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import CreatePost from './CreatePost';
-import Stories from './Stories';
 import Post from './Post';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -124,7 +123,6 @@ const VirtualizedNewsFeed = () => {
   if (loading && posts.length === 0) {
     return (
       <div className="max-w-2xl mx-auto space-y-6">
-        <Stories />
         <CreatePost />
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton key={i} className="h-64 w-full rounded-lg" />
@@ -136,7 +134,6 @@ const VirtualizedNewsFeed = () => {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="space-y-6 mb-6">
-        <Stories />
         <CreatePost />
       </div>
       
