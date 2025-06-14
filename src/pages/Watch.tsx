@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, MoreHorizontal, Heart, MessageCircle, Share, Eye, Filter, Search, Maximize, Settings, SkipBack, SkipForward, Clock, Bookmark, Download, Flag } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, MoreHorizontal, Heart, MessageCircle, Share, Eye, Filter, Search, Maximize, Settings, SkipBack, SkipForward, Clock, Bookmark, Download, Flag, Upload, List, Users, Plus, TrendingUp, Zap } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,10 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Header from '../components/Header';
 import MobileNavigation from '../components/MobileNavigation';
 import AccessibleButton from '../components/AccessibleButton';
 import LiveVideoIndicator from '../components/LiveVideoIndicator';
+import VideoUpload from '../components/VideoUpload';
+import PlaylistManager from '../components/PlaylistManager';
+import SubscriptionManager from '../components/SubscriptionManager';
 import { toast } from 'sonner';
 
 interface Video {
@@ -22,6 +25,7 @@ interface Video {
     avatar: string;
     verified: boolean;
     isFollowing: boolean;
+    subscribers: string;
   };
   thumbnail: string;
   duration: string;
@@ -33,6 +37,8 @@ interface Video {
   category: string;
   description: string;
   videoUrl?: string;
+  isTrending?: boolean;
+  isShort?: boolean;
 }
 
 const Watch = () => {
@@ -44,7 +50,8 @@ const Watch = () => {
         name: 'Nature Explorer',
         avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face',
         verified: true,
-        isFollowing: false
+        isFollowing: false,
+        subscribers: '890K'
       },
       thumbnail: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
       duration: '3:45',
@@ -53,7 +60,8 @@ const Watch = () => {
       likes: 890,
       timestamp: '2 hours ago',
       category: 'Nature',
-      description: 'Watch this breathtaking sunset timelapse captured from Mount Wilson Observatory.'
+      description: 'Watch this breathtaking sunset timelapse captured from Mount Wilson Observatory.',
+      isTrending: true
     },
     {
       id: '2',
@@ -62,7 +70,8 @@ const Watch = () => {
         name: 'Tech Today',
         avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face',
         verified: true,
-        isFollowing: true
+        isFollowing: true,
+        subscribers: '2.5M'
       },
       thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop',
       duration: 'LIVE',
@@ -76,21 +85,23 @@ const Watch = () => {
     },
     {
       id: '3',
-      title: 'Cooking Masterclass: Perfect Pasta in 15 Minutes',
+      title: 'Quick Pasta Recipe',
       creator: {
         name: 'Chef Maria',
         avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face',
         verified: false,
-        isFollowing: false
+        isFollowing: false,
+        subscribers: '156K'
       },
       thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop',
-      duration: '15:22',
-      durationSeconds: 922,
+      duration: '0:45',
+      durationSeconds: 45,
       views: 8900,
       likes: 567,
       timestamp: '1 day ago',
       category: 'Food',
-      description: 'Learn how to make restaurant-quality pasta at home in just 15 minutes!'
+      description: 'Quick 45-second pasta recipe!',
+      isShort: true
     },
     {
       id: '4',
@@ -99,7 +110,8 @@ const Watch = () => {
         name: 'GameStream Pro',
         avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face',
         verified: true,
-        isFollowing: true
+        isFollowing: true,
+        subscribers: '3.2M'
       },
       thumbnail: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop',
       duration: 'LIVE',
@@ -109,7 +121,8 @@ const Watch = () => {
       timestamp: 'Started 1 hour ago',
       isLive: true,
       category: 'Gaming',
-      description: 'Watch the most exciting gaming tournament finals live!'
+      description: 'Watch the most exciting gaming tournament finals live!',
+      isTrending: true
     },
     {
       id: '5',
@@ -118,7 +131,8 @@ const Watch = () => {
         name: 'Wellness Coach',
         avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face',
         verified: false,
-        isFollowing: false
+        isFollowing: false,
+        subscribers: '245K'
       },
       thumbnail: 'https://images.unsplash.com/photo-1588286840104-8957b019727f?w=800&h=600&fit=crop',
       duration: '12:30',
@@ -131,6 +145,7 @@ const Watch = () => {
     }
   ]);
 
+  const [activeTab, setActiveTab] = useState('home');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const [likedVideos, setLikedVideos] = useState<Set<string>>(new Set());
@@ -144,6 +159,7 @@ const Watch = () => {
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState<string | null>(null);
   const [watchLater, setWatchLater] = useState<Set<string>>(new Set());
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const categories = ['All', 'Technology', 'Nature', 'Food', 'Music', 'Gaming', 'Sports', 'Education', 'Health'];
 
@@ -329,362 +345,492 @@ const Watch = () => {
   });
 
   const liveVideos = videos.filter(v => v.isLive);
+  const trendingVideos = videos.filter(v => v.isTrending);
+  const shortsVideos = videos.filter(v => v.isShort);
+
+  const renderVideoCard = (video: Video) => (
+    <Card key={video.id} className={`overflow-hidden hover:shadow-lg transition-shadow ${isFullscreen === video.id ? 'fixed inset-0 z-50 rounded-none' : ''}`}>
+      <div className="relative">
+        <img
+          src={video.thumbnail}
+          alt={video.title}
+          className={`w-full object-cover cursor-pointer ${isFullscreen === video.id ? 'h-screen' : 'h-48'}`}
+          onClick={() => handleVideoClick(video.id)}
+        />
+        
+        {/* Enhanced overlays */}
+        <LiveVideoIndicator viewerCount={video.views} isLive={video.isLive || false} />
+        
+        {video.isTrending && (
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-red-500 text-white animate-pulse">
+              <TrendingUp className="w-3 h-3 mr-1" />
+              TRENDING
+            </Badge>
+          </div>
+        )}
+        
+        {video.isShort && (
+          <div className="absolute top-2 left-2">
+            <Badge className="bg-purple-500 text-white">
+              <Zap className="w-3 h-3 mr-1" />
+              SHORTS
+            </Badge>
+          </div>
+        )}
+
+        {/* Video Overlay with enhanced controls */}
+        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all cursor-pointer flex items-center justify-center"
+             onClick={() => handleVideoClick(video.id)}>
+          <div className="opacity-0 hover:opacity-100 transition-opacity">
+            <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+              {playingVideo === video.id ? (
+                <Pause className="w-8 h-8 text-gray-800" />
+              ) : (
+                <Play className="w-8 h-8 text-gray-800 ml-1" />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Duration Badge */}
+        <div className="absolute bottom-2 right-2">
+          <Badge 
+            variant={video.isLive ? 'destructive' : video.isShort ? 'secondary' : 'secondary'}
+            className={video.isLive ? 'animate-pulse' : ''}
+          >
+            {video.duration}
+          </Badge>
+        </div>
+
+        {/* Enhanced Video Controls when playing */}
+        {playingVideo === video.id && (
+          <>
+            {!video.isLive && (
+              <div className="absolute bottom-16 left-4 right-4">
+                <Progress 
+                  value={(currentTime[video.id] || 0) / video.durationSeconds * 100} 
+                  className="h-1 bg-white bg-opacity-30"
+                />
+                <div className="flex justify-between text-white text-xs mt-1">
+                  <span>{Math.floor((currentTime[video.id] || 0) / 60)}:{String(Math.floor((currentTime[video.id] || 0) % 60)).padStart(2, '0')}</span>
+                  <span>{video.duration}</span>
+                </div>
+              </div>
+            )}
+            
+            {/* Enhanced Control Buttons */}
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                {!video.isLive && (
+                  <>
+                    <AccessibleButton
+                      size="sm"
+                      onClick={() => console.log(`Skip backward ${video.id}`)}
+                      className="text-white bg-black bg-opacity-50 p-2 rounded"
+                    >
+                      <SkipBack className="w-4 h-4" />
+                    </AccessibleButton>
+                    <AccessibleButton
+                      size="sm"
+                      onClick={() => console.log(`Skip forward ${video.id}`)}
+                      className="text-white bg-black bg-opacity-50 p-2 rounded"
+                    >
+                      <SkipForward className="w-4 h-4" />
+                    </AccessibleButton>
+                  </>
+                )}
+                <AccessibleButton
+                  size="sm"
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="text-white bg-black bg-opacity-50 p-2 rounded"
+                >
+                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                </AccessibleButton>
+              </div>
+              
+              <div className="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                {video.views.toLocaleString()} {video.isLive ? 'watching' : 'views'}
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Select value={playbackSpeed.toString()} onValueChange={(value) => setPlaybackSpeed(parseFloat(value))}>
+                  <SelectTrigger className="w-16 h-8 text-xs text-white bg-black bg-opacity-50 border-none">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0.5">0.5x</SelectItem>
+                    <SelectItem value="0.75">0.75x</SelectItem>
+                    <SelectItem value="1">1x</SelectItem>
+                    <SelectItem value="1.25">1.25x</SelectItem>
+                    <SelectItem value="1.5">1.5x</SelectItem>
+                    <SelectItem value="2">2x</SelectItem>
+                  </SelectContent>
+                </Select>
+                <AccessibleButton
+                  size="sm"
+                  onClick={() => console.log(`Settings for ${video.id}`)}
+                  className="text-white bg-black bg-opacity-50 p-2 rounded"
+                >
+                  <Settings className="w-4 h-4" />
+                </AccessibleButton>
+                <AccessibleButton
+                  size="sm"
+                  onClick={() => setIsFullscreen(isFullscreen === video.id ? null : video.id)}
+                  className="text-white bg-black bg-opacity-50 p-2 rounded"
+                >
+                  <Maximize className="w-4 h-4" />
+                </AccessibleButton>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {!isFullscreen && (
+        <CardContent className="p-4">
+          {/* Enhanced Creator Info */}
+          <div className="flex items-start space-x-3 mb-3">
+            <Avatar className="w-10 h-10">
+              <AvatarImage src={video.creator.avatar} />
+              <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm leading-tight">
+                {video.title}
+              </h3>
+              <div className="flex items-center space-x-1 mt-1">
+                <p className="text-sm text-gray-600">{video.creator.name}</p>
+                {video.creator.verified && (
+                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                )}
+                <span className="text-xs text-gray-500">• {video.creator.subscribers} subscribers</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">{video.description}</p>
+            </div>
+            <div className="flex flex-col space-y-1">
+              <Button
+                variant={video.creator.isFollowing ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => handleFollow(video.creator.name, video.id)}
+              >
+                {video.creator.isFollowing ? 'Following' : 'Follow'}
+              </Button>
+            </div>
+          </div>
+
+          {/* Enhanced Video Stats */}
+          <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-1">
+                <Eye className="w-4 h-4" />
+                <span>{video.views.toLocaleString()}</span>
+              </div>
+              <span>{video.timestamp}</span>
+              {video.category && (
+                <Badge variant="outline" className="text-xs">
+                  {video.category}
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          {/* Enhanced Action Buttons */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-1">
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                onClick={() => handleLike(video.id)}
+                className={`flex items-center space-x-1 ${
+                  likedVideos.has(video.id) ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
+                }`}
+              >
+                <Heart className={`w-4 h-4 ${likedVideos.has(video.id) ? 'fill-current' : ''}`} />
+                <span className="text-sm">{video.likes}</span>
+              </AccessibleButton>
+              
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                onClick={() => handleComment(video.id)}
+                className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="text-sm">Comment</span>
+              </AccessibleButton>
+
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                onClick={() => handleWatchLater(video.id)}
+                className={`flex items-center space-x-1 ${
+                  watchLater.has(video.id) ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'
+                }`}
+              >
+                <Clock className="w-4 h-4" />
+              </AccessibleButton>
+
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                onClick={() => handleSave(video.id)}
+                className={`flex items-center space-x-1 ${
+                  savedVideos.has(video.id) ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
+                }`}
+              >
+                <Bookmark className={`w-4 h-4 ${savedVideos.has(video.id) ? 'fill-current' : ''}`} />
+              </AccessibleButton>
+            </div>
+
+            <div className="flex items-center space-x-1">
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                onClick={() => console.log(`Download ${video.id}`)}
+                className="text-gray-600 hover:text-green-600"
+              >
+                <Download className="w-4 h-4" />
+              </AccessibleButton>
+
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                onClick={() => handleShare(video.id)}
+                className="text-gray-600 hover:text-green-600"
+              >
+                <Share className="w-4 h-4" />
+              </AccessibleButton>
+
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                onClick={() => console.log(`Report ${video.id}`)}
+                className="text-gray-600 hover:text-red-600"
+              >
+                <Flag className="w-4 h-4" />
+              </AccessibleButton>
+            </div>
+          </div>
+        </CardContent>
+      )}
+    </Card>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       <Header />
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Page Header with Search and Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Watch</h1>
-              <p className="text-gray-600">Discover videos from creators you follow and explore new content</p>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Badge variant="destructive" className="animate-pulse">
-                <div className="w-2 h-2 bg-white rounded-full mr-1"></div>
-                {liveVideos.length} LIVE
-              </Badge>
-              <Badge variant="secondary">
-                {savedVideos.size} Saved
-              </Badge>
-              <Badge variant="outline">
-                {watchLater.size} Watch Later
-              </Badge>
-            </div>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          {/* Enhanced Tab List */}
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 gap-2">
+            <TabsTrigger value="home" className="flex items-center space-x-2">
+              <Play className="w-4 h-4" />
+              <span>Home</span>
+            </TabsTrigger>
+            <TabsTrigger value="trending" className="flex items-center space-x-2">
+              <TrendingUp className="w-4 h-4" />
+              <span>Trending</span>
+            </TabsTrigger>
+            <TabsTrigger value="shorts" className="flex items-center space-x-2">
+              <Zap className="w-4 h-4" />
+              <span>Shorts</span>
+            </TabsTrigger>
+            <TabsTrigger value="subscriptions" className="flex items-center space-x-2">
+              <Users className="w-4 h-4" />
+              <span>Subscriptions</span>
+            </TabsTrigger>
+            <TabsTrigger value="playlists" className="flex items-center space-x-2">
+              <List className="w-4 h-4" />
+              <span>Playlists</span>
+            </TabsTrigger>
+            <TabsTrigger value="upload" className="flex items-center space-x-2">
+              <Upload className="w-4 h-4" />
+              <span>Upload</span>
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Search and Filters */}
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
-                  placeholder="Search videos, creators, or topics..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="relevance">Relevance</SelectItem>
-                  <SelectItem value="views">Most Viewed</SelectItem>
-                  <SelectItem value="likes">Most Liked</SelectItem>
-                  <SelectItem value="newest">Newest</SelectItem>
-                  <SelectItem value="duration">Duration</SelectItem>
-                </SelectContent>
-              </Select>
-              <AccessibleButton
-                variant="outline"
-                size="sm"
-                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                aria-label={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
-              >
-                <Filter className="w-4 h-4" />
-              </AccessibleButton>
-            </div>
-          </div>
-        </div>
-
-        {/* Category Filters */}
-        <div className="flex space-x-2 overflow-x-auto mb-6 scrollbar-thin">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory(category)}
-              className="whitespace-nowrap"
-            >
-              {category}
-              {category !== 'All' && videos.filter(v => v.category === category).length > 0 && (
-                <span className="ml-1 text-xs">
-                  ({videos.filter(v => v.category === category).length})
-                </span>
-              )}
-            </Button>
-          ))}
-        </div>
-
-        {/* Videos Grid */}
-        <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-          {sortedVideos.map((video) => (
-            <Card key={video.id} className={`overflow-hidden hover:shadow-lg transition-shadow ${isFullscreen === video.id ? 'fixed inset-0 z-50 rounded-none' : ''}`}>
-              <div className="relative">
-                <img
-                  src={video.thumbnail}
-                  alt={video.title}
-                  className={`w-full object-cover cursor-pointer ${isFullscreen === video.id ? 'h-screen' : 'h-48'}`}
-                  onClick={() => handleVideoClick(video.id)}
-                />
-                
-                {/* Live Indicator */}
-                <LiveVideoIndicator viewerCount={video.views} isLive={video.isLive || false} />
-
-                {/* Video Overlay */}
-                <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all cursor-pointer flex items-center justify-center"
-                     onClick={() => handleVideoClick(video.id)}>
-                  <div className="opacity-0 hover:opacity-100 transition-opacity">
-                    <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                      {playingVideo === video.id ? (
-                        <Pause className="w-8 h-8 text-gray-800" />
-                      ) : (
-                        <Play className="w-8 h-8 text-gray-800 ml-1" />
-                      )}
-                    </div>
-                  </div>
+          {/* Home Tab */}
+          <TabsContent value="home" className="space-y-6">
+            {/* Page Header with Enhanced Stats */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Watch</h1>
+                  <p className="text-gray-600">Discover videos from creators you follow and explore new content</p>
                 </div>
-
-                {/* Duration Badge */}
-                <div className="absolute bottom-2 right-2">
-                  <Badge 
-                    variant={video.isLive ? 'destructive' : 'secondary'}
-                    className={video.isLive ? 'animate-pulse' : ''}
-                  >
-                    {video.duration}
+                <div className="flex items-center space-x-2">
+                  <Badge variant="destructive" className="animate-pulse">
+                    <div className="w-2 h-2 bg-white rounded-full mr-1"></div>
+                    {liveVideos.length} LIVE
+                  </Badge>
+                  <Badge variant="secondary">
+                    <TrendingUp className="w-3 h-3 mr-1" />
+                    {trendingVideos.length} Trending
+                  </Badge>
+                  <Badge variant="outline">
+                    <Zap className="w-3 h-3 mr-1" />
+                    {shortsVideos.length} Shorts
+                  </Badge>
+                  <Badge variant="secondary">
+                    {savedVideos.size} Saved
+                  </Badge>
+                  <Badge variant="outline">
+                    {watchLater.size} Watch Later
                   </Badge>
                 </div>
-
-                {/* Video Controls (when playing) */}
-                {playingVideo === video.id && (
-                  <>
-                    {/* Progress Bar */}
-                    <div className="absolute bottom-16 left-4 right-4">
-                      <Progress 
-                        value={video.isLive ? 0 : (currentTime[video.id] || 0) / video.durationSeconds * 100} 
-                        className="h-1 bg-white bg-opacity-30"
-                      />
-                      {!video.isLive && (
-                        <div className="flex justify-between text-white text-xs mt-1">
-                          <span>{formatTime(currentTime[video.id] || 0)}</span>
-                          <span>{formatDuration(video.duration)}</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Control Buttons */}
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {!video.isLive && (
-                          <>
-                            <AccessibleButton
-                              size="sm"
-                              onClick={() => handleSkip(video.id, 'backward')}
-                              className="text-white bg-black bg-opacity-50 p-2 rounded"
-                            >
-                              <SkipBack className="w-4 h-4" />
-                            </AccessibleButton>
-                            <AccessibleButton
-                              size="sm"
-                              onClick={() => handleSkip(video.id, 'forward')}
-                              className="text-white bg-black bg-opacity-50 p-2 rounded"
-                            >
-                              <SkipForward className="w-4 h-4" />
-                            </AccessibleButton>
-                          </>
-                        )}
-                        <AccessibleButton
-                          size="sm"
-                          onClick={handleVolumeToggle}
-                          className="text-white bg-black bg-opacity-50 p-2 rounded"
-                        >
-                          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                        </AccessibleButton>
-                      </div>
-                      
-                      <div className="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                        {video.views.toLocaleString()} watching
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <Select value={playbackSpeed.toString()} onValueChange={(value) => handleSpeedChange(parseFloat(value))}>
-                          <SelectTrigger className="w-16 h-8 text-xs text-white bg-black bg-opacity-50 border-none">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="0.5">0.5x</SelectItem>
-                            <SelectItem value="0.75">0.75x</SelectItem>
-                            <SelectItem value="1">1x</SelectItem>
-                            <SelectItem value="1.25">1.25x</SelectItem>
-                            <SelectItem value="1.5">1.5x</SelectItem>
-                            <SelectItem value="2">2x</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <AccessibleButton
-                          size="sm"
-                          onClick={() => handleVideoSettings(video.id)}
-                          className="text-white bg-black bg-opacity-50 p-2 rounded"
-                        >
-                          <Settings className="w-4 h-4" />
-                        </AccessibleButton>
-                        <AccessibleButton
-                          size="sm"
-                          onClick={() => handleFullscreen(video.id)}
-                          className="text-white bg-black bg-opacity-50 p-2 rounded"
-                        >
-                          <Maximize className="w-4 h-4" />
-                        </AccessibleButton>
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
 
-              {!isFullscreen && (
-                <CardContent className="p-4">
-                  {/* Creator Info */}
-                  <div className="flex items-start space-x-3 mb-3">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={video.creator.avatar} />
-                      <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm leading-tight">
-                        {video.title}
-                      </h3>
-                      <div className="flex items-center space-x-1 mt-1">
-                        <p className="text-sm text-gray-600">{video.creator.name}</p>
-                        {video.creator.verified && (
-                          <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                            <span className="text-white text-xs">✓</span>
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{video.description}</p>
-                    </div>
-                    <div className="flex flex-col space-y-1">
-                      <Button
-                        variant={video.creator.isFollowing ? "secondary" : "outline"}
-                        size="sm"
-                        onClick={() => handleFollow(video.creator.name, video.id)}
-                      >
-                        {video.creator.isFollowing ? 'Following' : 'Follow'}
-                      </Button>
-                    </div>
+              {/* Enhanced Search and Filters */}
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                      placeholder="Search videos, creators, or topics..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
                   </div>
+                </div>
+                <div className="flex gap-2">
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="relevance">Relevance</SelectItem>
+                      <SelectItem value="views">Most Viewed</SelectItem>
+                      <SelectItem value="likes">Most Liked</SelectItem>
+                      <SelectItem value="newest">Newest</SelectItem>
+                      <SelectItem value="duration">Duration</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <AccessibleButton
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                    aria-label={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
+                  >
+                    <Filter className="w-4 h-4" />
+                  </AccessibleButton>
+                </div>
+              </div>
+            </div>
 
-                  {/* Video Stats */}
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-1">
-                        <Eye className="w-4 h-4" />
-                        <span>{video.views.toLocaleString()}</span>
-                      </div>
-                      <span>{video.timestamp}</span>
-                    </div>
-                  </div>
+            {/* Enhanced Category Filters */}
+            <div className="flex space-x-2 overflow-x-auto scrollbar-thin">
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedCategory(category)}
+                  className="whitespace-nowrap"
+                >
+                  {category}
+                  {category !== 'All' && videos.filter(v => v.category === category).length > 0 && (
+                    <span className="ml-1 text-xs">
+                      ({videos.filter(v => v.category === category).length})
+                    </span>
+                  )}
+                </Button>
+              ))}
+            </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-1">
-                      <AccessibleButton
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleLike(video.id)}
-                        className={`flex items-center space-x-1 ${
-                          likedVideos.has(video.id) ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
-                        }`}
-                      >
-                        <Heart className={`w-4 h-4 ${likedVideos.has(video.id) ? 'fill-current' : ''}`} />
-                        <span className="text-sm">{video.likes}</span>
-                      </AccessibleButton>
-                      
-                      <AccessibleButton
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleComment(video.id)}
-                        className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        <span className="text-sm">Comment</span>
-                      </AccessibleButton>
+            {/* Videos Grid */}
+            <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+              {sortedVideos.map(renderVideoCard)}
+            </div>
 
-                      <AccessibleButton
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleWatchLater(video.id)}
-                        className={`flex items-center space-x-1 ${
-                          watchLater.has(video.id) ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'
-                        }`}
-                      >
-                        <Clock className="w-4 h-4" />
-                      </AccessibleButton>
-
-                      <AccessibleButton
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSave(video.id)}
-                        className={`flex items-center space-x-1 ${
-                          savedVideos.has(video.id) ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
-                        }`}
-                      >
-                        <Bookmark className={`w-4 h-4 ${savedVideos.has(video.id) ? 'fill-current' : ''}`} />
-                      </AccessibleButton>
-                    </div>
-
-                    <div className="flex items-center space-x-1">
-                      <AccessibleButton
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDownload(video.id)}
-                        className="text-gray-600 hover:text-green-600"
-                      >
-                        <Download className="w-4 h-4" />
-                      </AccessibleButton>
-
-                      <AccessibleButton
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleShare(video.id)}
-                        className="text-gray-600 hover:text-green-600"
-                      >
-                        <Share className="w-4 h-4" />
-                      </AccessibleButton>
-
-                      <AccessibleButton
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleReport(video.id)}
-                        className="text-gray-600 hover:text-red-600"
-                      >
-                        <Flag className="w-4 h-4" />
-                      </AccessibleButton>
-                    </div>
-                  </div>
-                </CardContent>
-              )}
-            </Card>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {sortedVideos.length === 0 && (
-          <div className="text-center py-12">
-            <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No videos found</h3>
-            <p className="text-gray-500">
-              {searchQuery ? `No results for "${searchQuery}"` : 'Try selecting a different category or check back later.'}
-            </p>
-            {searchQuery && (
-              <Button
-                variant="outline"
-                onClick={() => setSearchQuery('')}
-                className="mt-4"
-              >
-                Clear search
-              </Button>
+            {/* Empty State */}
+            {sortedVideos.length === 0 && (
+              <div className="text-center py-12">
+                <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No videos found</h3>
+                <p className="text-gray-500">
+                  {searchQuery ? `No results for "${searchQuery}"` : 'Try selecting a different category or check back later.'}
+                </p>
+                {searchQuery && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setSearchQuery('')}
+                    className="mt-4"
+                  >
+                    Clear search
+                  </Button>
+                )}
+              </div>
             )}
-          </div>
-        )}
+          </TabsContent>
+
+          {/* Trending Tab */}
+          <TabsContent value="trending" className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2 text-red-500" />
+                Trending Videos
+              </h2>
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                {trendingVideos.map(renderVideoCard)}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Shorts Tab */}
+          <TabsContent value="shorts" className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <Zap className="w-5 h-5 mr-2 text-purple-500" />
+                Shorts
+              </h2>
+              <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                {shortsVideos.map(renderVideoCard)}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Subscriptions Tab */}
+          <TabsContent value="subscriptions">
+            <SubscriptionManager />
+          </TabsContent>
+
+          {/* Playlists Tab */}
+          <TabsContent value="playlists">
+            <PlaylistManager />
+          </TabsContent>
+
+          {/* Upload Tab */}
+          <TabsContent value="upload" className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <Upload className="w-5 h-5 mr-2 text-blue-500" />
+                Upload Video
+              </h2>
+              <div className="text-center py-12">
+                <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Share your videos with the world</h3>
+                <p className="text-gray-500 mb-6">Upload and manage your videos to reach millions of viewers</p>
+                <Button onClick={() => setIsUploadModalOpen(true)} size="lg">
+                  <Upload className="w-5 h-5 mr-2" />
+                  Upload Video
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
+      
       <MobileNavigation />
+      
+      {/* Video Upload Modal */}
+      <VideoUpload 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)} 
+      />
     </div>
   );
 };

@@ -14,6 +14,7 @@ import EnhancedMarketplace from "./pages/EnhancedMarketplace";
 import EnhancedEvents from "./pages/EnhancedEvents";
 import Saved from "./pages/Saved";
 import EnhancedMemories from "./pages/EnhancedMemories";
+import TrendingPage from "./components/TrendingPage";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/messages" element={<EnhancedMessages />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/watch" element={<Watch />} />
+            <Route path="/trending" element={<TrendingPage />} />
             <Route path="/marketplace" element={<EnhancedMarketplace />} />
             <Route path="/events" element={<EnhancedEvents />} />
             <Route path="/saved" element={<Saved />} />
