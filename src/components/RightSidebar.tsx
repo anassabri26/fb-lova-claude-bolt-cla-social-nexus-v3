@@ -2,7 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Users, TrendingUp, Gamepad2, ShoppingBag } from 'lucide-react';
 import FriendRequestsPanel from './FriendRequestsPanel';
 import PeopleYouMayKnow from './PeopleYouMayKnow';
 import { useFriends } from '@/hooks/useFriends';
@@ -31,77 +32,125 @@ const RightSidebar = () => {
     }
   ];
 
+  const upcomingEvents = [
+    {
+      id: 1,
+      title: "Team Meeting",
+      date: "Today at 3:00 PM",
+      attendees: 12
+    },
+    {
+      id: 2,
+      title: "Birthday Party",
+      date: "Tomorrow at 7:00 PM",
+      attendees: 25
+    }
+  ];
+
+  const trendingTopics = [
+    { id: 1, topic: "#TechNews", posts: "2.3k posts" },
+    { id: 2, topic: "#Photography", posts: "1.8k posts" },
+    { id: 3, topic: "#Travel", posts: "1.2k posts" },
+  ];
+
   return (
-    <div className="w-80 bg-gray-50 h-full overflow-y-auto">
-      <div className="p-4 space-y-4">
-        {/* Friend Requests */}
-        <FriendRequestsPanel />
-        
-        {/* People You May Know */}
-        <PeopleYouMayKnow />
+    <div className="space-y-6 p-4">
+      {/* Friend Requests */}
+      <FriendRequestsPanel />
+      
+      {/* People You May Know */}
+      <PeopleYouMayKnow />
 
-        {/* Online Friends */}
-        <Card>
-          <CardHeader className="p-4">
-            <CardTitle className="text-base font-semibold flex items-center">
-              <Users className="w-5 h-5 mr-2 text-gray-600" />
-              <span>Contacts ({friends?.length || 0})</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-2 pt-0">
-            {onlineFriends.map((friend) => (
-              <div key={friend.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                <div className="relative">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={friend.avatar} />
-                    <AvatarFallback className="text-xs">{friend.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  {friend.isOnline && (
-                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                  )}
-                </div>
-                <span className="text-sm font-medium text-gray-900">{friend.name}</span>
+      {/* Online Friends */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Users className="w-5 h-5" />
+            <span>Online Friends ({friends?.length || 0})</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {onlineFriends.map((friend) => (
+            <div key={friend.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
+              <div className="relative">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={friend.avatar} />
+                  <AvatarFallback>{friend.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                {friend.isOnline && (
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                )}
               </div>
-            ))}
-          </CardContent>
-        </Card>
+              <span className="text-sm font-medium">{friend.name}</span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
-        {/* Your Pages and Profiles */}
-        <Card>
-          <CardHeader className="p-4">
-            <CardTitle className="text-base font-semibold">Your Pages and profiles</CardTitle>
-          </CardHeader>
-          <CardContent className="p-2 pt-0">
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xs font-bold">YP</span>
-              </div>
-              <span className="text-sm font-medium text-gray-900">Your Page</span>
+      {/* Upcoming Events */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Calendar className="w-5 h-5" />
+            <span>Upcoming Events</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {upcomingEvents.map((event) => (
+            <div key={event.id} className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+              <h4 className="font-semibold text-blue-900">{event.title}</h4>
+              <p className="text-sm text-blue-700">{event.date}</p>
+              <p className="text-xs text-blue-600">{event.attendees} attending</p>
             </div>
-          </CardContent>
-        </Card>
+          ))}
+        </CardContent>
+      </Card>
 
-        {/* Group conversations */}
-        <Card>
-          <CardHeader className="p-4">
-            <CardTitle className="text-base font-semibold">Group conversations</CardTitle>
-          </CardHeader>
-          <CardContent className="p-2 pt-0">
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-              <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                <Users className="w-4 h-4 text-white" />
+      {/* Trending Topics */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <TrendingUp className="w-5 h-5" />
+            <span>Trending</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {trendingTopics.map((trend) => (
+            <div key={trend.id} className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
+              <div>
+                <p className="font-semibold text-blue-600">{trend.topic}</p>
+                <p className="text-xs text-gray-500">{trend.posts}</p>
               </div>
-              <span className="text-sm font-medium text-gray-900">Design Team</span>
             </div>
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-              <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
-                <Users className="w-4 h-4 text-white" />
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Games */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Gamepad2 className="w-5 h-5" />
+            <span>Games</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer">
+              <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                <Gamepad2 className="w-4 h-4 text-white" />
               </div>
-              <span className="text-sm font-medium text-gray-900">Weekend Plans</span>
+              <span className="text-sm font-medium">Word Puzzle</span>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer">
+              <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                <Gamepad2 className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-sm font-medium">Candy Crush</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -11,18 +11,18 @@ const FriendRequestsPanel = () => {
   const respondMutation = useRespondToFriendRequest();
 
   const handleAccept = (requestId: string) => {
-    respondMutation.mutate({ requestId, 'status': 'accepted' });
+    respondMutation.mutate({ requestId, status: 'accepted' });
   };
 
   const handleDecline = (requestId: string) => {
-    respondMutation.mutate({ requestId, 'status': 'declined' });
+    respondMutation.mutate({ requestId, status: 'declined' });
   };
 
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-base font-semibold">
+          <CardTitle className="flex items-center space-x-2">
             <UserPlus className="w-5 h-5" />
             <span>Friend Requests</span>
           </CardTitle>
@@ -38,7 +38,7 @@ const FriendRequestsPanel = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-base font-semibold">
+          <CardTitle className="flex items-center space-x-2">
             <UserPlus className="w-5 h-5" />
             <span>Friend Requests</span>
           </CardTitle>
@@ -53,7 +53,7 @@ const FriendRequestsPanel = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2 text-base font-semibold">
+        <CardTitle className="flex items-center space-x-2">
           <UserPlus className="w-5 h-5" />
           <span>Friend Requests ({requests.length})</span>
         </CardTitle>
@@ -69,10 +69,10 @@ const FriendRequestsPanel = () => {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold text-sm text-gray-900">
+                <p className="font-semibold">
                   {request.requester_profile?.full_name || 'Unknown User'}
                 </p>
-                <p className="text-xs text-gray-500">wants to be friends</p>
+                <p className="text-sm text-gray-500">wants to be friends</p>
               </div>
             </div>
             <div className="flex space-x-2">

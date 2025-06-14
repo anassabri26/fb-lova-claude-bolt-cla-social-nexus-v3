@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -11,25 +10,24 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import AccessibleButton from '../components/AccessibleButton';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 const Friends = () => {
   const [activeTab, setActiveTab] = useState<'requests' | 'all' | 'suggestions'>('requests');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterActive, setFilterActive] = useState(false);
 
-  // State for tab counts
+  // NEW: State for tab counts
   const [requestsCount, setRequestsCount] = useState(0);
   const [allFriendsCount, setAllFriendsCount] = useState(0);
   const [suggestionsCount, setSuggestionsCount] = useState(0);
 
-  // Fetch request, friends, and suggestion counts
+  // Fetch request, friends, and suggestion counts (with loading)
   React.useEffect(() => {
     const fetchCounts = async () => {
+      // Requests count
       const user = await supabase.auth.getUser();
       if (!user.data.user) return;
-
-      // Requests count
       const { data: reqs } = await supabase
         .from("friendships")
         .select("id")
@@ -63,7 +61,10 @@ const Friends = () => {
       const connectedIds = new Set<string>();
       if (friendships) {
         friendships.forEach((f) => {
-          if (f.status === "accepted" || f.status === "pending") {
+          if (
+            f.status === "accepted" ||
+            f.status === "pending"
+          ) {
             connectedIds.add(f.requester_id);
             connectedIds.add(f.addressee_id);
           }
@@ -118,14 +119,11 @@ const Friends = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
       <Header />
       <div className="flex max-w-7xl mx-auto">
-        <div className="hidden lg:block w-80 fixed left-0 top-16 h-full overflow-y-auto">
-          <Sidebar />
-        </div>
-        
-        <main className="flex-1 lg:ml-80 px-4 py-6">
+        <Sidebar />
+        <main className="flex-1 px-4 py-6">
           <div className="max-w-4xl mx-auto">
             {/* Page Header */}
             <div className="mb-6">
@@ -193,10 +191,7 @@ const Friends = () => {
           </div>
         </main>
       </div>
-      
-      <div className="lg:hidden">
-        <MobileNavigation />
-      </div>
+      <MobileNavigation />
     </div>
   );
 };
