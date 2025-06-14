@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import AccessibleButton from '../components/AccessibleButton';
+import CreateMarketplaceItem from '../components/CreateMarketplaceItem';
 import { toast } from 'sonner';
 
 interface MarketplaceItem {
@@ -77,12 +78,46 @@ const EnhancedMarketplace = () => {
       postedDate: '3 days ago',
       description: 'Well-maintained 2018 Honda Civic with low mileage. Clean title, no accidents.',
       isSaved: false
+    },
+    {
+      id: '4',
+      title: 'iPhone 14 Pro',
+      price: '$750',
+      location: 'Berkeley, CA',
+      seller: {
+        name: 'David Kim',
+        avatar: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face'
+      },
+      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=600&fit=crop',
+      category: 'Electronics',
+      condition: 'Like New',
+      postedDate: '5 days ago',
+      description: 'iPhone 14 Pro in excellent condition. No scratches, includes original box and charger.',
+      isSaved: false
+    },
+    {
+      id: '5',
+      title: 'Gaming Setup - Complete',
+      price: '$1,500',
+      location: 'San Francisco, CA',
+      seller: {
+        name: 'Alex Rodriguez',
+        avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
+      },
+      image: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=800&h=600&fit=crop',
+      category: 'Electronics',
+      condition: 'Good',
+      postedDate: '1 day ago',
+      description: 'Complete gaming setup including monitor, keyboard, mouse, and RGB lighting.',
+      isSaved: false
     }
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [priceFilter, setPriceFilter] = useState('All');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const categories = ['All', 'Electronics', 'Furniture', 'Vehicles', 'Clothing', 'Home & Garden', 'Sports'];
   const priceFilters = ['All', 'Under $100', '$100-$500', '$500-$1000', 'Over $1000'];
@@ -95,25 +130,78 @@ const EnhancedMarketplace = () => {
     ));
     const item = items.find(i => i.id === itemId);
     toast.success(item?.isSaved ? 'Removed from saved' : 'Saved item!');
+    console.log('Item saved/unsaved:', itemId);
   };
 
   const handleMessageSeller = (sellerName: string) => {
     toast.info(`Opening conversation with ${sellerName}`);
+    console.log('Messaging seller:', sellerName);
   };
 
   const handleShare = (itemTitle: string) => {
-    toast.success(`Shared "${itemTitle}"`);
+    if (navigator.share) {
+      navigator.share({
+        title: itemTitle,
+        text: `Check out this item: ${itemTitle}`,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success(`Link copied to clipboard for "${itemTitle}"`);
+    }
+    console.log('Shared item:', itemTitle);
   };
 
   const handleCreateListing = () => {
-    toast.info('Create listing feature coming soon!');
+    setIsCreateModalOpen(true);
+    console.log('Opening create listing modal');
+  };
+
+  const handleItemClick = (item: MarketplaceItem) => {
+    toast.info(`Viewing details for ${item.title}`);
+    console.log('Item clicked:', item);
+  };
+
+  const handleApplyFilters = () => {
+    toast.success('Filters applied successfully!');
+    console.log('Filters applied:', { selectedCategory, priceFilter, locationFilter });
+  };
+
+  const handleClearFilters = () => {
+    setSelectedCategory('All');
+    setPriceFilter('All');
+    setLocationFilter('');
+    setSearchTerm('');
+    toast.info('All filters cleared');
+    console.log('Filters cleared');
   };
 
   const filteredItems = items.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesLocation = !locationFilter || item.location.toLowerCase().includes(locationFilter.toLowerCase());
+    
+    let matchesPrice = true;
+    if (priceFilter !== 'All') {
+      const price = parseInt(item.price.replace(/[$,]/g, ''));
+      switch (priceFilter) {
+        case 'Under $100':
+          matchesPrice = price < 100;
+          break;
+        case '$100-$500':
+          matchesPrice = price >= 100 && price <= 500;
+          break;
+        case '$500-$1000':
+          matchesPrice = price >= 500 && price <= 1000;
+          break;
+        case 'Over $1000':
+          matchesPrice = price > 1000;
+          break;
+      }
+    }
+    
+    return matchesSearch && matchesCategory && matchesLocation && matchesPrice;
   });
 
   return (
@@ -133,14 +221,29 @@ const EnhancedMarketplace = () => {
           <div className="lg:w-64 space-y-4">
             <Card>
               <CardContent className="p-4">
-                <h3 className="font-semibold mb-3">Filters</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold">Filters</h3>
+                  <AccessibleButton
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="text-blue-600 text-xs"
+                  >
+                    Clear All
+                  </AccessibleButton>
+                </div>
                 
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-gray-700">Location</label>
                     <div className="relative mt-1">
                       <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <Input placeholder="Enter location" className="pl-10" />
+                      <Input 
+                        placeholder="Enter location" 
+                        className="pl-10" 
+                        value={locationFilter}
+                        onChange={(e) => setLocationFilter(e.target.value)}
+                      />
                     </div>
                   </div>
 
@@ -169,6 +272,28 @@ const EnhancedMarketplace = () => {
                       ))}
                     </select>
                   </div>
+
+                  <Button onClick={handleApplyFilters} className="w-full" size="sm">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Apply Filters
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Quick Stats */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="font-semibold mb-2">Quick Stats</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Total Items:</span>
+                    <span className="font-medium">{filteredItems.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Saved Items:</span>
+                    <span className="font-medium">{items.filter(i => i.isSaved).length}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -187,10 +312,22 @@ const EnhancedMarketplace = () => {
               />
             </div>
 
+            {/* Results Count */}
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                Showing {filteredItems.length} of {items.length} items
+                {searchTerm && ` for "${searchTerm}"`}
+              </p>
+            </div>
+
             {/* Items Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.map((item) => (
-                <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                <Card 
+                  key={item.id} 
+                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handleItemClick(item)}
+                >
                   <div className="relative">
                     <img
                       src={item.image}
@@ -230,7 +367,7 @@ const EnhancedMarketplace = () => {
 
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2">{item.description}</p>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2">
                         <Avatar className="w-6 h-6">
                           <AvatarImage src={item.seller.avatar} />
@@ -241,7 +378,7 @@ const EnhancedMarketplace = () => {
                       <span className="text-xs text-gray-500">{item.postedDate}</span>
                     </div>
 
-                    <div className="flex space-x-2 mt-4">
+                    <div className="flex space-x-2">
                       <Button
                         size="sm"
                         onClick={(e) => {
@@ -273,13 +410,21 @@ const EnhancedMarketplace = () => {
               <div className="text-center py-12">
                 <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No items found</h3>
-                <p className="text-gray-500">Try adjusting your search or filters.</p>
+                <p className="text-gray-500 mb-4">Try adjusting your search or filters.</p>
+                <Button onClick={handleClearFilters} variant="outline">
+                  Clear Filters
+                </Button>
               </div>
             )}
           </div>
         </div>
       </div>
       <MobileNavigation />
+      
+      <CreateMarketplaceItem 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+      />
     </div>
   );
 };
