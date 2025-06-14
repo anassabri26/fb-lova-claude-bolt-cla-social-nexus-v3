@@ -1,6 +1,7 @@
 
 import React from 'react';
 import CreatePost from './CreatePost';
+import Stories from './Stories';
 import Post from './Post';
 
 const NewsFeed = () => {
@@ -50,6 +51,7 @@ const NewsFeed = () => {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
+      <Stories />
       <CreatePost />
       {posts.map((post) => (
         <Post key={post.id} post={post} />
