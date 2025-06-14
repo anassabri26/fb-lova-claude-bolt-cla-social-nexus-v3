@@ -23,14 +23,14 @@ export const useFriendRequests = () => {
   return useQuery({
     queryKey: ['friend-requests'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) return [];
 
       // Get friend requests
       const { data: requests, error } = await supabase
         .from('friendships')
         .select('*')
-        .eq('addressee_id', user.id)
+        .eq('addressee_id', user.data.user.id)
         .eq('status', 'pending');
 
       if (error) throw error;
@@ -42,7 +42,7 @@ export const useFriendRequests = () => {
             .from('profiles')
             .select('full_name, avatar_url')
             .eq('id', request.requester_id)
-            .maybeSingle();
+            .single();
 
           return {
             ...request,
@@ -60,14 +60,14 @@ export const useFriends = () => {
   return useQuery({
     queryKey: ['friends'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) return [];
 
       // Get friendships
       const { data: friendships, error } = await supabase
         .from('friendships')
         .select('*')
-        .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
+        .or(`requester_id.eq.${user.data.user.id},addressee_id.eq.${user.data.user.id}`)
         .eq('status', 'accepted');
 
       if (error) throw error;
@@ -80,12 +80,12 @@ export const useFriends = () => {
               .from('profiles')
               .select('full_name, avatar_url')
               .eq('id', friendship.requester_id)
-              .maybeSingle(),
+              .single(),
             supabase
               .from('profiles')
               .select('full_name, avatar_url')
               .eq('id', friendship.addressee_id)
-              .maybeSingle()
+              .single()
           ]);
 
           return {

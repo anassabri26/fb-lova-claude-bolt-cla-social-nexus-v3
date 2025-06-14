@@ -35,7 +35,7 @@ export const useComments = (postId: string) => {
             .from('profiles')
             .select('full_name, avatar_url')
             .eq('id', comment.user_id)
-            .maybeSingle();
+            .single();
 
           return {
             ...comment,
@@ -73,7 +73,7 @@ export const useCreateComment = () => {
         .from('profiles')
         .select('full_name, avatar_url')
         .eq('id', data.user_id)
-        .maybeSingle();
+        .single();
 
       return {
         ...data,

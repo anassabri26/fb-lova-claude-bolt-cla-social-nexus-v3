@@ -33,7 +33,7 @@ export const usePosts = () => {
       // Get likes count and user's like status for each post
       const postsWithCounts = await Promise.all(
         (posts || []).map(async (post) => {
-          const [likesResult, userLikeResult, profileResult] = await Promise.all([
+          const [likesResult, userLikeResult, profile] = await Promise.all([
             supabase
               .from('likes')
               .select('id', { count: 'exact' })
@@ -43,19 +43,19 @@ export const usePosts = () => {
               .select('id')
               .eq('post_id', post.id)
               .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-              .maybeSingle(),
+              .single(),
             supabase
               .from('profiles')
               .select('full_name, avatar_url')
               .eq('id', post.user_id)
-              .maybeSingle()
+              .single()
           ]);
 
           return {
             ...post,
             likes_count: likesResult.count || 0,
-            user_has_liked: userLikeResult.data !== null,
-            profiles: profileResult.data
+            user_has_liked: !userLikeResult.error,
+            profiles: profile.data
           };
         })
       );
@@ -101,8 +101,7 @@ export const useLikePost = () => {
   
   return useMutation({
     mutationFn: async ({ postId, isLiked }: { postId: string; isLiked: boolean }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const userId = (await supabase.auth.getUser()).data.user?.id;
       
       if (isLiked) {
         // Unlike
@@ -110,7 +109,7 @@ export const useLikePost = () => {
           .from('likes')
           .delete()
           .eq('post_id', postId)
-          .eq('user_id', user.id);
+          .eq('user_id', userId);
         
         if (error) throw error;
       } else {
@@ -120,7 +119,7 @@ export const useLikePost = () => {
           .insert([
             {
               post_id: postId,
-              user_id: user.id
+              user_id: userId
             }
           ]);
         
