@@ -1,196 +1,96 @@
+
 import React, { useState } from 'react';
-import { Image, Smile, MapPin, Users, MoreHorizontal, Camera, Video } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { toast } from 'sonner';
+import { Image, Smile, MapPin } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCreatePost } from '@/hooks/usePosts';
 import AccessibleButton from './AccessibleButton';
-import PhotoUpload from './PhotoUpload';
 
 const CreatePost = () => {
-  const [postContent, setPostContent] = useState('');
+  const [content, setContent] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [privacy, setPrivacy] = useState('Public');
-  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
-  const [selectedPhotos, setSelectedPhotos] = useState<File[]>([]);
+  const { user } = useAuth();
+  const createPostMutation = useCreatePost();
 
-  const handleSubmit = () => {
-    if (postContent.trim() || selectedPhotos.length > 0) {
-      console.log('Posting:', { content: postContent, photos: selectedPhotos.length });
-      toast.success('Post created successfully!');
-      setPostContent('');
-      setSelectedPhotos([]);
-      setIsExpanded(false);
-    } else {
-      toast.error('Please write something or add photos before posting');
-    }
+  const handleSubmit = async () => {
+    if (!content.trim()) return;
+    
+    await createPostMutation.mutateAsync({ content });
+    setContent('');
+    setIsExpanded(false);
   };
 
-  const handlePhotoSelect = (photos: File[]) => {
-    setSelectedPhotos(photos);
-    toast.success(`${photos.length} photo(s) added to your post`);
-  };
-
-  const handleAddPhoto = () => {
-    setShowPhotoUpload(true);
-  };
-
-  const handleAddFeeling = () => {
-    toast.info('Feeling/Activity feature coming soon!');
-    console.log('Add feeling clicked');
-  };
-
-  const handleAddLocation = () => {
-    toast.info('Location feature coming soon!');
-    console.log('Add location clicked');
-  };
-
-  const handleTagPeople = () => {
-    toast.info('Tag people feature coming soon!');
-    console.log('Tag people clicked');
-  };
-
-  const handleMoreOptions = () => {
-    toast.info('More options coming soon!');
-    console.log('More options clicked');
-  };
-
-  const handlePrivacyChange = () => {
-    const privacyOptions = ['Public', 'Friends', 'Only me'];
-    const currentIndex = privacyOptions.indexOf(privacy);
-    const nextIndex = (currentIndex + 1) % privacyOptions.length;
-    setPrivacy(privacyOptions[nextIndex]);
-    toast.info(`Privacy changed to ${privacyOptions[nextIndex]}`);
-  };
+  if (!user) return null;
 
   return (
-    <>
-      <Card className="bg-white shadow-sm border-0 shadow-gray-100">
-        <CardContent className="p-4">
-          <div className="flex space-x-3">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <Textarea
-                placeholder="What's on your mind?"
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-                onFocus={() => setIsExpanded(true)}
-                className="min-h-[50px] border-none resize-none focus:ring-0 focus:border-none p-0 text-lg placeholder:text-gray-500"
-              />
-              
-              {/* Selected Photos Preview */}
-              {selectedPhotos.length > 0 && (
-                <div className="mt-3 grid grid-cols-3 gap-2">
-                  {selectedPhotos.slice(0, 6).map((photo, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Selected ${index + 1}`}
-                        className="w-full h-20 object-cover rounded"
-                      />
-                      {selectedPhotos.length > 6 && index === 5 && (
-                        <div className="absolute inset-0 bg-black bg-opacity-50 rounded flex items-center justify-center">
-                          <span className="text-white text-sm font-medium">
-                            +{selectedPhotos.length - 6} more
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              {isExpanded && (
-                <div className="mt-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Post to:</span>
-                    <AccessibleButton
-                      variant="outline"
-                      size="sm"
-                      onClick={handlePrivacyChange}
-                      className="text-blue-600 border-blue-600"
-                    >
-                      {privacy}
+    <Card className="bg-white shadow-sm border-0 shadow-gray-100 mb-6">
+      <CardContent className="p-4">
+        <div className="flex space-x-3">
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={user.user_metadata?.avatar_url} />
+            <AvatarFallback>{user.user_metadata?.full_name?.charAt(0) || 'U'}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            {!isExpanded ? (
+              <button
+                onClick={() => setIsExpanded(true)}
+                className="w-full text-left p-3 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors"
+              >
+                What's on your mind, {user.user_metadata?.full_name?.split(' ')[0] || 'there'}?
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <Textarea
+                  placeholder={`What's on your mind, ${user.user_metadata?.full_name?.split(' ')[0] || 'there'}?`}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="border-0 resize-none focus:ring-0 text-lg p-0 min-h-[100px]"
+                  autoFocus
+                />
+                <div className="flex items-center justify-between">
+                  <div className="flex space-x-4">
+                    <AccessibleButton variant="ghost" size="sm" className="text-green-600">
+                      <Image className="w-5 h-5 mr-2" />
+                      Photo/Video
+                    </AccessibleButton>
+                    <AccessibleButton variant="ghost" size="sm" className="text-yellow-600">
+                      <Smile className="w-5 h-5 mr-2" />
+                      Feeling/Activity
+                    </AccessibleButton>
+                    <AccessibleButton variant="ghost" size="sm" className="text-red-600">
+                      <MapPin className="w-5 h-5 mr-2" />
+                      Check In
                     </AccessibleButton>
                   </div>
-                  
-                  <div className="grid grid-cols-2 gap-2">
-                    <AccessibleButton
-                      variant="ghost"
-                      className="flex items-center justify-center space-x-2 p-3 hover:bg-gray-50 rounded-lg"
-                      onClick={handleAddPhoto}
-                    >
-                      <Camera className="w-5 h-5 text-green-600" />
-                      <span className="text-gray-700">Photo/Video</span>
-                    </AccessibleButton>
-                    
-                    <AccessibleButton
-                      variant="ghost"
-                      className="flex items-center justify-center space-x-2 p-3 hover:bg-gray-50 rounded-lg"
-                      onClick={handleTagPeople}
-                    >
-                      <Users className="w-5 h-5 text-blue-600" />
-                      <span className="text-gray-700">Tag People</span>
-                    </AccessibleButton>
-                    
-                    <AccessibleButton
-                      variant="ghost"
-                      className="flex items-center justify-center space-x-2 p-3 hover:bg-gray-50 rounded-lg"
-                      onClick={handleAddFeeling}
-                    >
-                      <Smile className="w-5 h-5 text-yellow-600" />
-                      <span className="text-gray-700">Feeling</span>
-                    </AccessibleButton>
-                    
-                    <AccessibleButton
-                      variant="ghost"
-                      className="flex items-center justify-center space-x-2 p-3 hover:bg-gray-50 rounded-lg"
-                      onClick={handleAddLocation}
-                    >
-                      <MapPin className="w-5 h-5 text-red-600" />
-                      <span className="text-gray-700">Location</span>
-                    </AccessibleButton>
-                  </div>
-                  
-                  <div className="flex justify-between items-center pt-3 border-t">
-                    <AccessibleButton
-                      variant="ghost"
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
                       size="sm"
-                      onClick={handleMoreOptions}
+                      onClick={() => {
+                        setIsExpanded(false);
+                        setContent('');
+                      }}
                     >
-                      <MoreHorizontal className="w-5 h-5" />
-                    </AccessibleButton>
-                    
-                    <AccessibleButton
+                      Cancel
+                    </Button>
+                    <Button 
+                      size="sm"
                       onClick={handleSubmit}
-                      disabled={!postContent.trim() && selectedPhotos.length === 0}
-                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300"
+                      disabled={!content.trim() || createPostMutation.isPending}
                     >
-                      Post
-                    </AccessibleButton>
+                      {createPostMutation.isPending ? 'Posting...' : 'Post'}
+                    </Button>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Photo Upload Dialog */}
-      <Dialog open={showPhotoUpload} onOpenChange={setShowPhotoUpload}>
-        <DialogContent className="max-w-md">
-          <PhotoUpload
-            onPhotoSelect={handlePhotoSelect}
-            onClose={() => setShowPhotoUpload(false)}
-          />
-        </DialogContent>
-      </Dialog>
-    </>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

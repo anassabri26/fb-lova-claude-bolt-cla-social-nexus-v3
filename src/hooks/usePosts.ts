@@ -12,7 +12,7 @@ export interface Post {
   profiles: {
     full_name: string;
     avatar_url?: string;
-  };
+  } | null;
   likes_count?: number;
   comments_count?: number;
   user_has_liked?: boolean;
@@ -26,14 +26,37 @@ export const usePosts = () => {
         .from('posts')
         .select(`
           *,
-          profiles!posts_user_id_fkey (full_name, avatar_url),
-          likes (count),
-          comments (count)
+          profiles (full_name, avatar_url)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Post[];
+      
+      // Get likes count and user's like status for each post
+      const postsWithCounts = await Promise.all(
+        (data || []).map(async (post) => {
+          const [likesResult, userLikeResult] = await Promise.all([
+            supabase
+              .from('likes')
+              .select('id', { count: 'exact' })
+              .eq('post_id', post.id),
+            supabase
+              .from('likes')
+              .select('id')
+              .eq('post_id', post.id)
+              .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+              .single()
+          ]);
+
+          return {
+            ...post,
+            likes_count: likesResult.count || 0,
+            user_has_liked: !userLikeResult.error
+          };
+        })
+      );
+
+      return postsWithCounts as Post[];
     }
   });
 };

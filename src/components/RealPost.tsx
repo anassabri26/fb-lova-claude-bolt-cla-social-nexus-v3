@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Heart, MessageCircle, Share, MoreHorizontal, ThumbsUp } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -7,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import AccessibleButton from './AccessibleButton';
 import { Post, useLikePost } from '@/hooks/usePosts';
+import { useComments, useCreateComment } from '@/hooks/useComments';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -18,7 +19,10 @@ const RealPost = ({ post }: RealPostProps) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isLiked, setIsLiked] = useState(post.user_has_liked || false);
+  const { user } = useAuth();
   const likeMutation = useLikePost();
+  const { data: comments } = useComments(post.id);
+  const createCommentMutation = useCreateComment();
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -31,8 +35,10 @@ const RealPost = ({ post }: RealPostProps) => {
 
   const handleComment = () => {
     if (newComment.trim()) {
-      // TODO: Implement comment creation
-      toast.success('Comment functionality coming soon!');
+      createCommentMutation.mutate({ 
+        postId: post.id, 
+        content: newComment.trim() 
+      });
       setNewComment('');
     }
   };
@@ -86,7 +92,7 @@ const RealPost = ({ post }: RealPostProps) => {
             <span>{post.likes_count || 0}</span>
           </div>
           <div className="flex space-x-4">
-            <span>{post.comments_count || 0} comments</span>
+            <span>{comments?.length || 0} comments</span>
             <span>0 shares</span>
           </div>
         </div>
@@ -128,22 +134,53 @@ const RealPost = ({ post }: RealPostProps) => {
 
         {/* Comments Section */}
         {showComments && (
-          <div className="border-t border-gray-200 px-4 py-4">
-            <div className="flex space-x-3">
-              <Avatar className="w-8 h-8">
-                <AvatarFallback>You</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 flex space-x-2">
-                <Input
-                  placeholder="Write a comment..."
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleComment()}
-                  className="rounded-full"
-                />
-                <Button onClick={handleComment} size="sm">
-                  Post
-                </Button>
+          <div className="border-t border-gray-200">
+            {/* Existing Comments */}
+            {comments && comments.length > 0 && (
+              <div className="px-4 py-2 space-y-3">
+                {comments.map((comment) => (
+                  <div key={comment.id} className="flex space-x-3">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={comment.profiles?.avatar_url} />
+                      <AvatarFallback>{comment.profiles?.full_name?.charAt(0) || 'U'}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="bg-gray-100 rounded-lg px-3 py-2">
+                        <p className="font-semibold text-sm">{comment.profiles?.full_name || 'User'}</p>
+                        <p className="text-gray-900">{comment.content}</p>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Add Comment */}
+            <div className="px-4 py-4">
+              <div className="flex space-x-3">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={user?.user_metadata?.avatar_url} />
+                  <AvatarFallback>{user?.user_metadata?.full_name?.charAt(0) || 'U'}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 flex space-x-2">
+                  <Input
+                    placeholder="Write a comment..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleComment()}
+                    className="rounded-full"
+                  />
+                  <Button 
+                    onClick={handleComment} 
+                    size="sm"
+                    disabled={!newComment.trim() || createCommentMutation.isPending}
+                  >
+                    {createCommentMutation.isPending ? 'Posting...' : 'Post'}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
