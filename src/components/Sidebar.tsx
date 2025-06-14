@@ -72,18 +72,18 @@ const Sidebar = () => {
   const visibleItems = showMore ? menuItems : menuItems.slice(0, 8);
 
   return (
-    <aside className="hidden md:block w-80 p-4 h-[calc(100vh-4rem)] overflow-y-auto sticky top-16">
-      <div className="space-y-6">
+    <aside className="hidden md:block w-64 lg:w-80 p-2 lg:p-4 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-y-auto sticky top-14 sm:top-16">
+      <div className="space-y-4 lg:space-y-6">
         {/* User Profile */}
         <div 
-          className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
+          className="flex items-center space-x-2 lg:space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
           onClick={handleProfileClick}
         >
-          <Avatar className="w-9 h-9">
+          <Avatar className="w-8 h-8 lg:w-9 lg:h-9">
             <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
-          <span className="font-medium text-gray-900">John Doe</span>
+          <span className="font-medium text-gray-900 text-sm lg:text-base">John Doe</span>
         </div>
 
         {/* Main Menu */}
@@ -94,7 +94,7 @@ const Sidebar = () => {
               <AccessibleButton
                 key={item.label}
                 variant="ghost"
-                className={`w-full flex items-center justify-between p-2 rounded-lg text-left font-normal transition-colors ${
+                className={`w-full flex items-center justify-between p-2 rounded-lg text-left font-normal transition-colors text-sm lg:text-base ${
                   isActive 
                     ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' 
                     : 'text-gray-700 hover:bg-gray-100'
@@ -102,12 +102,12 @@ const Sidebar = () => {
                 onClick={() => handleNavigation(item.path, item.label)}
                 aria-label={item.label}
               >
-                <div className="flex items-center space-x-3">
-                  <item.icon className="w-5 h-5" />
-                  <span>{item.label}</span>
+                <div className="flex items-center space-x-2 lg:space-x-3 min-w-0">
+                  <item.icon className="w-4 h-4 lg:w-5 lg:h-5 flex-shrink-0" />
+                  <span className="truncate">{item.label}</span>
                 </div>
                 {item.count && (
-                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 lg:px-2 lg:py-1 rounded-full flex-shrink-0">
                     {item.count}
                   </span>
                 )}
@@ -119,15 +119,15 @@ const Sidebar = () => {
         {/* See More Button */}
         <AccessibleButton
           variant="ghost"
-          className="w-full flex items-center space-x-3 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+          className="w-full flex items-center space-x-2 lg:space-x-3 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors text-sm lg:text-base"
           onClick={() => {
             setShowMore(!showMore);
             toast.info(showMore ? 'Showing fewer options' : 'Showing more options');
           }}
           aria-expanded={showMore}
         >
-          <div className="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center">
-            <ChevronDown className={`w-3 h-3 transition-transform ${showMore ? 'rotate-180' : ''}`} />
+          <div className="w-4 h-4 lg:w-5 lg:h-5 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+            <ChevronDown className={`w-2.5 h-2.5 lg:w-3 lg:h-3 transition-transform ${showMore ? 'rotate-180' : ''}`} />
           </div>
           <span>{showMore ? 'See less' : 'See more'}</span>
         </AccessibleButton>
@@ -136,13 +136,13 @@ const Sidebar = () => {
         <hr className="border-gray-200" />
 
         {/* Shortcuts */}
-        <div className="space-y-3">
+        <div className="space-y-2 lg:space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-gray-500 font-medium text-sm">Your shortcuts</h3>
+            <h3 className="text-gray-500 font-medium text-xs lg:text-sm">Your shortcuts</h3>
             <AccessibleButton
               variant="ghost"
               size="sm"
-              className="text-blue-600 text-sm hover:bg-blue-50 transition-colors"
+              className="text-blue-600 text-xs lg:text-sm hover:bg-blue-50 transition-colors"
               onClick={handleShortcutEdit}
             >
               Edit
@@ -153,16 +153,16 @@ const Sidebar = () => {
             <AccessibleButton
               key={shortcut.name}
               variant="ghost"
-              className="w-full flex items-center space-x-3 p-2 rounded-lg text-left hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center space-x-2 lg:space-x-3 p-2 rounded-lg text-left hover:bg-gray-100 transition-colors"
               onClick={() => handleNavigation(shortcut.path, shortcut.name)}
             >
               <img
                 src={shortcut.image}
                 alt={shortcut.name}
-                className="w-8 h-8 rounded-lg object-cover"
+                className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg object-cover flex-shrink-0"
               />
               <div className="flex-1 min-w-0">
-                <p className="text-gray-900 font-medium truncate">{shortcut.name}</p>
+                <p className="text-gray-900 font-medium truncate text-sm lg:text-base">{shortcut.name}</p>
                 <p className="text-xs text-gray-500">{shortcut.members} members</p>
               </div>
             </AccessibleButton>
@@ -170,31 +170,31 @@ const Sidebar = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="space-y-3">
-          <h3 className="text-gray-500 font-medium text-sm">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-2 lg:space-y-3">
+          <h3 className="text-gray-500 font-medium text-xs lg:text-sm">Quick Actions</h3>
+          <div className="grid grid-cols-2 gap-1 lg:gap-2">
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-3 h-auto"
+              className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
               onClick={() => {
                 toast.success('Create post opened');
                 console.log('Quick action: Create post');
               }}
             >
-              <MessageCircle className="w-4 h-4" />
+              <MessageCircle className="w-3 h-3 lg:w-4 lg:h-4" />
               <span className="text-xs">Post</span>
             </AccessibleButton>
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-3 h-auto"
+              className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
               onClick={() => {
                 toast.success('Create event opened');
                 console.log('Quick action: Create event');
               }}
             >
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-3 h-3 lg:w-4 lg:h-4" />
               <span className="text-xs">Event</span>
             </AccessibleButton>
           </div>

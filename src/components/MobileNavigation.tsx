@@ -38,8 +38,8 @@ const MobileNavigation = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-pb shadow-lg">
-      <div className="flex items-center justify-around px-2 py-1">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-safe shadow-lg">
+      <div className="flex items-center justify-around px-1 py-1 max-w-sm mx-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           let pressTimer: NodeJS.Timeout;
@@ -49,7 +49,7 @@ const MobileNavigation = () => {
               key={item.id}
               variant="ghost"
               size="sm"
-              className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg min-h-[44px] min-w-[44px] transition-all duration-200 ${
+              className={`flex flex-col items-center space-y-0.5 py-2 px-2 rounded-lg min-h-[44px] min-w-[44px] transition-all duration-200 ${
                 isActive 
                   ? 'text-blue-600 bg-blue-50 transform scale-105' 
                   : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'

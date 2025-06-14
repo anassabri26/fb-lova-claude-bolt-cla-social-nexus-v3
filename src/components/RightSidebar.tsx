@@ -75,29 +75,29 @@ const RightSidebar = () => {
   };
 
   return (
-    <aside className="hidden xl:block w-80 p-4 h-[calc(100vh-4rem)] overflow-y-auto sticky top-16">
-      <div className="space-y-6">
+    <aside className="hidden xl:block w-72 2xl:w-80 p-2 lg:p-4 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-y-auto sticky top-14 sm:top-16">
+      <div className="space-y-4 lg:space-y-6">
         <FriendRequests />
         <FriendsList />
         
         {/* Sponsored */}
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <h3 className="font-semibold text-gray-900 mb-3">Sponsored</h3>
-          <div className="space-y-4">
+        <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4">
+          <h3 className="font-semibold text-gray-900 mb-2 lg:mb-3 text-sm lg:text-base">Sponsored</h3>
+          <div className="space-y-3 lg:space-y-4">
             {sponsoredAds.map((ad) => (
               <div 
                 key={ad.id}
-                className="flex space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+                className="flex space-x-2 lg:space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
                 onClick={() => handleAdClick(ad)}
               >
                 <img
                   src={ad.image}
                   alt={ad.title}
-                  className="w-16 h-16 rounded-lg object-cover"
+                  className="w-12 h-12 lg:w-16 lg:h-16 rounded-lg object-cover flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-medium text-gray-900 truncate">{ad.title}</h4>
-                  <p className="text-xs text-gray-600 mt-1">{ad.description}</p>
+                  <h4 className="text-xs lg:text-sm font-medium text-gray-900 truncate">{ad.title}</h4>
+                  <p className="text-xs text-gray-600 mt-1 line-clamp-2">{ad.description}</p>
                   <p className="text-xs text-gray-500 mt-1">Sponsored by {ad.sponsor}</p>
                 </div>
               </div>
@@ -106,26 +106,26 @@ const RightSidebar = () => {
         </div>
 
         {/* Birthdays */}
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="flex items-center space-x-2 mb-3">
-            <Calendar className="w-5 h-5 text-blue-600" />
-            <h3 className="font-semibold text-gray-900">Birthdays</h3>
+        <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4">
+          <div className="flex items-center space-x-2 mb-2 lg:mb-3">
+            <Calendar className="w-4 h-4 lg:w-5 lg:h-5 text-blue-600" />
+            <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Birthdays</h3>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2 lg:space-y-3">
             {birthdayFriends.map((friend) => (
               <div key={friend.id} className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Avatar className="w-8 h-8">
+                <div className="flex items-center space-x-2 min-w-0 flex-1">
+                  <Avatar className="w-6 h-6 lg:w-8 lg:h-8 flex-shrink-0">
                     <AvatarImage src={friend.avatar} />
                     <AvatarFallback>{friend.name.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-gray-900">{friend.name}'s birthday</span>
+                  <span className="text-xs lg:text-sm text-gray-900 truncate">{friend.name}'s birthday</span>
                 </div>
                 <AccessibleButton
                   variant="outline"
                   size="sm"
                   onClick={() => handleBirthdayWish(friend)}
-                  className="text-xs"
+                  className="text-xs flex-shrink-0 ml-2"
                 >
                   Wish
                 </AccessibleButton>
@@ -135,11 +135,11 @@ const RightSidebar = () => {
         </div>
 
         {/* Upcoming Events */}
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4">
+          <div className="flex items-center justify-between mb-2 lg:mb-3">
             <div className="flex items-center space-x-2">
-              <Clock className="w-5 h-5 text-green-600" />
-              <h3 className="font-semibold text-gray-900">Upcoming Events</h3>
+              <Clock className="w-4 h-4 lg:w-5 lg:h-5 text-green-600" />
+              <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Upcoming Events</h3>
             </div>
             <AccessibleButton
               variant="ghost"
@@ -150,12 +150,12 @@ const RightSidebar = () => {
               Create
             </AccessibleButton>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2 lg:space-y-3">
             {upcomingEvents.map((event) => (
-              <div key={event.id} className="p-3 border border-gray-200 rounded-lg">
+              <div key={event.id} className="p-2 lg:p-3 border border-gray-200 rounded-lg">
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h4 className="text-sm font-medium text-gray-900">{event.title}</h4>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-xs lg:text-sm font-medium text-gray-900 truncate">{event.title}</h4>
                     <p className="text-xs text-gray-600 mt-1">{event.date}</p>
                     <p className="text-xs text-gray-500 mt-1">{event.attendees} attending</p>
                   </div>
@@ -174,17 +174,17 @@ const RightSidebar = () => {
         </div>
 
         {/* Trending Topics */}
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="flex items-center space-x-2 mb-3">
-            <TrendingUp className="w-5 h-5 text-orange-600" />
-            <h3 className="font-semibold text-gray-900">Trending</h3>
+        <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4">
+          <div className="flex items-center space-x-2 mb-2 lg:mb-3">
+            <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5 text-orange-600" />
+            <h3 className="font-semibold text-gray-900 text-sm lg:text-base">Trending</h3>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1 lg:space-y-2">
             {['#ReactJS', '#WebDevelopment', '#TechNews', '#Design', '#Programming'].map((topic, index) => (
               <AccessibleButton
                 key={index}
                 variant="ghost"
-                className="w-full justify-start text-sm text-blue-600 hover:bg-blue-50"
+                className="w-full justify-start text-xs lg:text-sm text-blue-600 hover:bg-blue-50"
                 onClick={() => {
                   toast.success(`Exploring ${topic}`);
                   console.log('Trending topic clicked:', topic);
@@ -197,31 +197,31 @@ const RightSidebar = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <h3 className="font-semibold text-gray-900 mb-3">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-2">
+        <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4">
+          <h3 className="font-semibold text-gray-900 mb-2 lg:mb-3 text-sm lg:text-base">Quick Actions</h3>
+          <div className="grid grid-cols-2 gap-1 lg:gap-2">
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-3 h-auto"
+              className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
               onClick={() => {
                 toast.success('Find friends opened');
                 console.log('Quick action: Find friends');
               }}
             >
-              <Users className="w-4 h-4" />
+              <Users className="w-3 h-3 lg:w-4 lg:h-4" />
               <span className="text-xs">Find Friends</span>
             </AccessibleButton>
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-3 h-auto"
+              className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
               onClick={() => {
                 toast.success('Start conversation opened');
                 console.log('Quick action: Start conversation');
               }}
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-3 h-3 lg:w-4 lg:h-4" />
               <span className="text-xs">Message</span>
             </AccessibleButton>
           </div>

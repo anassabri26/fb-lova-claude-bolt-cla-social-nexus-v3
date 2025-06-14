@@ -33,9 +33,9 @@ const Index = () => {
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
         <Header />
-        <div className="flex max-w-7xl mx-auto">
+        <div className="flex max-w-7xl mx-auto px-2 sm:px-4">
           <Sidebar />
-          <main className="flex-1 px-2 sm:px-4 py-6 max-w-2xl mx-auto" role="main" aria-label="Main content">
+          <main className="flex-1 py-4 sm:py-6 max-w-full md:max-w-2xl mx-auto min-w-0" role="main" aria-label="Main content">
             <ErrorBoundary fallback={
               <div className="text-center py-8">
                 <p>Unable to load stories. Please try again.</p>
