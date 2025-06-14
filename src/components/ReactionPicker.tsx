@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Heart, ThumbsUp, Laugh, Angry, Frown, Surprise } from 'lucide-react';
+import { Heart, ThumbsUp, Laugh, Angry, Frown, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import AccessibleButton from './AccessibleButton';
 
@@ -17,7 +17,7 @@ const reactions: Reaction[] = [
   { type: 'like', icon: ThumbsUp, color: 'text-blue-600', label: 'Like' },
   { type: 'love', icon: Heart, color: 'text-red-600', label: 'Love' },
   { type: 'laugh', icon: Laugh, color: 'text-yellow-600', label: 'Haha' },
-  { type: 'wow', icon: Surprise, color: 'text-orange-600', label: 'Wow' },
+  { type: 'wow', icon: Zap, color: 'text-orange-600', label: 'Wow' },
   { type: 'sad', icon: Frown, color: 'text-gray-600', label: 'Sad' },
   { type: 'angry', icon: Angry, color: 'text-red-700', label: 'Angry' },
 ];
