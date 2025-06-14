@@ -39,29 +39,29 @@ const EnhancedIndex = () => {
     <div className="min-h-screen bg-gray-100">
       <Header />
       
-      <div className="flex">
+      <div className="flex max-w-full">
         {/* Left Sidebar - Hidden on mobile */}
         {!isMobile && (
-          <div className="w-80 fixed left-0 top-16 h-full overflow-y-auto">
+          <div className="w-80 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-10">
             <Sidebar />
           </div>
         )}
         
         {/* Main Content */}
-        <main className={`flex-1 ${!isMobile ? 'ml-80 mr-80' : ''} p-4`}>
+        <main className={`flex-1 ${!isMobile ? 'ml-80 mr-80' : ''} max-w-2xl mx-auto px-4 py-6`}>
           <RealNewsFeed />
         </main>
         
         {/* Right Sidebar - Hidden on mobile */}
         {!isMobile && (
-          <div className="w-80 fixed right-0 top-16 h-full overflow-y-auto">
+          <div className="w-80 fixed right-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-10">
             <RightSidebar />
           </div>
         )}
       </div>
       
       {/* Mobile Navigation */}
-      <MobileNavigation />
+      {isMobile && <MobileNavigation />}
     </div>
   );
 };
