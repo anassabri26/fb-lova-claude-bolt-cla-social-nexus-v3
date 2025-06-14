@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { Bell, Settings, MoreHorizontal } from 'lucide-react';
+import { Bell, Settings, MoreHorizontal, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 import AccessibleButton from './AccessibleButton';
 
 interface NotificationsDropdownProps {
@@ -44,6 +45,31 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
     },
   ];
 
+  const handleNotificationClick = (notification: any) => {
+    toast.info(`Opened notification from ${notification.user.name}`);
+    console.log('Notification clicked:', notification);
+  };
+
+  const handleNotificationOptions = (notificationId: number) => {
+    toast.info('Notification options opened');
+    console.log('Notification options clicked for:', notificationId);
+  };
+
+  const handleMarkAllRead = () => {
+    toast.success('All notifications marked as read');
+    console.log('Mark all as read clicked');
+  };
+
+  const handleNotificationSettings = () => {
+    toast.info('Notification settings opened');
+    console.log('Notification settings clicked');
+  };
+
+  const handleSeeAll = () => {
+    toast.info('See all notifications clicked');
+    console.log('See all notifications clicked');
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -57,13 +83,36 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
         <CardHeader className="pb-3 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-bold">Notifications</CardTitle>
+            <div className="flex items-center space-x-2">
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                className="p-2 rounded-full hover:bg-gray-100"
+                onClick={handleNotificationSettings}
+                aria-label="Notification settings"
+              >
+                <Settings className="w-5 h-5 text-gray-600" />
+              </AccessibleButton>
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                className="p-2 rounded-full hover:bg-gray-100"
+                onClick={onClose}
+                aria-label="Close notifications"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </AccessibleButton>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-sm text-gray-600">Recent</span>
             <AccessibleButton
               variant="ghost"
               size="sm"
-              className="p-2 rounded-full hover:bg-gray-100"
-              aria-label="Notification settings"
+              className="text-blue-600 hover:bg-blue-50 text-sm px-2 py-1"
+              onClick={handleMarkAllRead}
             >
-              <Settings className="w-5 h-5 text-gray-600" />
+              Mark all as read
             </AccessibleButton>
           </div>
         </CardHeader>
@@ -75,6 +124,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
                 className={`flex items-start space-x-3 p-3 hover:bg-gray-50 cursor-pointer ${
                   notification.unread ? 'bg-blue-50' : ''
                 }`}
+                onClick={() => handleNotificationClick(notification)}
               >
                 <div className="relative">
                   <Avatar className="w-10 h-10">
@@ -97,6 +147,10 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
                   variant="ghost"
                   size="sm"
                   className="p-1 rounded-full hover:bg-gray-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNotificationOptions(notification.id);
+                  }}
                   aria-label="More options"
                 >
                   <MoreHorizontal className="w-4 h-4 text-gray-400" />
@@ -108,6 +162,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
             <AccessibleButton
               variant="ghost"
               className="w-full text-blue-600 hover:bg-blue-50 py-2"
+              onClick={handleSeeAll}
             >
               See all notifications
             </AccessibleButton>

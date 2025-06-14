@@ -1,22 +1,60 @@
 
 import React, { useState } from 'react';
-import { Image, Smile, MapPin, Users, MoreHorizontal } from 'lucide-react';
+import { Image, Smile, MapPin, Users, MoreHorizontal, Camera, Video } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 import AccessibleButton from './AccessibleButton';
 
 const CreatePost = () => {
   const [postContent, setPostContent] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [privacy, setPrivacy] = useState('Public');
 
   const handleSubmit = () => {
     if (postContent.trim()) {
       console.log('Posting:', postContent);
+      toast.success('Post created successfully!');
       setPostContent('');
       setIsExpanded(false);
+    } else {
+      toast.error('Please write something before posting');
     }
+  };
+
+  const handleAddPhoto = () => {
+    toast.info('Photo/Video feature coming soon!');
+    console.log('Add photo/video clicked');
+  };
+
+  const handleAddFeeling = () => {
+    toast.info('Feeling/Activity feature coming soon!');
+    console.log('Add feeling clicked');
+  };
+
+  const handleAddLocation = () => {
+    toast.info('Location feature coming soon!');
+    console.log('Add location clicked');
+  };
+
+  const handleTagPeople = () => {
+    toast.info('Tag people feature coming soon!');
+    console.log('Tag people clicked');
+  };
+
+  const handleMoreOptions = () => {
+    toast.info('More options coming soon!');
+    console.log('More options clicked');
+  };
+
+  const handlePrivacyChange = () => {
+    const privacyOptions = ['Public', 'Friends', 'Only me'];
+    const currentIndex = privacyOptions.indexOf(privacy);
+    const nextIndex = (currentIndex + 1) % privacyOptions.length;
+    setPrivacy(privacyOptions[nextIndex]);
+    toast.info(`Privacy changed to ${privacyOptions[nextIndex]}`);
   };
 
   return (
@@ -49,6 +87,7 @@ const CreatePost = () => {
                   variant="ghost"
                   size="sm"
                   className="p-2 text-green-600 hover:bg-green-50"
+                  onClick={handleAddPhoto}
                   aria-label="Add photo"
                 >
                   <Image className="w-5 h-5" />
@@ -57,6 +96,7 @@ const CreatePost = () => {
                   variant="ghost"
                   size="sm"
                   className="p-2 text-yellow-600 hover:bg-yellow-50"
+                  onClick={handleAddFeeling}
                   aria-label="Add feeling"
                 >
                   <Smile className="w-5 h-5" />
@@ -65,6 +105,7 @@ const CreatePost = () => {
                   variant="ghost"
                   size="sm"
                   className="p-2 text-red-600 hover:bg-red-50"
+                  onClick={handleAddLocation}
                   aria-label="Add location"
                 >
                   <MapPin className="w-5 h-5" />
@@ -73,6 +114,7 @@ const CreatePost = () => {
                   variant="ghost"
                   size="sm"
                   className="p-2 text-blue-600 hover:bg-blue-50"
+                  onClick={handleTagPeople}
                   aria-label="Tag people"
                 >
                   <Users className="w-5 h-5" />
@@ -81,6 +123,7 @@ const CreatePost = () => {
                   variant="ghost"
                   size="sm"
                   className="p-2 text-gray-600 hover:bg-gray-50"
+                  onClick={handleMoreOptions}
                   aria-label="More options"
                 >
                   <MoreHorizontal className="w-5 h-5" />
@@ -89,10 +132,16 @@ const CreatePost = () => {
             </div>
 
             <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
+              <AccessibleButton
+                variant="ghost"
+                size="sm"
+                className="flex items-center space-x-2"
+                onClick={handlePrivacyChange}
+                aria-label={`Change privacy setting. Currently: ${privacy}`}
+              >
                 <Users className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-500">Public</span>
-              </div>
+                <span className="text-sm text-gray-500">{privacy}</span>
+              </AccessibleButton>
               <AccessibleButton
                 onClick={handleSubmit}
                 disabled={!postContent.trim()}
@@ -111,6 +160,7 @@ const CreatePost = () => {
                 variant="ghost"
                 size="sm"
                 className="flex-1 flex items-center justify-center space-x-2 py-2 hover:bg-gray-50 rounded-lg"
+                onClick={handleAddPhoto}
                 aria-label="Add photo or video"
               >
                 <Image className="w-5 h-5 text-green-600" />
@@ -120,6 +170,7 @@ const CreatePost = () => {
                 variant="ghost"
                 size="sm"
                 className="flex-1 flex items-center justify-center space-x-2 py-2 hover:bg-gray-50 rounded-lg"
+                onClick={handleAddFeeling}
                 aria-label="Add feeling or activity"
               >
                 <Smile className="w-5 h-5 text-yellow-600" />

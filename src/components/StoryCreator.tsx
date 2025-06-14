@@ -3,16 +3,38 @@ import React, { useState } from 'react';
 import { Plus, Camera, Type, Music } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
+import { toast } from 'sonner';
 import AccessibleButton from './AccessibleButton';
 
 const StoryCreator = () => {
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleCreateStory = () => {
+    toast.success('Story creator opened!');
+    console.log('Create story clicked');
+  };
+
+  const handleAddPhoto = () => {
+    toast.info('Photo story feature coming soon!');
+    console.log('Add photo to story clicked');
+  };
+
+  const handleAddText = () => {
+    toast.info('Text story feature coming soon!');
+    console.log('Add text to story clicked');
+  };
+
+  const handleAddMusic = () => {
+    toast.info('Music story feature coming soon!');
+    console.log('Add music to story clicked');
+  };
 
   return (
     <Card 
       className="relative overflow-hidden cursor-pointer transition-transform duration-200 hover:scale-105"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCreateStory}
     >
       <CardContent className="p-0">
         <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600">
@@ -32,6 +54,10 @@ const StoryCreator = () => {
               variant="ghost"
               size="sm"
               className="bg-white bg-opacity-90 hover:bg-opacity-100 text-blue-600 rounded-full p-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCreateStory();
+              }}
               aria-label="Create story"
             >
               <Plus className="w-5 h-5" />
@@ -45,6 +71,10 @@ const StoryCreator = () => {
                 variant="ghost"
                 size="sm"
                 className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 rounded-full p-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddPhoto();
+                }}
                 aria-label="Add photo"
               >
                 <Camera className="w-4 h-4" />
@@ -53,6 +83,10 @@ const StoryCreator = () => {
                 variant="ghost"
                 size="sm"
                 className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 rounded-full p-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddText();
+                }}
                 aria-label="Add text"
               >
                 <Type className="w-4 h-4" />
@@ -61,6 +95,10 @@ const StoryCreator = () => {
                 variant="ghost"
                 size="sm"
                 className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 rounded-full p-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddMusic();
+                }}
                 aria-label="Add music"
               >
                 <Music className="w-4 h-4" />
