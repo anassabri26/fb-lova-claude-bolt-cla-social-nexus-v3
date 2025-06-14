@@ -1,82 +1,70 @@
 
 import React, { useState } from 'react';
+import { Play, Tv, Video, Search, Filter } from 'lucide-react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import LiveStreamCard from '../components/LiveStreamCard';
 import MobileNavigation from '../components/MobileNavigation';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Play, Eye, Clock, Bookmark, Share, MoreHorizontal } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import AccessibleButton from '../components/AccessibleButton';
-import { toast } from 'sonner';
 
 const Watch = () => {
-  const [activeTab, setActiveTab] = useState('foryou');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const videos = [
+  const categories = ['All', 'Gaming', 'Music', 'Sports', 'News', 'Entertainment', 'Education'];
+  
+  const liveStreams = [
     {
-      id: 1,
-      title: 'Amazing React Tutorial - Build a Full App',
-      creator: {
-        name: 'Tech Creator',
-        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+      id: '1',
+      streamer: {
+        name: 'GameMaster Pro',
+        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face',
+        verified: true
       },
-      thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=600&h=400&fit=crop',
-      duration: '12:34',
-      views: '1.2M',
-      uploadTime: '2d ago'
+      title: 'Epic Gameplay Session - New Game Launch!',
+      thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop',
+      viewers: 12500,
+      duration: '2:45:30',
+      category: 'Gaming'
     },
     {
-      id: 2,
-      title: 'Beautiful Sunset Timelapse',
-      creator: {
-        name: 'Nature Explorer',
-        avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
+      id: '2',
+      streamer: {
+        name: 'Music Live',
+        avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face',
+        verified: false
       },
-      thumbnail: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop',
-      duration: '8:45',
-      views: '850K',
-      uploadTime: '1d ago'
+      title: 'Acoustic Session - Your Favorite Songs',
+      thumbnail: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=600&fit=crop',
+      viewers: 3200,
+      duration: '1:15:20',
+      category: 'Music'
     },
     {
-      id: 3,
-      title: 'Cooking the Perfect Pasta',
-      creator: {
-        name: 'Chef Maria',
-        avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face'
+      id: '3',
+      streamer: {
+        name: 'Tech News Daily',
+        avatar: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face',
+        verified: true
       },
-      thumbnail: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=600&h=400&fit=crop',
-      duration: '15:20',
-      views: '2.1M',
-      uploadTime: '3d ago'
+      title: 'Breaking: Latest Tech Announcements',
+      thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop',
+      viewers: 8900,
+      duration: '0:45:12',
+      category: 'News'
     }
   ];
 
-  const liveVideos = [
-    {
-      id: 1,
-      title: 'Live: JavaScript Q&A Session',
-      creator: {
-        name: 'Code Master',
-        avatar: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face'
-      },
-      thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=600&h=400&fit=crop',
-      viewers: '1.2K',
-      isLive: true
-    }
-  ];
-
-  const handlePlayVideo = (video: any) => {
-    toast.info(`Playing: ${video.title}`);
-  };
-
-  const handleSaveVideo = (video: any) => {
-    toast.success(`Saved: ${video.title}`);
-  };
-
-  const handleShareVideo = (video: any) => {
-    toast.success(`Shared: ${video.title}`);
-  };
+  const filteredStreams = liveStreams.filter(stream => {
+    const matchesCategory = selectedCategory === 'All' || stream.category === selectedCategory;
+    const matchesSearch = stream.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         stream.streamer.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
@@ -84,148 +72,122 @@ const Watch = () => {
       <div className="flex max-w-7xl mx-auto">
         <Sidebar />
         <main className="flex-1 px-4 py-6">
-          <div className="max-w-6xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Watch</h1>
+          {/* Page Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+                <Tv className="w-8 h-8 mr-2 text-blue-600" />
+                Watch
+              </h1>
+              <AccessibleButton
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => console.log('Start live stream')}
+              >
+                <Video className="w-4 h-4 mr-2" />
+                Go Live
+              </AccessibleButton>
+            </div>
             
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="foryou">For You</TabsTrigger>
-                <TabsTrigger value="live">Live</TabsTrigger>
-                <TabsTrigger value="following">Following</TabsTrigger>
-                <TabsTrigger value="saved">Saved</TabsTrigger>
-              </TabsList>
+            {/* Search and Filters */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Input
+                  placeholder="Search live videos..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <div className="flex space-x-2 overflow-x-auto">
+                {categories.map((category) => (
+                  <Button
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedCategory(category)}
+                    className="whitespace-nowrap"
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Live Streams Grid */}
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2 animate-pulse"></div>
+                  Live Now ({filteredStreams.length})
+                </h2>
+              </div>
               
-              <TabsContent value="foryou" className="mt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {videos.map((video) => (
-                    <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                      <div className="relative">
-                        <img
-                          src={video.thumbnail}
-                          alt={video.title}
-                          className="w-full h-48 object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                          <AccessibleButton
-                            variant="ghost"
-                            size="lg"
-                            className="text-white bg-black bg-opacity-50 hover:bg-opacity-70 rounded-full p-4"
-                            onClick={() => handlePlayVideo(video)}
-                          >
-                            <Play className="w-8 h-8" />
-                          </AccessibleButton>
-                        </div>
-                        <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
-                          {video.duration}
-                        </div>
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="flex items-start space-x-3">
-                          <Avatar className="w-10 h-10">
-                            <AvatarImage src={video.creator.avatar} />
-                            <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1">
-                              {video.title}
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-1">{video.creator.name}</p>
-                            <div className="flex items-center space-x-2 text-xs text-gray-500">
-                              <span className="flex items-center">
-                                <Eye className="w-3 h-3 mr-1" />
-                                {video.views} views
-                              </span>
-                              <span>•</span>
-                              <span className="flex items-center">
-                                <Clock className="w-3 h-3 mr-1" />
-                                {video.uploadTime}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex flex-col space-y-1">
-                            <AccessibleButton
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleSaveVideo(video)}
-                            >
-                              <Bookmark className="w-4 h-4" />
-                            </AccessibleButton>
-                            <AccessibleButton
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleShareVideo(video)}
-                            >
-                              <Share className="w-4 h-4" />
-                            </AccessibleButton>
-                            <AccessibleButton variant="ghost" size="sm">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </AccessibleButton>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+              {filteredStreams.length === 0 ? (
+                <Card>
+                  <CardContent className="text-center py-12">
+                    <Tv className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">No live streams found</p>
+                    <p className="text-sm text-gray-400">Try adjusting your search or category filter</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredStreams.map((stream) => (
+                    <LiveStreamCard
+                      key={stream.id}
+                      stream={stream}
+                      onClick={() => console.log(`Watch stream: ${stream.title}`)}
+                    />
                   ))}
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="live" className="mt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {liveVideos.map((video) => (
-                    <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              )}
+            </div>
+
+            {/* Recommended Videos */}
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Recommended for You</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i} className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
+                    <CardContent className="p-0">
                       <div className="relative">
                         <img
-                          src={video.thumbnail}
-                          alt={video.title}
+                          src={`https://images.unsplash.com/photo-${
+                            i === 1 ? '1461749280684-dccba630e2f6' : 
+                            i === 2 ? '1518770660439-4636190af475' : 
+                            '1487058792275-0ad4aaf24ca7'
+                          }?w=800&h=600&fit=crop`}
+                          alt={`Recommended video ${i}`}
                           className="w-full h-48 object-cover"
                         />
-                        <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded font-bold">
-                          LIVE
+                        <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                          <Play className="w-12 h-12 text-white" />
                         </div>
-                        <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
-                          {video.viewers} watching
-                        </div>
-                        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                          <AccessibleButton
-                            variant="ghost"
-                            size="lg"
-                            className="text-white bg-black bg-opacity-50 hover:bg-opacity-70 rounded-full p-4"
-                            onClick={() => handlePlayVideo(video)}
-                          >
-                            <Play className="w-8 h-8" />
-                          </AccessibleButton>
+                        <div className="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                          {i === 1 ? '10:45' : i === 2 ? '15:30' : '8:20'}
                         </div>
                       </div>
-                      <CardContent className="p-4">
-                        <div className="flex items-start space-x-3">
-                          <Avatar className="w-10 h-10">
-                            <AvatarImage src={video.creator.avatar} />
-                            <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1">
-                              {video.title}
-                            </h3>
-                            <p className="text-sm text-gray-600">{video.creator.name}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="following" className="mt-6">
-                <div className="text-center py-12">
-                  <p className="text-gray-500">No videos from people you follow</p>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="saved" className="mt-6">
-                <div className="text-center py-12">
-                  <p className="text-gray-500">No saved videos</p>
-                </div>
-              </TabsContent>
-            </Tabs>
+                      <div className="p-3">
+                        <h3 className="font-semibold text-gray-900 text-sm line-clamp-2">
+                          {i === 1 ? 'React Tutorial: Building Modern Apps' : 
+                           i === 2 ? 'JavaScript Tips and Tricks' : 
+                           'Web Development Best Practices'}
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">TechChannel</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {i === 1 ? '1.2M views • 2 days ago' : 
+                           i === 2 ? '850K views • 1 week ago' : 
+                           '500K views • 3 days ago'}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         </main>
       </div>
