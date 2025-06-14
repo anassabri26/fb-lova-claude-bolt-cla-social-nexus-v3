@@ -1,0 +1,110 @@
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+export interface Post {
+  id: string;
+  user_id: string;
+  content: string;
+  image_url?: string;
+  created_at: string;
+  profiles: {
+    full_name: string;
+    avatar_url?: string;
+  };
+  likes_count?: number;
+  comments_count?: number;
+  user_has_liked?: boolean;
+}
+
+export const usePosts = () => {
+  return useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          *,
+          profiles:user_id (full_name, avatar_url),
+          likes (count),
+          comments (count)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as Post[];
+    }
+  });
+};
+
+export const useCreatePost = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ content, imageUrl }: { content: string; imageUrl?: string }) => {
+      const { data, error } = await supabase
+        .from('posts')
+        .insert([
+          {
+            content,
+            image_url: imageUrl,
+            user_id: (await supabase.auth.getUser()).data.user?.id
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      toast.success('Post created successfully!');
+    },
+    onError: (error) => {
+      toast.error('Failed to create post');
+      console.error('Error creating post:', error);
+    }
+  });
+};
+
+export const useLikePost = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ postId, isLiked }: { postId: string; isLiked: boolean }) => {
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      
+      if (isLiked) {
+        // Unlike
+        const { error } = await supabase
+          .from('likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', userId);
+        
+        if (error) throw error;
+      } else {
+        // Like
+        const { error } = await supabase
+          .from('likes')
+          .insert([
+            {
+              post_id: postId,
+              user_id: userId
+            }
+          ]);
+        
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+    onError: (error) => {
+      toast.error('Failed to update like');
+      console.error('Error updating like:', error);
+    }
+  });
+};
