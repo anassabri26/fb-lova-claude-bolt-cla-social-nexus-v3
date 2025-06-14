@@ -10,11 +10,6 @@ const RealNewsFeed = () => {
   const { user } = useAuth();
   const { data: posts, isLoading, error } = usePosts();
 
-  console.log('RealNewsFeed - User:', user);
-  console.log('RealNewsFeed - Posts:', posts);
-  console.log('RealNewsFeed - Loading:', isLoading);
-  console.log('RealNewsFeed - Error:', error);
-
   if (!user) {
     return (
       <div className="max-w-2xl mx-auto p-6 text-center">
