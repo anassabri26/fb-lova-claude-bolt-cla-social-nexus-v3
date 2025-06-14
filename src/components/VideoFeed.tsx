@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Play, Heart, MessageCircle, Share, MoreHorizontal, Clock } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -74,7 +73,7 @@ const VideoFeed = () => {
       comments: 89,
       isLive: false
     }
-  ];
+  ]);
 
   const liveStreams = [
     {
