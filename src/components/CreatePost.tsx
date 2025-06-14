@@ -71,114 +71,82 @@ const CreatePost = () => {
               value={postContent}
               onChange={(e) => setPostContent(e.target.value)}
               onFocus={() => setIsExpanded(true)}
-              className="border-none resize-none focus:ring-0 p-0 text-base placeholder-gray-500 bg-transparent"
-              rows={isExpanded ? 3 : 1}
-              aria-label="Create a new post"
+              className="min-h-[50px] border-none resize-none focus:ring-0 focus:border-none p-0 text-lg placeholder:text-gray-500"
             />
+            
+            {isExpanded && (
+              <div className="mt-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Post to:</span>
+                  <AccessibleButton
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePrivacyChange}
+                    className="text-blue-600 border-blue-600"
+                  >
+                    {privacy}
+                  </AccessibleButton>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  <AccessibleButton
+                    variant="ghost"
+                    className="flex items-center justify-center space-x-2 p-3 hover:bg-gray-50 rounded-lg"
+                    onClick={handleAddPhoto}
+                  >
+                    <Camera className="w-5 h-5 text-green-600" />
+                    <span className="text-gray-700">Photo/Video</span>
+                  </AccessibleButton>
+                  
+                  <AccessibleButton
+                    variant="ghost"
+                    className="flex items-center justify-center space-x-2 p-3 hover:bg-gray-50 rounded-lg"
+                    onClick={handleTagPeople}
+                  >
+                    <Users className="w-5 h-5 text-blue-600" />
+                    <span className="text-gray-700">Tag People</span>
+                  </AccessibleButton>
+                  
+                  <AccessibleButton
+                    variant="ghost"
+                    className="flex items-center justify-center space-x-2 p-3 hover:bg-gray-50 rounded-lg"
+                    onClick={handleAddFeeling}
+                  >
+                    <Smile className="w-5 h-5 text-yellow-600" />
+                    <span className="text-gray-700">Feeling</span>
+                  </AccessibleButton>
+                  
+                  <AccessibleButton
+                    variant="ghost"
+                    className="flex items-center justify-center space-x-2 p-3 hover:bg-gray-50 rounded-lg"
+                    onClick={handleAddLocation}
+                  >
+                    <MapPin className="w-5 h-5 text-red-600" />
+                    <span className="text-gray-700">Location</span>
+                  </AccessibleButton>
+                </div>
+                
+                <div className="flex justify-between items-center pt-3 border-t">
+                  <AccessibleButton
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleMoreOptions}
+                  >
+                    <MoreHorizontal className="w-5 h-5" />
+                  </AccessibleButton>
+                  
+                  <AccessibleButton
+                    onClick={handleSubmit}
+                    disabled={!postContent.trim()}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300"
+                  >
+                    Post
+                  </AccessibleButton>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-
-        {isExpanded && (
-          <div className="mt-4 space-y-4">
-            <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-              <span className="text-sm text-gray-700">Add to your post</span>
-              <div className="flex space-x-2">
-                <AccessibleButton
-                  variant="ghost"
-                  size="sm"
-                  className="p-2 text-green-600 hover:bg-green-50"
-                  onClick={handleAddPhoto}
-                  aria-label="Add photo"
-                >
-                  <Image className="w-5 h-5" />
-                </AccessibleButton>
-                <AccessibleButton
-                  variant="ghost"
-                  size="sm"
-                  className="p-2 text-yellow-600 hover:bg-yellow-50"
-                  onClick={handleAddFeeling}
-                  aria-label="Add feeling"
-                >
-                  <Smile className="w-5 h-5" />
-                </AccessibleButton>
-                <AccessibleButton
-                  variant="ghost"
-                  size="sm"
-                  className="p-2 text-red-600 hover:bg-red-50"
-                  onClick={handleAddLocation}
-                  aria-label="Add location"
-                >
-                  <MapPin className="w-5 h-5" />
-                </AccessibleButton>
-                <AccessibleButton
-                  variant="ghost"
-                  size="sm"
-                  className="p-2 text-blue-600 hover:bg-blue-50"
-                  onClick={handleTagPeople}
-                  aria-label="Tag people"
-                >
-                  <Users className="w-5 h-5" />
-                </AccessibleButton>
-                <AccessibleButton
-                  variant="ghost"
-                  size="sm"
-                  className="p-2 text-gray-600 hover:bg-gray-50"
-                  onClick={handleMoreOptions}
-                  aria-label="More options"
-                >
-                  <MoreHorizontal className="w-5 h-5" />
-                </AccessibleButton>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                className="flex items-center space-x-2"
-                onClick={handlePrivacyChange}
-                aria-label={`Change privacy setting. Currently: ${privacy}`}
-              >
-                <Users className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-500">{privacy}</span>
-              </AccessibleButton>
-              <AccessibleButton
-                onClick={handleSubmit}
-                disabled={!postContent.trim()}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Post
-              </AccessibleButton>
-            </div>
-          </div>
-        )}
-
-        {!isExpanded && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <div className="flex justify-between">
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                className="flex-1 flex items-center justify-center space-x-2 py-2 hover:bg-gray-50 rounded-lg"
-                onClick={handleAddPhoto}
-                aria-label="Add photo or video"
-              >
-                <Image className="w-5 h-5 text-green-600" />
-                <span className="text-gray-600 font-medium">Photo/Video</span>
-              </AccessibleButton>
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                className="flex-1 flex items-center justify-center space-x-2 py-2 hover:bg-gray-50 rounded-lg"
-                onClick={handleAddFeeling}
-                aria-label="Add feeling or activity"
-              >
-                <Smile className="w-5 h-5 text-yellow-600" />
-                <span className="text-gray-600 font-medium">Feeling/Activity</span>
-              </AccessibleButton>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

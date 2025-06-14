@@ -7,6 +7,7 @@ import RightSidebar from '../components/RightSidebar';
 import MobileNavigation from '../components/MobileNavigation';
 import ErrorBoundary from '../components/ErrorBoundary';
 import PerformanceMetrics from '../components/PerformanceMetrics';
+import Stories from '../components/Stories';
 import usePerformanceMonitoring from '../hooks/usePerformanceMonitoring';
 
 const Index = () => {
@@ -24,6 +25,13 @@ const Index = () => {
         <div className="flex max-w-7xl mx-auto">
           <Sidebar />
           <main className="flex-1 px-2 sm:px-4 py-6" role="main" aria-label="Main content">
+            <ErrorBoundary fallback={
+              <div className="text-center py-8">
+                <p>Unable to load stories. Please try again.</p>
+              </div>
+            }>
+              <Stories />
+            </ErrorBoundary>
             <ErrorBoundary fallback={
               <div className="text-center py-8">
                 <p>Unable to load news feed. Please try again.</p>

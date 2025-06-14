@@ -11,6 +11,9 @@ import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Watch from "./pages/Watch";
 import Marketplace from "./pages/Marketplace";
+import Events from "./pages/Events";
+import Saved from "./pages/Saved";
+import Memories from "./pages/Memories";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -28,6 +31,9 @@ function App() {
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/watch" element={<Watch />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/saved" element={<Saved />} />
+            <Route path="/memories" element={<Memories />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
