@@ -4,6 +4,7 @@ import { Heart, MessageCircle, Share, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
+import CommentsSection from './CommentsSection';
 
 interface PostProps {
   post: {
@@ -25,6 +26,7 @@ interface PostProps {
 const Post: React.FC<PostProps> = ({ post }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
+  const [showComments, setShowComments] = useState(false);
 
   const handleLike = () => {
     setLiked(!liked);
@@ -90,7 +92,12 @@ const Post: React.FC<PostProps> = ({ post }) => {
               <span>{likeCount} likes</span>
             </div>
             <div className="flex space-x-4">
-              <span>{post.comments} comments</span>
+              <button 
+                className="hover:underline"
+                onClick={() => setShowComments(!showComments)}
+              >
+                {post.comments} comments
+              </button>
               <span>{post.shares} shares</span>
             </div>
           </div>
@@ -110,7 +117,12 @@ const Post: React.FC<PostProps> = ({ post }) => {
               <Heart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
               <span className="font-medium">Like</span>
             </Button>
-            <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-6 py-3 rounded-lg">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-6 py-3 rounded-lg"
+              onClick={() => setShowComments(!showComments)}
+            >
               <MessageCircle className="w-5 h-5" />
               <span className="font-medium">Comment</span>
             </Button>
@@ -120,6 +132,9 @@ const Post: React.FC<PostProps> = ({ post }) => {
             </Button>
           </div>
         </div>
+
+        {/* Comments Section */}
+        <CommentsSection postId={post.id} isVisible={showComments} />
       </CardContent>
     </Card>
   );
