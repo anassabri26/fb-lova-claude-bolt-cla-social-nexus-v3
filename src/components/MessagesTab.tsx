@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Search, Phone, Video, MoreHorizontal, Send, Smile, Paperclip } from 'lucide-react';
+import { Search, Phone, Video, MoreHorizontal, Send, Smile, Paperclip, MessageCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

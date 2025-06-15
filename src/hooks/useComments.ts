@@ -21,30 +21,50 @@ export const useComments = (postId: string) => {
     queryFn: async () => {
       console.log('Fetching comments for post:', postId);
       
-      // Get comments with profile information
-      const { data: comments, error } = await supabase
-        .from('comments')
-        .select(`
-          id,
-          post_id,
-          user_id,
-          content,
-          created_at,
-          profiles:user_id (
-            full_name,
-            avatar_url
-          )
-        `)
-        .eq('post_id', postId)
-        .order('created_at', { ascending: true });
+      try {
+        // Get comments first
+        const { data: comments, error: commentsError } = await supabase
+          .from('comments')
+          .select('*')
+          .eq('post_id', postId)
+          .order('created_at', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching comments:', error);
-        throw error;
+        if (commentsError) {
+          console.error('Error fetching comments:', commentsError);
+          throw commentsError;
+        }
+
+        if (!comments || comments.length === 0) {
+          return [];
+        }
+
+        // Get user profiles separately
+        const userIds = [...new Set(comments.map(comment => comment.user_id))];
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', userIds);
+
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError);
+          // Continue with comments but without profile data
+        }
+
+        // Combine comments with profile data
+        const commentsWithProfiles = comments.map(comment => ({
+          ...comment,
+          profiles: profiles?.find(profile => profile.id === comment.user_id) || {
+            full_name: 'Anonymous User',
+            avatar_url: null
+          }
+        }));
+
+        console.log('Comments with profiles:', commentsWithProfiles);
+        return commentsWithProfiles as Comment[];
+      } catch (error) {
+        console.error('Error in useComments:', error);
+        return [];
       }
-
-      console.log('Comments fetched:', comments);
-      return (comments || []) as Comment[];
     },
     enabled: !!postId,
     staleTime: 30000,
@@ -70,17 +90,7 @@ export const useCreateComment = () => {
             user_id: user.id
           }
         ])
-        .select(`
-          id,
-          post_id,
-          user_id,
-          content,
-          created_at,
-          profiles:user_id (
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .single();
 
       if (error) {
@@ -88,12 +98,20 @@ export const useCreateComment = () => {
         throw error;
       }
 
-      return data as Comment;
+      // Get user profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      return {
+        ...data,
+        profiles: profile || { full_name: 'Anonymous User', avatar_url: null }
+      } as Comment;
     },
     onSuccess: (data) => {
-      // Invalidate comments for this specific post
       queryClient.invalidateQueries({ queryKey: ['comments', data.post_id] });
-      // Also invalidate posts to update comment counts
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       toast.success('Comment added!');
     },
@@ -118,7 +136,7 @@ export const useDeleteComment = () => {
         .from('comments')
         .delete()
         .eq('id', commentId)
-        .eq('user_id', user.id); // Ensure user can only delete their own comments
+        .eq('user_id', user.id);
 
       if (error) {
         console.error('Error deleting comment:', error);

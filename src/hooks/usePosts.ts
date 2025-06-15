@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -24,86 +25,99 @@ export const usePosts = () => {
     queryFn: async () => {
       console.log('Fetching posts...');
       
-      // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        console.error('User not authenticated:', userError);
-        throw new Error('User not authenticated');
-      }
+      try {
+        // Get current user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          console.error('User not authenticated:', userError);
+          throw new Error('User not authenticated');
+        }
 
-      // Get posts with profiles
-      const { data: posts, error: postsError } = await supabase
-        .from('posts')
-        .select(`
-          id,
-          user_id,
-          content,
-          image_url,
-          created_at,
-          updated_at,
-          profiles:user_id (
-            full_name,
-            avatar_url
-          )
-        `)
-        .order('created_at', { ascending: false });
+        // Get posts first
+        const { data: posts, error: postsError } = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (postsError) {
-        console.error('Error fetching posts:', postsError);
-        throw postsError;
-      }
+        if (postsError) {
+          console.error('Error fetching posts:', postsError);
+          throw postsError;
+        }
 
-      console.log('Raw posts data:', posts);
+        if (!posts || posts.length === 0) {
+          console.log('No posts found');
+          return [];
+        }
 
-      if (!posts || posts.length === 0) {
-        console.log('No posts found');
+        // Get user profiles separately
+        const userIds = [...new Set(posts.map(post => post.user_id))];
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', userIds);
+
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError);
+        }
+
+        // Get likes and comments counts for each post
+        const postsWithCounts = await Promise.all(
+          posts.map(async (post) => {
+            try {
+              // Get likes count and user's like status
+              const [likesResult, userLikeResult, commentsResult] = await Promise.all([
+                supabase
+                  .from('likes')
+                  .select('id', { count: 'exact' })
+                  .eq('post_id', post.id),
+                supabase
+                  .from('likes')
+                  .select('id')
+                  .eq('post_id', post.id)
+                  .eq('user_id', user.id)
+                  .maybeSingle(),
+                supabase
+                  .from('comments')
+                  .select('id', { count: 'exact' })
+                  .eq('post_id', post.id)
+              ]);
+
+              const profile = profiles?.find(p => p.id === post.user_id) || {
+                full_name: 'Anonymous User',
+                avatar_url: null
+              };
+
+              return {
+                ...post,
+                profiles: profile,
+                likes_count: likesResult.count || 0,
+                comments_count: commentsResult.count || 0,
+                user_has_liked: userLikeResult.data !== null,
+              };
+            } catch (error) {
+              console.error('Error getting post counts:', error);
+              return {
+                ...post,
+                profiles: {
+                  full_name: 'Anonymous User',
+                  avatar_url: null
+                },
+                likes_count: 0,
+                comments_count: 0,
+                user_has_liked: false,
+              };
+            }
+          })
+        );
+
+        console.log('Posts with counts:', postsWithCounts);
+        return postsWithCounts as Post[];
+      } catch (error) {
+        console.error('Error in usePosts:', error);
         return [];
       }
-
-      // Get likes and comments counts for each post
-      const postsWithCounts = await Promise.all(
-        posts.map(async (post) => {
-          try {
-            // Get likes count and user's like status
-            const [likesResult, userLikeResult, commentsResult] = await Promise.all([
-              supabase
-                .from('likes')
-                .select('id', { count: 'exact' })
-                .eq('post_id', post.id),
-              supabase
-                .from('likes')
-                .select('id')
-                .eq('post_id', post.id)
-                .eq('user_id', user.id)
-                .maybeSingle(),
-              supabase
-                .from('comments')
-                .select('id', { count: 'exact' })
-                .eq('post_id', post.id)
-            ]);
-
-            return {
-              ...post,
-              likes_count: likesResult.count || 0,
-              comments_count: commentsResult.count || 0,
-              user_has_liked: userLikeResult.data !== null,
-            };
-          } catch (error) {
-            console.error('Error getting post counts:', error);
-            return {
-              ...post,
-              likes_count: 0,
-              comments_count: 0,
-              user_has_liked: false,
-            };
-          }
-        })
-      );
-
-      console.log('Posts with counts:', postsWithCounts);
-      return postsWithCounts as Post[];
     },
-    staleTime: 30000, // Consider data fresh for 30 seconds
+    staleTime: 30000,
     retry: 3,
   });
 };
@@ -188,7 +202,6 @@ export const useLikePost = () => {
       }
     },
     onSuccess: () => {
-      // Invalidate and refetch posts to update counts
       queryClient.invalidateQueries({ queryKey: ['posts'] });
     },
     onError: (error) => {
@@ -212,7 +225,7 @@ export const useDeletePost = () => {
         .from('posts')
         .delete()
         .eq('id', postId)
-        .eq('user_id', user.id); // Ensure user can only delete their own posts
+        .eq('user_id', user.id);
 
       if (error) {
         console.error('Error deleting post:', error);
