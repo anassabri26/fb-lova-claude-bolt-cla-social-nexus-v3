@@ -31,12 +31,12 @@ export const usePosts = () => {
         throw new Error('User not authenticated');
       }
 
-      // Get posts with profiles - using inner join to ensure we get profile data
+      // Get posts with profiles - using the correct foreign key reference
       const { data: posts, error: postsError } = await supabase
         .from('posts')
         .select(`
           *,
-          profiles!inner(
+          profiles:user_id (
             full_name,
             avatar_url
           )
