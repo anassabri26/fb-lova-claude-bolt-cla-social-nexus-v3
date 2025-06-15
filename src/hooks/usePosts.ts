@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -32,12 +31,12 @@ export const usePosts = () => {
         throw new Error('User not authenticated');
       }
 
-      // Get posts with profiles - using the correct syntax
+      // Get posts with profiles - using explicit foreign key reference
       const { data: posts, error: postsError } = await supabase
         .from('posts')
         .select(`
           *,
-          profiles (
+          profiles!posts_user_id_fkey (
             full_name,
             avatar_url
           )
