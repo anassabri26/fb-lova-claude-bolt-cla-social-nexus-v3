@@ -5,7 +5,7 @@ import { usePosts } from '@/hooks/usePosts';
 import CreatePost from './CreatePost';
 import RealPost from './RealPost';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, RefreshCw, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const RealNewsFeed = () => {

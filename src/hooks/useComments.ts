@@ -21,12 +21,12 @@ export const useComments = (postId: string) => {
     queryFn: async () => {
       console.log('Fetching comments for post:', postId);
       
-      // Get comments with profile information
+      // Get comments with profile information using inner join
       const { data: comments, error } = await supabase
         .from('comments')
         .select(`
           *,
-          profiles:user_id (
+          profiles!inner (
             full_name,
             avatar_url
           )
@@ -68,7 +68,7 @@ export const useCreateComment = () => {
         ])
         .select(`
           *,
-          profiles:user_id (
+          profiles!inner (
             full_name,
             avatar_url
           )
