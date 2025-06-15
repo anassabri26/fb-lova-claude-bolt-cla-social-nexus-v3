@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import RightSidebar from '@/components/RightSidebar';
-import RealNewsFeed from '@/components/RealNewsFeed';
+import NavigationTabs from '@/components/NavigationTabs';
 import MobileNavigation from '@/components/MobileNavigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -48,8 +48,8 @@ const EnhancedIndex = () => {
         )}
         
         {/* Main Content */}
-        <main className={`flex-1 ${!isMobile ? 'ml-80 mr-80' : ''} max-w-2xl mx-auto px-4 py-6`}>
-          <RealNewsFeed />
+        <main className={`flex-1 ${!isMobile ? 'ml-80 mr-80' : ''} max-w-full mx-auto`}>
+          <NavigationTabs />
         </main>
         
         {/* Right Sidebar - Hidden on mobile */}
