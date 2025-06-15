@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -20,12 +21,16 @@ export const useComments = (postId: string) => {
     queryFn: async () => {
       console.log('Fetching comments for post:', postId);
       
-      // Get comments with profile information using explicit join
+      // Get comments with profile information using inner join
       const { data: comments, error } = await supabase
         .from('comments')
         .select(`
-          *,
-          profiles!comments_user_id_fkey (
+          id,
+          post_id,
+          user_id,
+          content,
+          created_at,
+          profiles:user_id (
             full_name,
             avatar_url
           )
@@ -66,8 +71,12 @@ export const useCreateComment = () => {
           }
         ])
         .select(`
-          *,
-          profiles!comments_user_id_fkey (
+          id,
+          post_id,
+          user_id,
+          content,
+          created_at,
+          profiles:user_id (
             full_name,
             avatar_url
           )
