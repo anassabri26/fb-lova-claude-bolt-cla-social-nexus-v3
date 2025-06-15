@@ -41,7 +41,7 @@ export const usePosts = () => {
           image_url,
           created_at,
           updated_at,
-          profiles!user_id (
+          profiles:user_id (
             full_name,
             avatar_url
           )
