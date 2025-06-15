@@ -32,7 +32,7 @@ export const usePosts = () => {
         throw new Error('User not authenticated');
       }
 
-      // Get posts with profiles using foreign key constraint name
+      // Get posts with profiles
       const { data: posts, error: postsError } = await supabase
         .from('posts')
         .select(`
@@ -42,7 +42,7 @@ export const usePosts = () => {
           image_url,
           created_at,
           updated_at,
-          profiles!posts_user_id_fkey (
+          profiles (
             full_name,
             avatar_url
           )
