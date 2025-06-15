@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -42,7 +41,7 @@ export const usePosts = () => {
           image_url,
           created_at,
           updated_at,
-          profiles (
+          profiles!user_id (
             full_name,
             avatar_url
           )
