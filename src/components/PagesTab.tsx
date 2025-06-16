@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { MOCK_IMAGES } from '@/lib/constants';
-import AccessibleButton from '@/components/AccessibleButton';
+import AccessibleButton from './AccessibleButton';
 
 interface Page {
   id: number;
@@ -20,7 +20,7 @@ interface Page {
   description?: string;
 }
 
-const Pages = () => {
+const PagesTab = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -320,4 +320,4 @@ const Pages = () => {
   );
 };
 
-export default Pages;
+export default PagesTab;
