@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -20,15 +19,15 @@ const FriendRequestsPanel = () => {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-base font-semibold">
-            <UserPlus className="w-5 h-5" />
+      <Card className="right-sidebar-card">
+        <CardHeader className="right-sidebar-card-header">
+          <CardTitle className="right-sidebar-card-title">
+            <UserPlus className="right-sidebar-icon" />
             <span>Friend Requests</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-gray-500">Loading...</p>
+        <CardContent className="right-sidebar-card-content">
+          <p className="text-gray-500 text-responsive-sm">Loading...</p>
         </CardContent>
       </Card>
     );
@@ -36,65 +35,68 @@ const FriendRequestsPanel = () => {
 
   if (!requests || requests.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-base font-semibold">
-            <UserPlus className="w-5 h-5" />
+      <Card className="right-sidebar-card">
+        <CardHeader className="right-sidebar-card-header">
+          <CardTitle className="right-sidebar-card-title">
+            <UserPlus className="right-sidebar-icon" />
             <span>Friend Requests</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-gray-500">No pending friend requests</p>
+        <CardContent className="right-sidebar-card-content">
+          <p className="text-gray-500 text-responsive-sm">No pending friend requests</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2 text-base font-semibold">
-          <UserPlus className="w-5 h-5" />
+    <Card className="right-sidebar-card">
+      <CardHeader className="right-sidebar-card-header">
+        <CardTitle className="right-sidebar-card-title">
+          <UserPlus className="right-sidebar-icon" />
           <span>Friend Requests ({requests.length})</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {requests.map((request) => (
-          <div key={request.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <Avatar className="w-10 h-10">
-                <AvatarImage src={request.requester_profile?.avatar_url} />
-                <AvatarFallback>
-                  {request.requester_profile?.full_name?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold text-sm text-gray-900">
-                  {request.requester_profile?.full_name || 'Unknown User'}
-                </p>
-                <p className="text-xs text-gray-500">wants to be friends</p>
+      <CardContent className="right-sidebar-card-content">
+        <div className="space-y-2">
+          {requests.map((request) => (
+            <div key={request.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-2 min-w-0">
+                <Avatar className="w-8 h-8 flex-shrink-0">
+                  <AvatarImage src={request.requester_profile?.avatar_url} />
+                  <AvatarFallback>
+                    {request.requester_profile?.full_name?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="font-semibold text-responsive-sm text-gray-900 truncate">
+                    {request.requester_profile?.full_name || 'Unknown User'}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">wants to be friends</p>
+                </div>
+              </div>
+              <div className="flex space-x-1 flex-shrink-0">
+                <Button
+                  size="sm"
+                  onClick={() => handleAccept(request.id)}
+                  disabled={respondMutation.isPending}
+                  className="bg-blue-600 hover:bg-blue-700 h-8 w-8 p-0"
+                >
+                  <Check className="w-4 h-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDecline(request.id)}
+                  disabled={respondMutation.isPending}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
             </div>
-            <div className="flex space-x-2">
-              <Button
-                size="sm"
-                onClick={() => handleAccept(request.id)}
-                disabled={respondMutation.isPending}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                <Check className="w-4 h-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleDecline(request.id)}
-                disabled={respondMutation.isPending}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

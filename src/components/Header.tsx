@@ -62,9 +62,9 @@ const Header = () => {
         <div className="container-responsive">
           <div className="flex items-center justify-between h-12 sm:h-14">
             {/* Left section - Logo */}
-            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+            <div className="flex items-center space-x-1 min-w-0">
               <div 
-                className="flex items-center space-x-1 sm:space-x-2 cursor-pointer hover:opacity-80 transition-opacity touch-target"
+                className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity touch-target"
                 onClick={() => handleNavigation('/', 'Home')}
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -75,7 +75,7 @@ const Header = () => {
             </div>
 
             {/* Center section - Search and Navigation */}
-            <div className="flex items-center space-x-1 sm:space-x-3 flex-1 max-w-lg mx-2 sm:mx-3">
+            <div className="flex items-center space-x-1 flex-1 max-w-lg mx-1 sm:mx-2">
               <form onSubmit={handleSearch} className="hide-mobile flex-1">
                 <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -84,7 +84,7 @@ const Header = () => {
                     placeholder="Search Facebook"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-gray-100 border-none rounded-full text-responsive-sm"
+                    className="pl-10 bg-gray-100 border-none rounded-full text-responsive-sm h-9"
                   />
                 </div>
               </form>
@@ -97,7 +97,7 @@ const Header = () => {
                       key={item.id}
                       variant="ghost" 
                       size="sm" 
-                      className={`relative button-responsive hover:bg-gray-100 rounded-xl transition-colors ${
+                      className={`relative p-2 rounded-xl transition-colors ${
                         isActive ? 'text-blue-600' : 'text-gray-600'
                       }`}
                       onClick={() => handleNavigation(item.path, item.label)}
@@ -105,7 +105,7 @@ const Header = () => {
                     >
                       <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       {isActive && (
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 sm:w-8 h-1 bg-blue-600 rounded-t-full"></div>
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-1 bg-blue-600 rounded-t-full"></div>
                       )}
                     </Button>
                   );
@@ -114,11 +114,11 @@ const Header = () => {
             </div>
 
             {/* Right section - User actions */}
-            <div className="flex items-center space-x-1 sm:space-x-2">
+            <div className="flex items-center space-x-1">
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="touch-target rounded-full hover:bg-gray-100 transition-colors"
+                className="touch-target p-2 rounded-full hover:bg-gray-100 transition-colors"
                 onClick={handleCreatePost}
                 aria-label="Create post"
               >
@@ -128,7 +128,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="relative touch-target rounded-full hover:bg-gray-100 transition-colors"
+                className="relative touch-target p-2 rounded-full hover:bg-gray-100 transition-colors"
                 onClick={handleNotificationsClick}
                 aria-label="Notifications"
               >
@@ -139,7 +139,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="show-mobile touch-target rounded-full hover:bg-gray-100 transition-colors"
+                className="show-mobile touch-target p-2 rounded-full hover:bg-gray-100 transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Menu"
               >
@@ -147,7 +147,7 @@ const Header = () => {
               </Button>
               
               <Avatar 
-                className="avatar-responsive cursor-pointer hover:opacity-80 transition-opacity touch-target" 
+                className="w-7 h-7 sm:w-8 sm:h-8 cursor-pointer hover:opacity-80 transition-opacity" 
                 onClick={handleProfileClick}
               >
                 <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
@@ -166,7 +166,7 @@ const Header = () => {
                   placeholder="Search Facebook"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-gray-100 border-none rounded-full text-responsive-sm"
+                  className="pl-10 bg-gray-100 border-none rounded-full text-responsive-sm h-9"
                 />
               </div>
             </form>
@@ -174,13 +174,13 @@ const Header = () => {
 
           {/* Mobile menu */}
           {isMenuOpen && (
-            <div className="show-mobile bg-white border-t border-gray-200 py-3">
-              <div className="grid grid-cols-2 gap-2 px-2 sm:px-4">
+            <div className="show-mobile bg-white border-t border-gray-200 py-2">
+              <div className="grid grid-cols-2 gap-2 px-2">
                 {navItems.map((item) => (
                   <Button
                     key={item.id}
                     variant="ghost"
-                    className="flex items-center space-x-2 button-responsive rounded-lg text-left justify-start"
+                    className="flex items-center space-x-2 p-2 rounded-lg text-left justify-start"
                     onClick={() => {
                       handleNavigation(item.path, item.label);
                       setIsMenuOpen(false);

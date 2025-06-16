@@ -176,7 +176,7 @@ const RealPost = ({ post }: RealPostProps) => {
                 Loading comments...
               </div>
             ) : comments && comments.length > 0 ? (
-              <div className="px-4 py-3 space-y-3 max-h-64 overflow-y-auto">
+              <div className="px-4 py-3 space-y-3 max-h-64 overflow-y-auto scrollbar-thin">
                 {comments.map((comment) => (
                   <div key={comment.id} className="flex space-x-3">
                     <Avatar className="w-8 h-8 flex-shrink-0">

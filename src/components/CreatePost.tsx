@@ -25,7 +25,7 @@ const CreatePost = () => {
   if (!user) return null;
 
   return (
-    <Card className="card-responsive bg-white shadow-sm border-0 shadow-gray-100 mb-6">
+    <Card className="card-responsive bg-white shadow-sm border-0 shadow-gray-100 mb-4">
       <CardContent className="spacing-responsive">
         <div className="flex space-x-3">
           <Avatar className="avatar-responsive">
@@ -36,7 +36,7 @@ const CreatePost = () => {
             {!isExpanded ? (
               <button
                 onClick={() => setIsExpanded(true)}
-                className="w-full text-left button-responsive bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors text-responsive-base"
+                className="w-full text-left p-2 sm:p-3 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors text-responsive-sm"
               >
                 What's on your mind, {user.user_metadata?.full_name?.split(' ')[0] || 'there'}?
               </button>
@@ -46,29 +46,29 @@ const CreatePost = () => {
                   placeholder={`What's on your mind, ${user.user_metadata?.full_name?.split(' ')[0] || 'there'}?`}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="border-0 resize-none focus:ring-0 text-responsive-lg p-0 min-h-[100px]"
+                  className="border-0 resize-none focus:ring-0 text-responsive-base p-0 min-h-[80px] sm:min-h-[100px]"
                   autoFocus
                 />
-                <div className="flex items-center justify-between">
-                  <div className="flex-stack-responsive">
-                    <AccessibleButton variant="ghost" size="sm" className="text-green-600">
-                      <Image className="w-5 h-5 mr-2" />
-                      <span className="text-responsive-sm">Photo/Video</span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
+                  <div className="flex flex-wrap gap-2">
+                    <AccessibleButton variant="ghost" size="sm" className="text-green-600 h-auto py-1">
+                      <Image className="w-4 h-4 mr-1" />
+                      <span className="text-xs">Photo</span>
                     </AccessibleButton>
-                    <AccessibleButton variant="ghost" size="sm" className="text-yellow-600">
-                      <Smile className="w-5 h-5 mr-2" />
-                      <span className="text-responsive-sm">Feeling/Activity</span>
+                    <AccessibleButton variant="ghost" size="sm" className="text-yellow-600 h-auto py-1">
+                      <Smile className="w-4 h-4 mr-1" />
+                      <span className="text-xs">Feeling</span>
                     </AccessibleButton>
-                    <AccessibleButton variant="ghost" size="sm" className="text-red-600">
-                      <MapPin className="w-5 h-5 mr-2" />
-                      <span className="text-responsive-sm">Check In</span>
+                    <AccessibleButton variant="ghost" size="sm" className="text-red-600 h-auto py-1">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      <span className="text-xs">Check In</span>
                     </AccessibleButton>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-2 self-end sm:self-auto">
                     <Button 
                       variant="outline" 
                       size="sm"
-                      className="button-responsive"
+                      className="h-8"
                       onClick={() => {
                         setIsExpanded(false);
                         setContent('');
@@ -78,7 +78,7 @@ const CreatePost = () => {
                     </Button>
                     <Button 
                       size="sm"
-                      className="button-responsive"
+                      className="h-8"
                       onClick={handleSubmit}
                       disabled={!content.trim() || createPostMutation.isPending}
                     >
