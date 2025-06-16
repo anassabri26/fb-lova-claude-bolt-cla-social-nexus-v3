@@ -175,7 +175,7 @@ const RealNewsFeed = () => {
                   ref={ref}
                   height={listHeight}
                   itemCount={itemCount}
-                  itemSize={450}
+                  itemSize={480}
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
