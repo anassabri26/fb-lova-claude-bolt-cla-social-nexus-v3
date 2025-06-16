@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import AccessibleButton from '@/components/AccessibleButton';
+import AccessibleButton from './AccessibleButton';
 import { toast } from 'sonner';
 import { MOCK_IMAGES } from '@/lib/constants';
 
@@ -22,7 +22,7 @@ interface Group {
   lastActivity: string;
 }
 
-const EnhancedGroups = () => {
+const GroupsTab = () => {
   const [groups, setGroups] = useState<Group[]>([
     {
       id: '1',
@@ -330,4 +330,4 @@ const EnhancedGroups = () => {
   );
 };
 
-export default EnhancedGroups;
+export default GroupsTab;
