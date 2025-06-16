@@ -54,9 +54,9 @@ const RealNewsFeed = () => {
   React.useEffect(() => {
     const updateHeight = () => {
       const viewportHeight = window.innerHeight;
-      const headerHeight = 64; // Approximate header height
-      const createPostHeight = 140; // Approximate create post height
-      const padding = 120; // Extra padding for better UX
+      const headerHeight = 64;
+      const createPostHeight = 140;
+      const padding = 120;
       const calculatedHeight = viewportHeight - headerHeight - createPostHeight - padding;
       setListHeight(Math.max(500, Math.min(800, calculatedHeight)));
     };
@@ -167,26 +167,26 @@ const RealNewsFeed = () => {
               isItemLoaded={isItemLoaded}
               itemCount={itemCount}
               loadMoreItems={loadMoreItems}
-              threshold={3} // Start loading when 3 items from the end
-              minimumBatchSize={10} // Load at least 10 items at a time
+              threshold={3}
+              minimumBatchSize={10}
             >
               {({ onItemsRendered, ref }) => (
                 <List
                   ref={ref}
                   height={listHeight}
                   itemCount={itemCount}
-                  itemSize={450} // Increased to account for proper spacing
+                  itemSize={450}
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
                     hasNextPage: hasNextPage ?? false,
                     isFetchingNextPage
                   }}
-                  overscanCount={2} // Render 2 extra items outside visible area
+                  overscanCount={2}
                   className="virtual-news-feed-list"
                   style={{ 
                     overflowX: 'hidden',
-                    backgroundColor: 'rgb(249 250 251)', // Gray-50 background
+                    backgroundColor: 'rgb(249 250 251)',
                   }}
                 >
                   {VirtualizedPost}

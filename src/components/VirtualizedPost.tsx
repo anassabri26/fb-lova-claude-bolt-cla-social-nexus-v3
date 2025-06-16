@@ -21,7 +21,6 @@ const VirtualizedPost = memo<VirtualizedPostProps>(({ index, style, data }) => {
       <div 
         style={{
           ...style,
-          // Remove any padding from style to prevent double spacing
           padding: 0,
           margin: 0,
         }} 
@@ -81,15 +80,12 @@ const VirtualizedPost = memo<VirtualizedPostProps>(({ index, style, data }) => {
     <div 
       style={{
         ...style,
-        // Critical: Remove all padding/margin from the virtual item container
         padding: 0,
         margin: 0,
-        // Ensure proper box sizing
         boxSizing: 'border-box',
       }} 
       className="w-full"
     >
-      {/* Container with proper spacing */}
       <div className="px-4 pb-6">
         <div className="max-w-2xl mx-auto">
           <RealPost post={post} />

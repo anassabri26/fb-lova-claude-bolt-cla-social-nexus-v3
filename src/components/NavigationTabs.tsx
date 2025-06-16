@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Home, Users, MessageCircle, Video, Store, Calendar, Bell, Settings } from 'lucide-react';
 import RealNewsFeed from './RealNewsFeed';

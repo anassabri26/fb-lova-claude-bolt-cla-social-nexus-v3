@@ -215,7 +215,6 @@ const Watch = () => {
 
   const handleSave = (videoId: string) => {
     const newSaved = new Set(savedVideos);
-    const video = videos.find(v => v.id === videoId);
     
     if (savedVideos.has(videoId)) {
       newSaved.delete(videoId);
@@ -230,7 +229,6 @@ const Watch = () => {
 
   const handleWatchLater = (videoId: string) => {
     const newWatchLater = new Set(watchLater);
-    const video = videos.find(v => v.id === videoId);
     
     if (watchLater.has(videoId)) {
       newWatchLater.delete(videoId);
@@ -269,56 +267,6 @@ const Watch = () => {
   const handleVolumeToggle = () => {
     setIsMuted(!isMuted);
     toast.info(isMuted ? 'Sound on' : 'Sound off');
-  };
-
-  const handleSkip = (videoId: string, direction: 'forward' | 'backward') => {
-    const skipAmount = 10;
-    const current = currentTime[videoId] || 0;
-    const video = videos.find(v => v.id === videoId);
-    const newTime = direction === 'forward' 
-      ? Math.min(current + skipAmount, video?.durationSeconds || 0)
-      : Math.max(current - skipAmount, 0);
-    
-    setCurrentTime(prev => ({ ...prev, [videoId]: newTime }));
-    toast.info(`Skipped ${direction} ${skipAmount}s`);
-  };
-
-  const handleFullscreen = (videoId: string) => {
-    setIsFullscreen(isFullscreen === videoId ? null : videoId);
-    toast.info(isFullscreen === videoId ? 'Exited fullscreen' : 'Entered fullscreen');
-    console.log(`Fullscreen toggled for video ${videoId}`);
-  };
-
-  const handleVideoSettings = (videoId: string) => {
-    toast.info('Video settings opened');
-    console.log(`Settings for video ${videoId}`);
-  };
-
-  const handleDownload = (videoId: string) => {
-    const video = videos.find(v => v.id === videoId);
-    toast.success(`Downloading: ${video?.title}`);
-    console.log(`Download initiated for video ${videoId}`);
-  };
-
-  const handleReport = (videoId: string) => {
-    const video = videos.find(v => v.id === videoId);
-    toast.info(`Report submitted for: ${video?.title}`);
-    console.log(`Report submitted for video ${videoId}`);
-  };
-
-  const handleSpeedChange = (speed: number) => {
-    setPlaybackSpeed(speed);
-    toast.info(`Playback speed: ${speed}x`);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const formatDuration = (duration: string) => {
-    return duration;
   };
 
   const filteredVideos = videos.filter(video => {
