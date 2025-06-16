@@ -4,7 +4,7 @@ import { Post, InfiniteQueryPage } from '@/types';
 import { APP_CONFIG, MOCK_IMAGES } from '@/lib/constants';
 import { handleError } from '@/lib/utils';
 
-// COMPLETELY REWRITTEN: Simple and reliable mock data generator
+// Simple and reliable mock data generator
 const generateMockPosts = (page: number, pageSize: number): InfiniteQueryPage<Post> => {
   const posts: Post[] = [];
   const startIndex = page * pageSize;

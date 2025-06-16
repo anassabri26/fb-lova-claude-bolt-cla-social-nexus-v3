@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Home, Users, MessageCircle, Video, Store, Calendar, Bell, Settings } from 'lucide-react';
 import RealNewsFeed from './RealNewsFeed';
@@ -14,13 +14,22 @@ interface NavigationTabsProps {
   onTabChange?: (tab: string) => void;
 }
 
-const NavigationTabs = ({ onTabChange }: NavigationTabsProps) => {
+const NavigationTabs: React.FC<NavigationTabsProps> = ({ onTabChange }) => {
   const [activeTab, setActiveTab] = useState('home');
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    onTabChange?.(value);
+    if (onTabChange) {
+      onTabChange(value);
+    }
   };
+
+  // Initialize with 'home' tab on first render
+  useEffect(() => {
+    if (onTabChange) {
+      onTabChange('home');
+    }
+  }, [onTabChange]);
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">

@@ -24,6 +24,7 @@ const EnhancedIndex = () => {
     setActiveTab(tab);
   };
 
+  // Only show right sidebar on home tab and when not on mobile
   const showRightSidebar = !isMobile && activeTab === 'home';
 
   if (loading) {

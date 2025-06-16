@@ -24,6 +24,7 @@ const Header = () => {
 
   const handleNavigation = (path: string) => {
     navigate(path);
+    setIsMenuOpen(false);
     console.log(`Header navigation: ${path}`);
   };
 
@@ -43,7 +44,6 @@ const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      toast.success(`Searching for: ${searchQuery}`);
       console.log(`Search query: ${searchQuery}`);
     }
   };

@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { Bell, X, Settings, Heart, MessageCircle, Users, Video } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import AccessibleButton from './AccessibleButton';
-import { toast } from 'sonner';
 
 interface Notification {
   id: string;
@@ -89,23 +87,22 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
       prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
     );
     
-    toast.success(`Opening ${notification.type} from ${notification.user.name}`);
     console.log('Notification clicked:', notification);
   };
 
   const handleAcceptFriend = (notificationId: string) => {
-    toast.success('Friend request accepted!');
+    console.log('Friend request accepted:', notificationId);
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
   };
 
   const handleDeclineFriend = (notificationId: string) => {
-    toast.info('Friend request declined');
+    console.log('Friend request declined:', notificationId);
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
   };
 
   const handleMarkAllRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    toast.success('All notifications marked as read');
+    console.log('All notifications marked as read');
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -114,7 +111,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-20" onClick={onClose}>
-      <div className="absolute top-16 right-4 w-96">
+      <div className="absolute top-16 right-4 w-96 max-w-[calc(100vw-2rem)]">
         <Card className="shadow-xl border-0" onClick={(e) => e.stopPropagation()}>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
@@ -123,7 +120,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
                 <AccessibleButton
                   variant="ghost"
                   size="sm"
-                  onClick={() => toast.info('Settings coming soon!')}
+                  onClick={() => console.log('Settings clicked')}
                 >
                   <Settings className="w-4 h-4" />
                 </AccessibleButton>
