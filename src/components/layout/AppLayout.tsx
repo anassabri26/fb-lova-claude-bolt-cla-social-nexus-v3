@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile, useIsTablet } from '@/hooks/use-device';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
@@ -20,6 +20,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 }) => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const location = useLocation();
   const [showRightSidebar, setShowRightSidebar] = useState(false);
   
@@ -39,10 +40,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gray-100 flex flex-col">
         <Header />
         
-        <div className="flex">
+        <div className="main-layout flex-grow">
           {/* Left Sidebar - Hidden on mobile */}
           {showSidebars && !isMobile && (
             <aside className="sidebar-responsive">
@@ -51,14 +52,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           )}
           
           {/* Main Content */}
-          <main className={`flex-1 ${!isMobile ? 'md:ml-[14rem] lg:ml-[16rem] xl:ml-[17rem] 2xl:ml-[18rem]' : ''} ${
-            showRightSidebar && !isMobile ? 'md:mr-[14rem] lg:mr-[16rem] xl:mr-[17rem] 2xl:mr-[18rem]' : ''
-          } transition-all duration-300`}>
+          <main className={`main-content ${!isMobile ? 'pt-4 pb-8' : 'pt-2 pb-20'}`}>
             {children}
           </main>
           
-          {/* Right Sidebar - Only shown on home page and not on mobile */}
-          {showSidebars && !isMobile && showRightSidebar && (
+          {/* Right Sidebar - Only shown on home page and not on mobile/tablet */}
+          {showSidebars && !isMobile && !isTablet && showRightSidebar && (
             <aside className="right-sidebar-responsive">
               <RightSidebar />
             </aside>

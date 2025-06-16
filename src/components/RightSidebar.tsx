@@ -5,6 +5,7 @@ import { Users } from 'lucide-react';
 import FriendRequestsPanel from './FriendRequestsPanel';
 import PeopleYouMayKnow from './PeopleYouMayKnow';
 import { useFriends } from '@/hooks/useFriends';
+import { MOCK_IMAGES } from '@/lib/constants';
 
 const RightSidebar = () => {
   const { data: friends } = useFriends();
@@ -13,19 +14,19 @@ const RightSidebar = () => {
     {
       id: 1,
       name: "Sarah Johnson",
-      avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face",
+      avatar: MOCK_IMAGES.AVATARS[0],
       isOnline: true
     },
     {
       id: 2,
       name: "Mike Chen",
-      avatar: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face",
+      avatar: MOCK_IMAGES.AVATARS[1],
       isOnline: true
     },
     {
       id: 3,
       name: "Emily Davis",
-      avatar: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face",
+      avatar: MOCK_IMAGES.AVATARS[2],
       isOnline: false
     }
   ];

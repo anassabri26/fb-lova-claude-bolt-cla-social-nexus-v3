@@ -2,7 +2,7 @@ import React from 'react';
 import { Home, Users, MessageCircle, Video, Store } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AccessibleButton from './AccessibleButton';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-device';
 
 const MobileNavigation = () => {
   const navigate = useNavigate();
@@ -29,16 +29,11 @@ const MobileNavigation = () => {
     console.log(`Mobile navigation: ${path}`);
   };
 
-  const handleLongPress = (item: any) => {
-    console.log(`Long press: ${item.label}`);
-  };
-
   return (
     <nav className="nav-responsive safe-area-bottom shadow-lg">
       <div className="flex items-center justify-around px-1 py-1 max-w-sm mx-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
-          let pressTimer: NodeJS.Timeout;
           
           return (
             <AccessibleButton
@@ -51,21 +46,6 @@ const MobileNavigation = () => {
                   : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
               }`}
               onClick={() => handleNavigation(item.path)}
-              onMouseDown={() => {
-                pressTimer = setTimeout(() => handleLongPress(item), 500);
-              }}
-              onMouseUp={() => {
-                clearTimeout(pressTimer);
-              }}
-              onMouseLeave={() => {
-                clearTimeout(pressTimer);
-              }}
-              onTouchStart={() => {
-                pressTimer = setTimeout(() => handleLongPress(item), 500);
-              }}
-              onTouchEnd={() => {
-                clearTimeout(pressTimer);
-              }}
               aria-label={item.label}
               aria-pressed={isActive}
               tooltip={`Navigate to ${item.label}`}

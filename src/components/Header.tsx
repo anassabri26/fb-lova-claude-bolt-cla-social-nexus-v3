@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import NotificationsDropdown from './NotificationsDropdown';
-import { toast } from 'sonner';
+import { useIsMobile, useIsTablet } from '@/hooks/use-device';
+import { ROUTES } from '@/lib/constants';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,13 +14,15 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
 
   const navItems = [
-    { id: 'home', icon: Home, path: '/', label: 'Home' },
-    { id: 'friends', icon: Users, path: '/friends', label: 'Friends' },
-    { id: 'watch', icon: Video, path: '/watch', label: 'Watch' },
-    { id: 'marketplace', icon: Store, path: '/marketplace', label: 'Marketplace' },
-    { id: 'messages', icon: MessageCircle, path: '/messages', label: 'Messages' },
+    { id: 'home', icon: Home, path: ROUTES.HOME, label: 'Home' },
+    { id: 'friends', icon: Users, path: ROUTES.FRIENDS, label: 'Friends' },
+    { id: 'watch', icon: Video, path: ROUTES.WATCH, label: 'Watch' },
+    { id: 'marketplace', icon: Store, path: ROUTES.MARKETPLACE, label: 'Marketplace' },
+    { id: 'messages', icon: MessageCircle, path: ROUTES.MESSAGES, label: 'Messages' },
   ];
 
   const handleNavigation = (path: string) => {
@@ -29,14 +32,14 @@ const Header = () => {
   };
 
   const handleProfileClick = () => {
-    navigate('/profile');
+    navigate(ROUTES.PROFILE);
     console.log('Profile clicked');
   };
 
   const handleNotificationsClick = () => {
     setIsNotificationsOpen(!isNotificationsOpen);
     if (!isNotificationsOpen) {
-      navigate('/notifications');
+      navigate(ROUTES.NOTIFICATIONS);
     }
     console.log('Notifications toggled');
   };
@@ -49,20 +52,20 @@ const Header = () => {
   };
 
   const handleCreatePost = () => {
-    navigate('/');
+    navigate(ROUTES.HOME);
     console.log('Create post clicked');
   };
 
   return (
     <>
       <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200 safe-area-top">
-        <div className="container-responsive">
+        <div className="container-responsive mx-auto">
           <div className="flex items-center justify-between h-12 sm:h-14">
             {/* Left section - Logo */}
             <div className="flex items-center space-x-1 min-w-0">
               <div 
                 className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity touch-target"
-                onClick={() => handleNavigation('/')}
+                onClick={() => handleNavigation(ROUTES.HOME)}
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-base sm:text-lg">f</span>
@@ -86,28 +89,30 @@ const Header = () => {
                 </div>
               </form>
               
-              <div className="hide-mobile flex items-center space-x-1">
-                {navItems.map((item) => {
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <Button 
-                      key={item.id}
-                      variant="ghost" 
-                      size="sm" 
-                      className={`relative p-2 rounded-xl transition-colors ${
-                        isActive ? 'text-blue-600' : 'text-gray-600'
-                      }`}
-                      onClick={() => handleNavigation(item.path)}
-                      aria-label={item.label}
-                    >
-                      <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                      {isActive && (
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-1 bg-blue-600 rounded-t-full"></div>
-                      )}
-                    </Button>
-                  );
-                })}
-              </div>
+              {!isMobile && !isTablet && (
+                <div className="flex items-center space-x-1">
+                  {navItems.map((item) => {
+                    const isActive = location.pathname === item.path;
+                    return (
+                      <Button 
+                        key={item.id}
+                        variant="ghost" 
+                        size="sm" 
+                        className={`relative p-2 rounded-xl transition-colors ${
+                          isActive ? 'text-blue-600' : 'text-gray-600'
+                        }`}
+                        onClick={() => handleNavigation(item.path)}
+                        aria-label={item.label}
+                      >
+                        <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        {isActive && (
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-5 h-1 bg-blue-600 rounded-t-full"></div>
+                        )}
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Right section - User actions */}

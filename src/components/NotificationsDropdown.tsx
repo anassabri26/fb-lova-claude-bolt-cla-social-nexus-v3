@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import AccessibleButton from './AccessibleButton';
+import { useIsMobile } from '@/hooks/use-device';
 
 interface Notification {
   id: string;
@@ -60,6 +61,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
       read: true
     }
   ]);
+  const isMobile = useIsMobile();
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -86,7 +88,6 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
     setNotifications(prev => 
       prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
     );
-    
     console.log('Notification clicked:', notification);
   };
 
@@ -111,7 +112,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-20" onClick={onClose}>
-      <div className="absolute top-16 right-4 w-96 max-w-[calc(100vw-2rem)]">
+      <div className={`absolute top-16 right-4 ${isMobile ? 'w-[calc(100vw-2rem)]' : 'w-96'} max-w-[calc(100vw-2rem)]`}>
         <Card className="shadow-xl border-0" onClick={(e) => e.stopPropagation()}>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">

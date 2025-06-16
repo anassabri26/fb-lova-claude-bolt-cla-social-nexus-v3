@@ -3,7 +3,7 @@ import { Home, Users, Bookmark, Clock, Calendar, Store, Video, MessageCircle, Fl
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AccessibleButton from './AccessibleButton';
-import { toast } from 'sonner';
+import { ROUTES, MOCK_IMAGES } from '@/lib/constants';
 
 const Sidebar = () => {
   const [showMore, setShowMore] = useState(false);
@@ -11,36 +11,36 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { icon: Home, label: 'Home', path: '/' },
-    { icon: Users, label: 'Friends', path: '/friends', count: 3 },
-    { icon: MessageCircle, label: 'Messenger', path: '/messages', count: 2 },
-    { icon: Video, label: 'Watch', path: '/watch' },
-    { icon: Store, label: 'Marketplace', path: '/marketplace' },
-    { icon: UsersRound, label: 'Groups', path: '/groups' },
-    { icon: Bookmark, label: 'Saved', path: '/saved' },
-    { icon: Calendar, label: 'Events', path: '/events' },
-    { icon: Clock, label: 'Memories', path: '/memories' },
+    { icon: Home, label: 'Home', path: ROUTES.HOME },
+    { icon: Users, label: 'Friends', path: ROUTES.FRIENDS, count: 3 },
+    { icon: MessageCircle, label: 'Messenger', path: ROUTES.MESSAGES, count: 2 },
+    { icon: Video, label: 'Watch', path: ROUTES.WATCH },
+    { icon: Store, label: 'Marketplace', path: ROUTES.MARKETPLACE },
+    { icon: UsersRound, label: 'Groups', path: ROUTES.GROUPS },
+    { icon: Bookmark, label: 'Saved', path: ROUTES.SAVED },
+    { icon: Calendar, label: 'Events', path: ROUTES.EVENTS },
+    { icon: Clock, label: 'Memories', path: ROUTES.MEMORIES },
     { icon: Flag, label: 'Pages', path: '/pages' },
     { icon: TrendingUp, label: 'Most Recent', path: '/recent' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
+    { icon: Settings, label: 'Settings', path: ROUTES.SETTINGS },
   ];
 
   const shortcuts = [
     { 
       name: 'React Developers', 
-      image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=400&fit=crop', 
+      image: MOCK_IMAGES.POSTS[0], 
       path: '/groups/react-developers',
       members: '12.5k'
     },
     { 
       name: 'Web Design Community', 
-      image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=400&fit=crop', 
+      image: MOCK_IMAGES.POSTS[1], 
       path: '/groups/web-design',
       members: '8.2k'
     },
     { 
       name: 'JavaScript Enthusiasts', 
-      image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop', 
+      image: MOCK_IMAGES.POSTS[2], 
       path: '/groups/javascript',
       members: '15.7k'
     },
@@ -52,12 +52,11 @@ const Sidebar = () => {
   };
 
   const handleProfileClick = () => {
-    navigate('/profile');
+    navigate(ROUTES.PROFILE);
     console.log('Profile clicked from sidebar');
   };
 
   const handleShortcutEdit = () => {
-    toast.info('Shortcut editing coming soon!');
     console.log('Edit shortcuts clicked');
   };
 
@@ -72,7 +71,7 @@ const Sidebar = () => {
           onClick={handleProfileClick}
         >
           <Avatar className="w-8 h-8">
-            <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
+            <AvatarImage src={MOCK_IMAGES.AVATARS[0]} />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <span className="font-medium text-gray-900 text-sm">John Doe</span>
@@ -114,7 +113,6 @@ const Sidebar = () => {
           className="w-full flex items-center space-x-2 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors text-sm"
           onClick={() => {
             setShowMore(!showMore);
-            toast.info(showMore ? 'Showing fewer options' : 'Showing more options');
           }}
           aria-expanded={showMore}
         >
@@ -182,7 +180,7 @@ const Sidebar = () => {
               size="sm"
               className="flex flex-col items-center space-y-1 p-2 h-auto"
               onClick={() => {
-                navigate('/events');
+                navigate(ROUTES.EVENTS);
                 console.log('Quick action: Create event');
               }}
             >
