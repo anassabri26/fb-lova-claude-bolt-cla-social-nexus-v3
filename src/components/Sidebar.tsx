@@ -66,42 +66,42 @@ const Sidebar = () => {
   const visibleItems = showMore ? menuItems : menuItems.slice(0, 8);
 
   return (
-    <aside className="hide-mobile w-64 lg:w-80 p-2 lg:p-4 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-y-auto sticky top-14 sm:top-16">
-      <div className="space-y-4 lg:space-y-6">
+    <aside className="sidebar-responsive">
+      <div className="sidebar-content">
         {/* User Profile */}
         <div 
-          className="flex items-center space-x-2 lg:space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors touch-target"
+          className="sidebar-profile-item"
           onClick={handleProfileClick}
         >
-          <Avatar className="avatar-responsive">
+          <Avatar className="sidebar-avatar">
             <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
-          <span className="font-medium text-gray-900 text-responsive-sm lg:text-responsive-base">John Doe</span>
+          <span className="sidebar-text">John Doe</span>
         </div>
 
         {/* Main Menu */}
-        <nav className="space-y-1">
+        <nav className="sidebar-nav">
           {visibleItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <AccessibleButton
                 key={item.label}
                 variant="ghost"
-                className={`w-full flex items-center justify-between button-responsive rounded-lg text-left font-normal transition-colors text-responsive-sm lg:text-responsive-base ${
+                className={`sidebar-nav-item ${
                   isActive 
-                    ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' 
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'sidebar-nav-item-active' 
+                    : 'sidebar-nav-item-inactive'
                 }`}
                 onClick={() => handleNavigation(item.path, item.label)}
                 aria-label={item.label}
               >
-                <div className="flex items-center space-x-2 lg:space-x-3 min-w-0">
-                  <item.icon className="w-4 h-4 lg:w-5 lg:h-5 flex-shrink-0" />
-                  <span className="truncate">{item.label}</span>
+                <div className="sidebar-nav-content">
+                  <item.icon className="sidebar-icon" />
+                  <span className="sidebar-text">{item.label}</span>
                 </div>
                 {item.count && (
-                  <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 lg:px-2 lg:py-1 rounded-full flex-shrink-0">
+                  <span className="sidebar-badge">
                     {item.count}
                   </span>
                 )}
@@ -113,30 +113,32 @@ const Sidebar = () => {
         {/* See More Button */}
         <AccessibleButton
           variant="ghost"
-          className="w-full flex items-center space-x-2 lg:space-x-3 button-responsive rounded-lg text-gray-700 hover:bg-gray-100 transition-colors text-responsive-sm lg:text-responsive-base"
+          className="sidebar-nav-item sidebar-nav-item-inactive"
           onClick={() => {
             setShowMore(!showMore);
             toast.info(showMore ? 'Showing fewer options' : 'Showing more options');
           }}
           aria-expanded={showMore}
         >
-          <div className="w-4 h-4 lg:w-5 lg:h-5 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-            <ChevronDown className={`w-2.5 h-2.5 lg:w-3 lg:h-3 transition-transform ${showMore ? 'rotate-180' : ''}`} />
+          <div className="sidebar-nav-content">
+            <div className="sidebar-see-more-icon">
+              <ChevronDown className={`sidebar-chevron ${showMore ? 'sidebar-chevron-rotated' : ''}`} />
+            </div>
+            <span className="sidebar-text">{showMore ? 'See less' : 'See more'}</span>
           </div>
-          <span>{showMore ? 'See less' : 'See more'}</span>
         </AccessibleButton>
 
         {/* Divider */}
-        <hr className="border-gray-200" />
+        <hr className="sidebar-divider" />
 
         {/* Shortcuts */}
-        <div className="space-y-2 lg:space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-gray-500 font-medium text-xs lg:text-sm">Your shortcuts</h3>
+        <div className="sidebar-section">
+          <div className="sidebar-section-header">
+            <h3 className="sidebar-section-title">Your shortcuts</h3>
             <AccessibleButton
               variant="ghost"
               size="sm"
-              className="text-blue-600 text-xs lg:text-sm hover:bg-blue-50 transition-colors"
+              className="sidebar-edit-button"
               onClick={handleShortcutEdit}
             >
               Edit
@@ -147,51 +149,51 @@ const Sidebar = () => {
             <AccessibleButton
               key={shortcut.name}
               variant="ghost"
-              className="w-full flex items-center space-x-2 lg:space-x-3 button-responsive rounded-lg text-left hover:bg-gray-100 transition-colors"
+              className="sidebar-shortcut-item"
               onClick={() => handleNavigation(shortcut.path, shortcut.name)}
             >
               <img
                 src={shortcut.image}
                 alt={shortcut.name}
-                className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg object-cover flex-shrink-0 image-responsive"
+                className="sidebar-shortcut-image"
               />
-              <div className="flex-1 min-w-0">
-                <p className="text-gray-900 font-medium truncate text-responsive-sm lg:text-responsive-base">{shortcut.name}</p>
-                <p className="text-xs text-gray-500">{shortcut.members} members</p>
+              <div className="sidebar-shortcut-content">
+                <p className="sidebar-shortcut-name">{shortcut.name}</p>
+                <p className="sidebar-shortcut-members">{shortcut.members} members</p>
               </div>
             </AccessibleButton>
           ))}
         </div>
 
         {/* Quick Actions */}
-        <div className="space-y-2 lg:space-y-3">
-          <h3 className="text-gray-500 font-medium text-xs lg:text-sm">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-1 lg:gap-2">
+        <div className="sidebar-section">
+          <h3 className="sidebar-section-title">Quick Actions</h3>
+          <div className="sidebar-quick-actions">
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 button-responsive h-auto"
+              className="sidebar-quick-action"
               onClick={() => {
                 navigate('/');
                 toast.success('Create post opened');
                 console.log('Quick action: Create post');
               }}
             >
-              <MessageCircle className="w-3 h-3 lg:w-4 lg:h-4" />
-              <span className="text-xs">Post</span>
+              <MessageCircle className="sidebar-quick-action-icon" />
+              <span className="sidebar-quick-action-text">Post</span>
             </AccessibleButton>
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 button-responsive h-auto"
+              className="sidebar-quick-action"
               onClick={() => {
                 navigate('/events');
                 toast.success('Create event opened');
                 console.log('Quick action: Create event');
               }}
             >
-              <Calendar className="w-3 h-3 lg:w-4 lg:h-4" />
-              <span className="text-xs">Event</span>
+              <Calendar className="sidebar-quick-action-icon" />
+              <span className="sidebar-quick-action-text">Event</span>
             </AccessibleButton>
           </div>
         </div>

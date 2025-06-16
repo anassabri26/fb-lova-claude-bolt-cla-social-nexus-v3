@@ -38,25 +38,17 @@ const EnhancedIndex = () => {
     <div className="min-h-screen bg-gray-100">
       <Header />
       
-      <div className="flex max-w-full">
-        {/* Left Sidebar - Hidden on mobile */}
-        {!isMobile && (
-          <div className="w-80 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-10">
-            <Sidebar />
-          </div>
-        )}
+      <div className="main-layout">
+        {/* Left Sidebar */}
+        <Sidebar />
         
         {/* Main Content */}
-        <main className={`flex-1 ${!isMobile ? 'ml-80 mr-80' : ''} max-w-full mx-auto container-responsive`}>
+        <main className="main-content">
           <RealNewsFeed />
         </main>
         
-        {/* Right Sidebar - Hidden on mobile */}
-        {!isMobile && (
-          <div className="w-80 fixed right-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto z-10">
-            <RightSidebar />
-          </div>
-        )}
+        {/* Right Sidebar */}
+        <RightSidebar />
       </div>
       
       {/* Mobile Navigation */}
