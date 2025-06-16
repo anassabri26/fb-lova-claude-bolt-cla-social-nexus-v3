@@ -1,227 +1,430 @@
-
 import React, { useState } from 'react';
-import { Search, Filter, MapPin, Heart, Share, MessageCircle } from 'lucide-react';
+import { Search, Plus, MapPin, Filter, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import AccessibleButton from './AccessibleButton';
+import CreateMarketplaceItem from './CreateMarketplaceItem';
 import { toast } from 'sonner';
+import { MOCK_IMAGES } from '@/lib/constants';
+
+interface MarketplaceItem {
+  id: string;
+  title: string;
+  price: string;
+  location: string;
+  seller: {
+    name: string;
+    avatar: string;
+  };
+  image: string;
+  category: string;
+  condition: string;
+  postedDate: string;
+  description: string;
+  isSaved: boolean;
+}
 
 const MarketplaceTab = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-
-  const categories = [
-    { id: 'all', label: 'All Categories' },
-    { id: 'electronics', label: 'Electronics' },
-    { id: 'furniture', label: 'Furniture' },
-    { id: 'clothing', label: 'Clothing' },
-    { id: 'books', label: 'Books' },
-    { id: 'sports', label: 'Sports' },
-    { id: 'automotive', label: 'Automotive' }
-  ];
-
-  const listings = [
+  const [items, setItems] = useState<MarketplaceItem[]>([
     {
       id: '1',
-      title: 'MacBook Pro 13" 2021',
+      title: 'MacBook Pro 13" M2 Chip',
       price: '$1,200',
-      location: 'New York, NY',
-      image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop',
+      location: 'San Francisco, CA',
       seller: {
         name: 'Sarah Johnson',
-        avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face',
-        rating: 4.8
+        avatar: MOCK_IMAGES.AVATARS[0]
       },
-      category: 'electronics',
-      posted: '2 hours ago',
+      image: MOCK_IMAGES.POSTS[0],
+      category: 'Electronics',
+      condition: 'Like New',
+      postedDate: '2 days ago',
+      description: 'Excellent condition MacBook Pro with M2 chip. Barely used, comes with original charger.',
       isSaved: false
     },
     {
       id: '2',
       title: 'Vintage Leather Sofa',
-      price: '$450',
-      location: 'Brooklyn, NY',
-      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
+      price: '$800',
+      location: 'Oakland, CA',
       seller: {
         name: 'Mike Chen',
-        avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face',
-        rating: 4.5
+        avatar: MOCK_IMAGES.AVATARS[1]
       },
-      category: 'furniture',
-      posted: '1 day ago',
+      image: MOCK_IMAGES.POSTS[2],
+      category: 'Furniture',
+      condition: 'Good',
+      postedDate: '1 week ago',
+      description: 'Beautiful vintage leather sofa in good condition. Perfect for living room.',
       isSaved: true
     },
     {
       id: '3',
-      title: 'Mountain Bike - Like New',
-      price: '$350',
-      location: 'Queens, NY',
-      image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop',
+      title: '2018 Honda Civic',
+      price: '$18,500',
+      location: 'San Jose, CA',
       seller: {
         name: 'Emma Wilson',
-        avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face',
-        rating: 5.0
+        avatar: MOCK_IMAGES.AVATARS[2]
       },
-      category: 'sports',
-      posted: '3 days ago',
+      image: MOCK_IMAGES.POSTS[3],
+      category: 'Vehicles',
+      condition: 'Excellent',
+      postedDate: '3 days ago',
+      description: 'Well-maintained 2018 Honda Civic with low mileage. Clean title, no accidents.',
       isSaved: false
     },
     {
       id: '4',
-      title: 'Designer Winter Jacket',
-      price: '$80',
-      location: 'Manhattan, NY',
-      image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop',
+      title: 'iPhone 14 Pro',
+      price: '$750',
+      location: 'Berkeley, CA',
       seller: {
         name: 'David Kim',
-        avatar: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face',
-        rating: 4.2
+        avatar: MOCK_IMAGES.AVATARS[3]
       },
-      category: 'clothing',
-      posted: '1 week ago',
+      image: MOCK_IMAGES.POSTS[4],
+      category: 'Electronics',
+      condition: 'Like New',
+      postedDate: '5 days ago',
+      description: 'iPhone 14 Pro in excellent condition. No scratches, includes original box and charger.',
+      isSaved: false
+    },
+    {
+      id: '5',
+      title: 'Gaming Setup - Complete',
+      price: '$1,500',
+      location: 'San Francisco, CA',
+      seller: {
+        name: 'Alex Rodriguez',
+        avatar: MOCK_IMAGES.AVATARS[5]
+      },
+      image: MOCK_IMAGES.POSTS[5],
+      category: 'Electronics',
+      condition: 'Good',
+      postedDate: '1 day ago',
+      description: 'Complete gaming setup including monitor, keyboard, mouse, and RGB lighting.',
       isSaved: false
     }
-  ];
+  ]);
 
-  const handleSave = (id: string, title: string) => {
-    toast.success(`Saved "${title}" to your list`);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [priceFilter, setPriceFilter] = useState('All');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const categories = ['All', 'Electronics', 'Furniture', 'Vehicles', 'Clothing', 'Home & Garden', 'Sports'];
+  const priceFilters = ['All', 'Under $100', '$100-$500', '$500-$1000', 'Over $1000'];
+
+  const handleSaveItem = (itemId: string) => {
+    setItems(items.map(item => 
+      item.id === itemId 
+        ? { ...item, isSaved: !item.isSaved }
+        : item
+    ));
+    const item = items.find(i => i.id === itemId);
+    toast.success(item?.isSaved ? 'Removed from saved' : 'Saved item!');
+    console.log('Item saved/unsaved:', itemId);
   };
 
-  const handleMessage = (sellerName: string) => {
-    toast.info(`Opening chat with ${sellerName}`);
+  const handleMessageSeller = (sellerName: string) => {
+    toast.info(`Opening conversation with ${sellerName}`);
+    console.log('Messaging seller:', sellerName);
   };
 
-  const handleShare = (title: string) => {
-    toast.success(`Shared "${title}"`);
+  const handleShare = (itemTitle: string) => {
+    if (navigator.share) {
+      navigator.share({
+        title: itemTitle,
+        text: `Check out this item: ${itemTitle}`,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success(`Link copied to clipboard for "${itemTitle}"`);
+    }
+    console.log('Shared item:', itemTitle);
   };
 
-  const filteredListings = listings.filter(listing => {
-    const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || listing.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+  const handleCreateListing = () => {
+    setIsCreateModalOpen(true);
+    console.log('Opening create listing modal');
+  };
+
+  const handleItemClick = (item: MarketplaceItem) => {
+    toast.info(`Viewing details for ${item.title}`);
+    console.log('Item clicked:', item);
+  };
+
+  const handleApplyFilters = () => {
+    toast.success('Filters applied successfully!');
+    console.log('Filters applied:', { selectedCategory, priceFilter, locationFilter });
+  };
+
+  const handleClearFilters = () => {
+    setSelectedCategory('All');
+    setPriceFilter('All');
+    setLocationFilter('');
+    setSearchTerm('');
+    toast.info('All filters cleared');
+    console.log('Filters cleared');
+  };
+
+  const filteredItems = items.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+    const matchesLocation = !locationFilter || item.location.toLowerCase().includes(locationFilter.toLowerCase());
+    
+    let matchesPrice = true;
+    if (priceFilter !== 'All') {
+      const price = parseInt(item.price.replace(/[$,]/g, ''));
+      switch (priceFilter) {
+        case 'Under $100':
+          matchesPrice = price < 100;
+          break;
+        case '$100-$500':
+          matchesPrice = price >= 100 && price <= 500;
+          break;
+        case '$500-$1000':
+          matchesPrice = price >= 500 && price <= 1000;
+          break;
+        case 'Over $1000':
+          matchesPrice = price > 1000;
+          break;
+      }
+    }
+    
+    return matchesSearch && matchesCategory && matchesLocation && matchesPrice;
   });
 
   return (
-    <div className="max-w-6xl mx-auto p-4 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Marketplace</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          + Create Listing
-        </Button>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="flex space-x-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Search marketplace..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Button variant="outline" className="flex items-center space-x-2">
-          <Filter className="w-4 h-4" />
-          <span>Filters</span>
-        </Button>
-      </div>
-
-      {/* Categories */}
-      <div className="flex space-x-2 overflow-x-auto pb-2">
-        {categories.map((category) => (
-          <Button
-            key={category.id}
-            variant={selectedCategory === category.id ? 'default' : 'outline'}
-            onClick={() => setSelectedCategory(category.id)}
-            className="whitespace-nowrap"
-          >
-            {category.label}
+    <div className="w-full">
+      <div className="container-responsive mx-auto py-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+          <h1 className="text-2xl font-bold text-gray-900">Marketplace</h1>
+          <Button onClick={handleCreateListing} className="flex items-center space-x-2 sm:self-end">
+            <Plus className="w-4 h-4" />
+            <span>Create Listing</span>
           </Button>
-        ))}
-      </div>
+        </div>
 
-      {/* Listings Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filteredListings.map((listing) => (
-          <Card key={listing.id} className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardContent className="p-0">
-              <div className="relative">
-                <img
-                  src={listing.image}
-                  alt={listing.title}
-                  className="w-full h-48 object-cover rounded-t-lg"
-                />
-                <AccessibleButton
-                  onClick={() => handleSave(listing.id, listing.title)}
-                  className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-2 hover:bg-opacity-100"
-                >
-                  <Heart className={`w-4 h-4 ${listing.isSaved ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
-                </AccessibleButton>
-              </div>
-              
-              <div className="p-4 space-y-3">
-                <div>
-                  <h3 className="font-semibold text-lg text-gray-900 line-clamp-2">{listing.title}</h3>
-                  <p className="text-xl font-bold text-blue-600">{listing.price}</p>
-                </div>
-                
-                <div className="flex items-center space-x-1 text-gray-600">
-                  <MapPin className="w-4 h-4" />
-                  <span className="text-sm">{listing.location}</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage src={listing.seller.avatar} />
-                      <AvatarFallback>{listing.seller.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">{listing.seller.name}</p>
-                      <div className="flex items-center space-x-1">
-                        <span className="text-xs text-yellow-500">★</span>
-                        <span className="text-xs text-gray-600">{listing.seller.rating}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-xs text-gray-500">{listing.posted}</span>
-                </div>
-                
-                <div className="flex space-x-2">
-                  <Button
-                    onClick={() => handleMessage(listing.seller.name)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
-                  >
-                    <MessageCircle className="w-4 h-4 mr-1" />
-                    Message
-                  </Button>
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Filters Sidebar */}
+          <div className="lg:w-64 space-y-4">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold">Filters</h3>
                   <AccessibleButton
-                    onClick={() => handleShare(listing.title)}
-                    variant="outline"
-                    className="px-3"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="text-blue-600 text-xs"
                   >
-                    <Share className="w-4 h-4" />
+                    Clear All
                   </AccessibleButton>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Location</label>
+                    <div className="relative mt-1">
+                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input 
+                        placeholder="Enter location" 
+                        className="pl-10" 
+                        value={locationFilter}
+                        onChange={(e) => setLocationFilter(e.target.value)}
+                      />
+                    </div>
+                  </div>
 
-      {filteredListings.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Search className="w-10 h-10 text-gray-400" />
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Category</label>
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {categories.map(category => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Price Range</label>
+                    <select
+                      value={priceFilter}
+                      onChange={(e) => setPriceFilter(e.target.value)}
+                      className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {priceFilters.map(filter => (
+                        <option key={filter} value={filter}>{filter}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <Button onClick={handleApplyFilters} className="w-full" size="sm">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Apply Filters
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Quick Stats */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="font-semibold mb-2">Quick Stats</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Total Items:</span>
+                    <span className="font-medium">{filteredItems.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Saved Items:</span>
+                    <span className="font-medium">{items.filter(i => i.isSaved).length}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No items found</h3>
-          <p className="text-gray-500">Try adjusting your search or filters</p>
+
+          {/* Main Content */}
+          <div className="flex-1">
+            {/* Search */}
+            <div className="relative mb-6">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search Marketplace..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Results Count */}
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                Showing {filteredItems.length} of {items.length} items
+                {searchTerm && ` for "${searchTerm}"`}
+              </p>
+            </div>
+
+            {/* Items Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredItems.map((item) => (
+                <Card 
+                  key={item.id} 
+                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full flex flex-col"
+                  onClick={() => handleItemClick(item)}
+                >
+                  <div className="relative">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-48 object-cover"
+                    />
+                    <AccessibleButton
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveItem(item.id);
+                      }}
+                      className={`absolute top-2 right-2 rounded-full ${
+                        item.isSaved ? 'text-red-600 bg-white/90' : 'text-gray-600 bg-white/90'
+                      }`}
+                    >
+                      <Heart className={`w-4 h-4 ${item.isSaved ? 'fill-current' : ''}`} />
+                    </AccessibleButton>
+                  </div>
+
+                  <CardContent className="p-4 flex-1 flex flex-col">
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="font-semibold text-lg line-clamp-1">{item.title}</h3>
+                        <span className="font-bold text-blue-600">{item.price}</span>
+                      </div>
+
+                      <div className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
+                        <MapPin className="w-4 h-4" />
+                        <span>{item.location}</span>
+                      </div>
+
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Badge variant="secondary">{item.category}</Badge>
+                        <Badge variant="outline">{item.condition}</Badge>
+                      </div>
+
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">{item.description}</p>
+                    </div>
+
+                    <div className="mt-auto">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-2">
+                          <Avatar className="w-6 h-6">
+                            <AvatarImage src={item.seller.avatar} />
+                            <AvatarFallback>{item.seller.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm text-gray-600">{item.seller.name}</span>
+                        </div>
+                        <span className="text-xs text-gray-500">{item.postedDate}</span>
+                      </div>
+
+                      <div className="flex space-x-2">
+                        <Button
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMessageSeller(item.seller.name);
+                          }}
+                          className="flex-1"
+                        >
+                          <MessageCircle className="w-4 h-4 mr-1" />
+                          Message
+                        </Button>
+                        <AccessibleButton
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShare(item.title);
+                          }}
+                        >
+                          <Share2 className="w-4 h-4" />
+                        </AccessibleButton>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {filteredItems.length === 0 && (
+              <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+                <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No items found</h3>
+                <p className="text-gray-500 mb-4">Try adjusting your search or filters.</p>
+                <Button onClick={handleClearFilters} variant="outline">
+                  Clear Filters
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
+      
+      <CreateMarketplaceItem 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+      />
     </div>
   );
 };
