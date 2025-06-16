@@ -1,10 +1,9 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import RightSidebar from '@/components/RightSidebar';
-import NavigationTabs from '@/components/NavigationTabs';
+import RealNewsFeed from '@/components/RealNewsFeed';
 import MobileNavigation from '@/components/MobileNavigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -47,9 +46,9 @@ const EnhancedIndex = () => {
           </div>
         )}
         
-        {/* Main Content */}
-        <main className={`flex-1 ${!isMobile ? 'ml-80 mr-80' : ''} max-w-full mx-auto`}>
-          <NavigationTabs />
+        {/* Main Content - Direct News Feed */}
+        <main className={`flex-1 ${!isMobile ? 'ml-80 mr-80' : ''} max-w-full mx-auto py-6`}>
+          <RealNewsFeed />
         </main>
         
         {/* Right Sidebar - Hidden on mobile */}
