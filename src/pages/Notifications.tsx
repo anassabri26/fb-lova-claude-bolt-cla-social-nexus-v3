@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { Bell, Heart, MessageCircle, Users, Calendar, ShoppingBag, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import Header from '../components/Header';
 import MobileNavigation from '../components/MobileNavigation';
 import AccessibleButton from '../components/AccessibleButton';
 import { toast } from 'sonner';
@@ -108,7 +106,6 @@ const Notifications = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
-      <Header />
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

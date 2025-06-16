@@ -1,6 +1,4 @@
-
 import React, { useState } from 'react';
-import Header from '../components/Header';
 import MobileNavigation from '../components/MobileNavigation';
 import MessagesList from '../components/MessagesList';
 import ConversationView from '../components/ConversationView';
@@ -29,7 +27,6 @@ const EnhancedMessages = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
-      <Header />
       <div className="max-w-7xl mx-auto h-[calc(100vh-4rem)]">
         <div className="flex h-full">
           {/* Messages List - Hidden on mobile when contact is selected */}

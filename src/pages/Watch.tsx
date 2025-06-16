@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Header from '../components/Header';
 import MobileNavigation from '../components/MobileNavigation';
 import AccessibleButton from '../components/AccessibleButton';
 import LiveVideoIndicator from '../components/LiveVideoIndicator';
@@ -163,6 +162,7 @@ const Watch = () => {
 
   const categories = ['All', 'Technology', 'Nature', 'Food', 'Music', 'Gaming', 'Sports', 'Education', 'Health'];
 
+  // Simulate video time progression
   useEffect(() => {
     const interval = setInterval(() => {
       if (playingVideo) {
@@ -214,6 +214,7 @@ const Watch = () => {
 
   const handleSave = (videoId: string) => {
     const newSaved = new Set(savedVideos);
+    const video = videos.find(v => v.id === videoId);
     
     if (savedVideos.has(videoId)) {
       newSaved.delete(videoId);
@@ -228,6 +229,7 @@ const Watch = () => {
 
   const handleWatchLater = (videoId: string) => {
     const newWatchLater = new Set(watchLater);
+    const video = videos.find(v => v.id === videoId);
     
     if (watchLater.has(videoId)) {
       newWatchLater.delete(videoId);
@@ -268,6 +270,56 @@ const Watch = () => {
     toast.info(isMuted ? 'Sound on' : 'Sound off');
   };
 
+  const handleSkip = (videoId: string, direction: 'forward' | 'backward') => {
+    const skipAmount = 10;
+    const current = currentTime[videoId] || 0;
+    const video = videos.find(v => v.id === videoId);
+    const newTime = direction === 'forward' 
+      ? Math.min(current + skipAmount, video?.durationSeconds || 0)
+      : Math.max(current - skipAmount, 0);
+    
+    setCurrentTime(prev => ({ ...prev, [videoId]: newTime }));
+    toast.info(`Skipped ${direction} ${skipAmount}s`);
+  };
+
+  const handleFullscreen = (videoId: string) => {
+    setIsFullscreen(isFullscreen === videoId ? null : videoId);
+    toast.info(isFullscreen === videoId ? 'Exited fullscreen' : 'Entered fullscreen');
+    console.log(`Fullscreen toggled for video ${videoId}`);
+  };
+
+  const handleVideoSettings = (videoId: string) => {
+    toast.info('Video settings opened');
+    console.log(`Settings for video ${videoId}`);
+  };
+
+  const handleDownload = (videoId: string) => {
+    const video = videos.find(v => v.id === videoId);
+    toast.success(`Downloading: ${video?.title}`);
+    console.log(`Download initiated for video ${videoId}`);
+  };
+
+  const handleReport = (videoId: string) => {
+    const video = videos.find(v => v.id === videoId);
+    toast.info(`Report submitted for: ${video?.title}`);
+    console.log(`Report submitted for video ${videoId}`);
+  };
+
+  const handleSpeedChange = (speed: number) => {
+    setPlaybackSpeed(speed);
+    toast.info(`Playback speed: ${speed}x`);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const formatDuration = (duration: string) => {
+    return duration;
+  };
+
   const filteredVideos = videos.filter(video => {
     const matchesCategory = selectedCategory === 'All' || video.category === selectedCategory;
     const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -305,6 +357,7 @@ const Watch = () => {
           onClick={() => handleVideoClick(video.id)}
         />
         
+        {/* Enhanced overlays */}
         <LiveVideoIndicator viewerCount={video.views} isLive={video.isLive || false} />
         
         {video.isTrending && (
@@ -325,6 +378,7 @@ const Watch = () => {
           </div>
         )}
 
+        {/* Video Overlay with enhanced controls */}
         <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all cursor-pointer flex items-center justify-center"
              onClick={() => handleVideoClick(video.id)}>
           <div className="opacity-0 hover:opacity-100 transition-opacity">
@@ -338,6 +392,7 @@ const Watch = () => {
           </div>
         </div>
 
+        {/* Duration Badge */}
         <div className="absolute bottom-2 right-2">
           <Badge 
             variant={video.isLive ? 'destructive' : video.isShort ? 'secondary' : 'secondary'}
@@ -347,6 +402,7 @@ const Watch = () => {
           </Badge>
         </div>
 
+        {/* Enhanced Video Controls when playing */}
         {playingVideo === video.id && (
           <>
             {!video.isLive && (
@@ -362,6 +418,7 @@ const Watch = () => {
               </div>
             )}
             
+            {/* Enhanced Control Buttons */}
             <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 {!video.isLive && (
@@ -431,6 +488,7 @@ const Watch = () => {
 
       {!isFullscreen && (
         <CardContent className="p-4">
+          {/* Enhanced Creator Info */}
           <div className="flex items-start space-x-3 mb-3">
             <Avatar className="w-10 h-10">
               <AvatarImage src={video.creator.avatar} />
@@ -462,6 +520,7 @@ const Watch = () => {
             </div>
           </div>
 
+          {/* Enhanced Video Stats */}
           <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
@@ -477,6 +536,7 @@ const Watch = () => {
             </div>
           </div>
 
+          {/* Enhanced Action Buttons */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-1">
               <AccessibleButton
@@ -560,9 +620,9 @@ const Watch = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
-      <Header />
       <div className="max-w-7xl mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          {/* Enhanced Tab List */}
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 gap-2">
             <TabsTrigger value="home" className="flex items-center space-x-2">
               <Play className="w-4 h-4" />
@@ -590,7 +650,9 @@ const Watch = () => {
             </TabsTrigger>
           </TabsList>
 
+          {/* Home Tab */}
           <TabsContent value="home" className="space-y-6">
+            {/* Page Header with Enhanced Stats */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div>
@@ -619,6 +681,7 @@ const Watch = () => {
                 </div>
               </div>
 
+              {/* Enhanced Search and Filters */}
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <div className="relative">
@@ -656,6 +719,7 @@ const Watch = () => {
               </div>
             </div>
 
+            {/* Enhanced Category Filters */}
             <div className="flex space-x-2 overflow-x-auto scrollbar-thin">
               {categories.map((category) => (
                 <Button
@@ -675,10 +739,12 @@ const Watch = () => {
               ))}
             </div>
 
+            {/* Videos Grid */}
             <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
               {sortedVideos.map(renderVideoCard)}
             </div>
 
+            {/* Empty State */}
             {sortedVideos.length === 0 && (
               <div className="text-center py-12">
                 <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -699,6 +765,7 @@ const Watch = () => {
             )}
           </TabsContent>
 
+          {/* Trending Tab */}
           <TabsContent value="trending" className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
@@ -711,6 +778,7 @@ const Watch = () => {
             </div>
           </TabsContent>
 
+          {/* Shorts Tab */}
           <TabsContent value="shorts" className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
@@ -723,14 +791,17 @@ const Watch = () => {
             </div>
           </TabsContent>
 
+          {/* Subscriptions Tab */}
           <TabsContent value="subscriptions">
             <SubscriptionManager />
           </TabsContent>
 
+          {/* Playlists Tab */}
           <TabsContent value="playlists">
             <PlaylistManager />
           </TabsContent>
 
+          {/* Upload Tab */}
           <TabsContent value="upload" className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
@@ -753,6 +824,7 @@ const Watch = () => {
       
       <MobileNavigation />
       
+      {/* Video Upload Modal */}
       <VideoUpload 
         isOpen={isUploadModalOpen} 
         onClose={() => setIsUploadModalOpen(false)} 
