@@ -8,7 +8,7 @@ interface VirtualizedPostProps {
   data: {
     posts: Post[];
     hasNextPage: boolean;
-    fetchNextPage: () => void;
+    fetchNextPage: () => Promise<any>;
     isFetchingNextPage: boolean;
   };
 }
@@ -24,14 +24,29 @@ const VirtualizedPost = memo(({ index, style, data }: VirtualizedPostProps) => {
       hasNextPage &&
       !isFetchingNextPage
     ) {
-      fetchNextPage();
+      fetchNextPage().catch(console.error);
     }
   }, [index, posts.length, hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   if (!post) {
+    // Loading skeleton for posts that haven't loaded yet
     return (
-      <div style={style} className="flex items-center justify-center p-4">
-        <div className="animate-pulse bg-gray-200 rounded-lg w-full h-64"></div>
+      <div style={style} className="px-4 py-2">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-4 animate-pulse">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
+            <div className="space-y-2 flex-1">
+              <div className="h-4 w-32 bg-gray-200 rounded"></div>
+              <div className="h-3 w-24 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+          <div className="h-20 w-full bg-gray-200 rounded"></div>
+          <div className="flex space-x-4">
+            <div className="h-8 w-16 bg-gray-200 rounded"></div>
+            <div className="h-8 w-20 bg-gray-200 rounded"></div>
+            <div className="h-8 w-16 bg-gray-200 rounded"></div>
+          </div>
+        </div>
       </div>
     );
   }

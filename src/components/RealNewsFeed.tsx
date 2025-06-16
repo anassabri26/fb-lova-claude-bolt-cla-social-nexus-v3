@@ -35,11 +35,14 @@ const RealNewsFeed = () => {
   }, [allPosts]);
 
   // Load more items
-  const loadMoreItems = useCallback(() => {
+  const loadMoreItems = useCallback(async () => {
     if (!isFetchingNextPage && hasNextPage) {
-      return fetchNextPage();
+      try {
+        await fetchNextPage();
+      } catch (error) {
+        console.error('Error loading more posts:', error);
+      }
     }
-    return Promise.resolve();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (!user) {
@@ -138,7 +141,7 @@ const RealNewsFeed = () => {
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
-                    hasNextPage,
+                    hasNextPage: hasNextPage ?? false,
                     fetchNextPage,
                     isFetchingNextPage
                   }}
