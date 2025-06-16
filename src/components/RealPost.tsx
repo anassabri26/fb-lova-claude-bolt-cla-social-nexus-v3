@@ -33,7 +33,6 @@ const RealPost = ({ post }: RealPostProps) => {
     try {
       await likeMutation.mutateAsync({ postId: post.id, isLiked });
     } catch (error) {
-      // Revert optimistic update on error
       setIsLiked(isLiked);
       setLikesCount(post.likes_count || 0);
     }
@@ -76,7 +75,6 @@ const RealPost = ({ post }: RealPostProps) => {
   return (
     <Card className="shadow-sm hover:shadow-md transition-shadow bg-white border border-gray-200">
       <CardContent className="p-0">
-        {/* Post Header */}
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="w-10 h-10">
@@ -99,12 +97,10 @@ const RealPost = ({ post }: RealPostProps) => {
           </AccessibleButton>
         </div>
 
-        {/* Post Content */}
         <div className="px-4 pb-3">
           <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">{post.content}</p>
         </div>
 
-        {/* Post Image */}
         {post.image_url && (
           <div className="w-full">
             <img
@@ -116,7 +112,6 @@ const RealPost = ({ post }: RealPostProps) => {
           </div>
         )}
 
-        {/* Reaction Summary */}
         <div className="px-4 py-3 flex items-center justify-between text-sm text-gray-500 border-b border-gray-100">
           <div className="flex items-center space-x-1">
             {likesCount > 0 && (
@@ -140,7 +135,6 @@ const RealPost = ({ post }: RealPostProps) => {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="px-4 py-2 flex items-center justify-between">
           <AccessibleButton
             variant="ghost"
@@ -175,10 +169,8 @@ const RealPost = ({ post }: RealPostProps) => {
           </AccessibleButton>
         </div>
 
-        {/* Comments Section */}
         {showComments && (
           <div className="border-t border-gray-200 bg-gray-50">
-            {/* Existing Comments */}
             {commentsLoading ? (
               <div className="px-4 py-4 text-center text-gray-500">
                 Loading comments...
@@ -213,7 +205,6 @@ const RealPost = ({ post }: RealPostProps) => {
               </div>
             )}
             
-            {/* Add Comment */}
             <div className="px-4 py-4 border-t border-gray-200 bg-white">
               <div className="flex space-x-3">
                 <Avatar className="w-8 h-8 flex-shrink-0">

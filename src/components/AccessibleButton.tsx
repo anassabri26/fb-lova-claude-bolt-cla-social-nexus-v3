@@ -30,7 +30,6 @@ const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
         return;
       }
       
-      // Add visual feedback
       const button = e.currentTarget;
       button.style.transform = 'scale(0.95)';
       setTimeout(() => {

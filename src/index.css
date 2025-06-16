@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -37,19 +35,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -102,7 +93,6 @@
   }
 }
 
-/* Enhanced scrollbar styles for virtual scrolling */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: rgb(209 213 219) rgb(243 244 246);
@@ -137,20 +127,17 @@
   background-color: rgb(243 244 246);
 }
 
-/* CRITICAL: Virtual News Feed Specific Styles */
 .virtual-news-feed-list {
   scroll-behavior: smooth;
   contain: layout style paint;
   background-color: rgb(249 250 251);
 }
 
-/* CRITICAL: Fix for virtual list item positioning */
 .virtual-news-feed-list > div {
   position: relative !important;
   overflow: visible !important;
 }
 
-/* CRITICAL: Fix for virtual list item spacing */
 .virtual-news-feed-list > div > div {
   position: absolute !important;
   top: 0 !important;
@@ -163,7 +150,6 @@
   z-index: auto !important;
 }
 
-/* Smooth transitions for loading states */
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -177,7 +163,6 @@
   }
 }
 
-/* Performance optimizations for mobile */
 @media (max-width: 768px) {
   .virtual-news-feed-list {
     transform: translate3d(0, 0, 0);
@@ -188,7 +173,6 @@
   }
 }
 
-/* Enhanced scrollbar for virtual news feed */
 .virtual-news-feed-list::-webkit-scrollbar {
   width: 8px;
 }
@@ -208,12 +192,10 @@
   background: rgb(156 163 175);
 }
 
-/* CRITICAL: Ensure no interference between virtual items */
 .virtual-news-feed-list * {
   box-sizing: border-box;
 }
 
-/* CRITICAL: Prevent any layout shifts */
 .virtual-news-feed-list [style*="position: absolute"] {
   z-index: auto;
   contain: layout style paint;

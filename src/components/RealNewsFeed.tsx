@@ -24,20 +24,16 @@ const RealNewsFeed = () => {
     refetch
   } = useInfinitePosts(20);
 
-  // Flatten all pages into a single array of posts
   const allPosts = useMemo(() => {
     return data?.pages.flatMap(page => page.posts) ?? [];
   }, [data]);
 
-  // Calculate total item count for infinite loader
   const itemCount = hasNextPage ? allPosts.length + 1 : allPosts.length;
 
-  // Check if an item is loaded
   const isItemLoaded = useCallback((index: number) => {
     return !!allPosts[index];
   }, [allPosts]);
 
-  // Load more items function for InfiniteLoader
   const loadMoreItems = useCallback(async (startIndex: number, stopIndex: number) => {
     if (!isFetchingNextPage && hasNextPage) {
       try {
@@ -50,7 +46,6 @@ const RealNewsFeed = () => {
     return Promise.resolve();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  // Adjust list height based on viewport
   React.useEffect(() => {
     const updateHeight = () => {
       const viewportHeight = window.innerHeight;
@@ -131,7 +126,6 @@ const RealNewsFeed = () => {
       
       {allPosts.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          {/* Feed Header with Stats */}
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -161,7 +155,6 @@ const RealNewsFeed = () => {
             </div>
           </div>
           
-          {/* Virtual Scrolling Container */}
           <div style={{ height: listHeight }} className="relative bg-gray-50">
             <InfiniteLoader
               isItemLoaded={isItemLoaded}
@@ -175,7 +168,7 @@ const RealNewsFeed = () => {
                   ref={ref}
                   height={listHeight}
                   itemCount={itemCount}
-                  itemSize={480}
+                  itemSize={500}
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
@@ -195,7 +188,6 @@ const RealNewsFeed = () => {
             </InfiniteLoader>
           </div>
           
-          {/* End of feed indicator */}
           {!hasNextPage && allPosts.length > 0 && (
             <div className="p-6 text-center border-t border-gray-100 bg-gray-50">
               <div className="text-gray-500">
