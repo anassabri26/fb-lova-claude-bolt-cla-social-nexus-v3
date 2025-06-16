@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, TrendingUp, Star, Filter, Search, Calendar, MessageCircle, Share, ThumbsUp } from 'lucide-react';
+import { Clock, TrendingUp, Star, Filter, Search, Calendar, MessageCircle, Share, ThumbsUp, MoreHorizontal } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
