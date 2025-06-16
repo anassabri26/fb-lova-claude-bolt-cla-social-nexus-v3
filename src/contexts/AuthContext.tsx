@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -49,49 +48,86 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: fullName
+          }
         }
+      });
+
+      if (error) {
+        console.error('Supabase sign-up error:', error);
+        toast.error(error.message);
+      } else {
+        toast.success('Check your email to confirm your account!');
       }
-    });
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Check your email to confirm your account!');
+      return { error };
+    } catch (networkError: any) {
+      console.error('Network error during sign-up:', networkError);
+      
+      // Provide more specific error messages based on the type of network error
+      if (networkError.message === 'Failed to fetch') {
+        toast.error('Unable to connect to authentication service. Please check your internet connection and try again.');
+      } else if (networkError.name === 'TypeError' && networkError.message.includes('fetch')) {
+        toast.error('Network connection failed. Please ensure you have internet access.');
+      } else {
+        toast.error('An unexpected error occurred. Please try again.');
+      }
+      
+      return { error: networkError };
     }
-
-    return { error };
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Welcome back!');
+      if (error) {
+        console.error('Supabase sign-in error:', error);
+        toast.error(error.message);
+      } else {
+        toast.success('Welcome back!');
+      }
+
+      return { error };
+    } catch (networkError: any) {
+      console.error('Network error during sign-in:', networkError);
+      
+      if (networkError.message === 'Failed to fetch') {
+        toast.error('Unable to connect to authentication service. Please check your internet connection and try again.');
+      } else if (networkError.name === 'TypeError' && networkError.message.includes('fetch')) {
+        toast.error('Network connection failed. Please ensure you have internet access.');
+      } else {
+        toast.error('An unexpected error occurred. Please try again.');
+      }
+      
+      return { error: networkError };
     }
-
-    return { error };
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Signed out successfully');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Supabase sign-out error:', error);
+        toast.error(error.message);
+      } else {
+        toast.success('Signed out successfully');
+      }
+    } catch (networkError: any) {
+      console.error('Network error during sign-out:', networkError);
+      toast.error('Failed to sign out. Please try again.');
     }
   };
 
