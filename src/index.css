@@ -247,12 +247,21 @@
   }
 }
 
-/* Large Desktop: Wider sidebars */
-@media (min-width: 80.0625rem) { /* 1281px+ */
+/* Large Desktop: Wider content area with minimal sidebar spacing */
+@media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
+  .main-content {
+    margin-left: 17rem; /* 272px - slightly wider sidebars */
+    margin-right: 17rem; /* 272px */
+    width: calc(100% - 34rem); /* More space for content */
+  }
+}
+
+/* Extra Large Desktop: Maximum content width */
+@media (min-width: 100.0625rem) { /* 1601px+ */
   .main-content {
     margin-left: 18rem; /* 288px */
     margin-right: 18rem; /* 288px */
-    width: calc(100% - 36rem);
+    width: calc(100% - 36rem); /* Maximum content area */
   }
 }
 
@@ -288,8 +297,16 @@
   }
 }
 
-/* Large Desktop: Wide sidebar */
-@media (min-width: 80.0625rem) { /* 1281px+ */
+/* Large Desktop: Optimized sidebar width */
+@media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
+  .sidebar-responsive {
+    display: block;
+    width: 17rem; /* 272px - slightly wider for better content balance */
+  }
+}
+
+/* Extra Large Desktop: Maximum sidebar width */
+@media (min-width: 100.0625rem) { /* 1601px+ */
   .sidebar-responsive {
     display: block;
     width: 18rem; /* 288px */
@@ -553,8 +570,16 @@
   }
 }
 
-/* Large Desktop: Wide right sidebar */
-@media (min-width: 80.0625rem) { /* 1281px+ */
+/* Large Desktop: Optimized right sidebar width */
+@media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
+  .right-sidebar-responsive {
+    display: block;
+    width: 17rem; /* 272px - slightly wider for better balance */
+  }
+}
+
+/* Extra Large Desktop: Maximum right sidebar width */
+@media (min-width: 100.0625rem) { /* 1601px+ */
   .right-sidebar-responsive {
     display: block;
     width: 18rem; /* 288px */
@@ -875,7 +900,7 @@
   padding-top: env(safe-area-inset-top, 0);
 }
 
-/* NEWS FEED RESPONSIVE OPTIMIZATIONS */
+/* NEWS FEED RESPONSIVE OPTIMIZATIONS - ENHANCED FOR LARGE SCREENS */
 .news-feed-container {
   width: 100%;
   max-width: 100%;
@@ -896,9 +921,25 @@
   }
 }
 
-@media (min-width: 64.0625rem) { /* 1025px+ */
+@media (min-width: 64.0625rem) and (max-width: 80rem) { /* 1025px - 1280px */
   .news-feed-container {
     max-width: 42rem; /* 672px */
+    padding: 1rem;
+  }
+}
+
+/* Large Desktop: Wider news feed for better content utilization */
+@media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
+  .news-feed-container {
+    max-width: 48rem; /* 768px - significantly wider */
+    padding: 1rem;
+  }
+}
+
+/* Extra Large Desktop: Maximum news feed width */
+@media (min-width: 100.0625rem) { /* 1601px+ */
+  .news-feed-container {
+    max-width: 52rem; /* 832px - maximum width for optimal reading */
     padding: 1rem;
   }
 }
