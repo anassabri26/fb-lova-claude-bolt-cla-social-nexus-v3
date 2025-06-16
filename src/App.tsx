@@ -1,57 +1,143 @@
-
+import React, { lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import EnhancedIndex from "./pages/EnhancedIndex";
-import EnhancedProfile from "./pages/EnhancedProfile";
-import EnhancedGroups from "./pages/EnhancedGroups";
-import EnhancedFriends from "./pages/EnhancedFriends";
-import EnhancedMessages from "./pages/EnhancedMessages";
-import Notifications from "./pages/Notifications";
-import Watch from "./pages/Watch";
-import EnhancedMarketplace from "./pages/EnhancedMarketplace";
-import EnhancedEvents from "./pages/EnhancedEvents";
-import Saved from "./pages/Saved";
-import EnhancedMemories from "./pages/EnhancedMemories";
-import TrendingPage from "./components/TrendingPage";
-import Recent from "./pages/Recent";
-import Pages from "./pages/Pages";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
-import Auth from "./pages/Auth";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import AppLayout from "@/components/layout/AppLayout";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import { ROUTES } from "@/lib/constants";
+
+// Lazy-loaded pages for better performance
+const Auth = lazy(() => import("./pages/Auth"));
+const EnhancedIndex = lazy(() => import("./pages/EnhancedIndex"));
+const EnhancedProfile = lazy(() => import("./pages/EnhancedProfile"));
+const EnhancedGroups = lazy(() => import("./pages/EnhancedGroups"));
+const EnhancedFriends = lazy(() => import("./pages/EnhancedFriends"));
+const EnhancedMessages = lazy(() => import("./pages/EnhancedMessages"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+const Watch = lazy(() => import("./pages/Watch"));
+const EnhancedMarketplace = lazy(() => import("./pages/EnhancedMarketplace"));
+const EnhancedEvents = lazy(() => import("./pages/EnhancedEvents"));
+const Saved = lazy(() => import("./pages/Saved"));
+const EnhancedMemories = lazy(() => import("./pages/EnhancedMemories"));
+const TrendingPage = lazy(() => import("./components/TrendingPage"));
+const Recent = lazy(() => import("./pages/Recent"));
+const Pages = lazy(() => import("./pages/Pages"));
+const Settings = lazy(() => import("./pages/Settings"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <LoadingSpinner size="lg" />
+      <p className="mt-4 text-gray-600">Loading...</p>
+    </div>
+  </div>
+);
 
 function App() {
   return (
-    <QueryProvider>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/" element={<EnhancedIndex />} />
-              <Route path="/profile" element={<EnhancedProfile />} />
-              <Route path="/groups" element={<EnhancedGroups />} />
-              <Route path="/friends" element={<EnhancedFriends />} />
-              <Route path="/messages" element={<EnhancedMessages />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/watch" element={<Watch />} />
-              <Route path="/trending" element={<TrendingPage />} />
-              <Route path="/marketplace" element={<EnhancedMarketplace />} />
-              <Route path="/events" element={<EnhancedEvents />} />
-              <Route path="/saved" element={<Saved />} />
-              <Route path="/memories" element={<EnhancedMemories />} />
-              <Route path="/recent" element={<Recent />} />
-              <Route path="/pages" element={<Pages />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryProvider>
+    <ErrorBoundary>
+      <QueryProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster position="top-right" closeButton richColors />
+            <BrowserRouter>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  {/* Auth route - no layout */}
+                  <Route path={ROUTES.AUTH} element={<Auth />} />
+                  
+                  {/* Main routes with layout */}
+                  <Route path={ROUTES.HOME} element={
+                    <AppLayout>
+                      <EnhancedIndex />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.PROFILE} element={
+                    <AppLayout>
+                      <EnhancedProfile />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.GROUPS} element={
+                    <AppLayout>
+                      <EnhancedGroups />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.FRIENDS} element={
+                    <AppLayout>
+                      <EnhancedFriends />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.MESSAGES} element={
+                    <AppLayout>
+                      <EnhancedMessages />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.NOTIFICATIONS} element={
+                    <AppLayout>
+                      <Notifications />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.WATCH} element={
+                    <AppLayout>
+                      <Watch />
+                    </AppLayout>
+                  } />
+                  <Route path="/trending" element={
+                    <AppLayout>
+                      <TrendingPage />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.MARKETPLACE} element={
+                    <AppLayout>
+                      <EnhancedMarketplace />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.EVENTS} element={
+                    <AppLayout>
+                      <EnhancedEvents />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.SAVED} element={
+                    <AppLayout>
+                      <Saved />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.MEMORIES} element={
+                    <AppLayout>
+                      <EnhancedMemories />
+                    </AppLayout>
+                  } />
+                  <Route path="/recent" element={
+                    <AppLayout>
+                      <Recent />
+                    </AppLayout>
+                  } />
+                  <Route path="/pages" element={
+                    <AppLayout>
+                      <Pages />
+                    </AppLayout>
+                  } />
+                  <Route path={ROUTES.SETTINGS} element={
+                    <AppLayout>
+                      <Settings />
+                    </AppLayout>
+                  } />
+                  
+                  {/* 404 route */}
+                  <Route path="/not-found" element={<NotFound />} />
+                  <Route path="*" element={<Navigate to="/not-found" replace />} />
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryProvider>
+    </ErrorBoundary>
   );
 }
 

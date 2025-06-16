@@ -1,77 +1,55 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-
-export interface Post {
-  id: string;
-  user_id: string;
-  content: string;
-  image_url?: string;
-  created_at: string;
-  updated_at: string;
-  profiles: {
-    full_name: string;
-    avatar_url?: string;
-  } | null;
-  likes_count?: number;
-  comments_count?: number;
-  user_has_liked?: boolean;
-}
-
-export interface PostsPage {
-  posts: Post[];
-  nextCursor?: string;
-  hasMore: boolean;
-}
+import { Post, InfiniteQueryPage } from '@/types';
+import { APP_CONFIG, MOCK_IMAGES } from '@/lib/constants';
+import { handleError } from '@/lib/utils';
 
 // COMPLETELY REWRITTEN: Simple and reliable mock data generator
-const generateMockPosts = (page: number, pageSize: number): PostsPage => {
+const generateMockPosts = (page: number, pageSize: number): InfiniteQueryPage<Post> => {
   const posts: Post[] = [];
   const startIndex = page * pageSize;
   
   const profiles = [
     {
+      id: 'user_1',
       full_name: 'Sarah Johnson',
-      avatar_url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[0]
     },
     {
+      id: 'user_2',
       full_name: 'Mike Chen',
-      avatar_url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[1]
     },
     {
+      id: 'user_3',
       full_name: 'Emma Wilson',
-      avatar_url: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[2]
     },
     {
+      id: 'user_4',
       full_name: 'David Kim',
-      avatar_url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[3]
     },
     {
+      id: 'user_5',
       full_name: 'Lisa Wang',
-      avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[4]
     },
     {
+      id: 'user_6',
       full_name: 'Alex Rodriguez',
-      avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[5]
     },
     {
+      id: 'user_7',
       full_name: 'Jessica Park',
-      avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[6]
     },
     {
+      id: 'user_8',
       full_name: 'Robert Smith',
-      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[7]
     }
-  ];
-
-  const images = [
-    'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=600&fit=crop'
   ];
 
   const contents = [
@@ -98,11 +76,11 @@ const generateMockPosts = (page: number, pageSize: number): PostsPage => {
     const profile = profiles[postIndex % profiles.length];
     const content = contents[postIndex % contents.length];
     const hasImage = Math.random() > 0.4; // 60% chance of having an image
-    const image = hasImage ? images[postIndex % images.length] : undefined;
+    const image = hasImage ? MOCK_IMAGES.POSTS[postIndex % MOCK_IMAGES.POSTS.length] : undefined;
 
     posts.push({
       id: `post_${postIndex + 1}`, // Start from 1 for better UX
-      user_id: `user_${postIndex % 8}`,
+      user_id: profile.id,
       content: `${content} (Post #${postIndex + 1})`,
       image_url: image,
       created_at: new Date(Date.now() - (postIndex * 15 * 60 * 1000)).toISOString(), // 15 minutes apart
@@ -177,6 +155,7 @@ export const useCreatePost = () => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         profiles: {
+          id: 'current_user',
           full_name: 'John Doe',
           avatar_url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
         },
@@ -190,10 +169,10 @@ export const useCreatePost = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts', 'infinite'] });
-      toast.success('Post created successfully! (Mock mode)');
+      toast.success('Post created successfully!');
     },
     onError: (error) => {
-      console.error('Error creating post:', error);
+      handleError(error, 'createPost');
       toast.error('Failed to create post. Please try again.');
     }
   });
@@ -214,7 +193,7 @@ export const useLikePost = () => {
       queryClient.invalidateQueries({ queryKey: ['posts', 'infinite'] });
     },
     onError: (error) => {
-      console.error('Error updating like:', error);
+      handleError(error, 'likePost');
       toast.error('Failed to update like. Please try again.');
     }
   });
@@ -233,10 +212,10 @@ export const useDeletePost = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts', 'infinite'] });
-      toast.success('Post deleted successfully! (Mock mode)');
+      toast.success('Post deleted successfully!');
     },
     onError: (error) => {
-      console.error('Error deleting post:', error);
+      handleError(error, 'deletePost');
       toast.error('Failed to delete post. Please try again.');
     }
   });

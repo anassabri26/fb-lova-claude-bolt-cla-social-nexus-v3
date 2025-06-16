@@ -1,21 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-
-export interface Friendship {
-  id: string;
-  requester_id: string;
-  addressee_id: string;
-  status: 'pending' | 'accepted' | 'declined';
-  created_at: string;
-  requester_profile?: {
-    full_name: string;
-    avatar_url?: string;
-  };
-  addressee_profile?: {
-    full_name: string;
-    avatar_url?: string;
-  };
-}
+import { Friendship } from '@/types';
+import { handleError } from '@/lib/utils';
+import { MOCK_IMAGES } from '@/lib/constants';
 
 // Mock friend requests data
 const mockFriendRequests: Friendship[] = [
@@ -25,9 +12,11 @@ const mockFriendRequests: Friendship[] = [
     addressee_id: 'current_user',
     status: 'pending',
     created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     requester_profile: {
+      id: 'user_7',
       full_name: 'Alex Rodriguez',
-      avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[5]
     }
   },
   {
@@ -36,9 +25,11 @@ const mockFriendRequests: Friendship[] = [
     addressee_id: 'current_user',
     status: 'pending',
     created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     requester_profile: {
+      id: 'user_8',
       full_name: 'Jessica Park',
-      avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[6]
     }
   }
 ];
@@ -51,9 +42,11 @@ const mockFriends: Friendship[] = [
     addressee_id: 'user_1',
     status: 'accepted',
     created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
     addressee_profile: {
+      id: 'user_1',
       full_name: 'Sarah Johnson',
-      avatar_url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[0]
     }
   },
   {
@@ -62,9 +55,11 @@ const mockFriends: Friendship[] = [
     addressee_id: 'current_user',
     status: 'accepted',
     created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
     requester_profile: {
+      id: 'user_2',
       full_name: 'Mike Chen',
-      avatar_url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+      avatar_url: MOCK_IMAGES.AVATARS[1]
     }
   }
 ];
@@ -110,11 +105,11 @@ export const useSendFriendRequest = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friend-requests'] });
-      toast.success('Friend request sent! (Mock mode)');
+      toast.success('Friend request sent!');
     },
     onError: (error) => {
+      handleError(error, 'sendFriendRequest');
       toast.error('Failed to send friend request');
-      console.error('Error sending friend request:', error);
     }
   });
 };
@@ -133,11 +128,11 @@ export const useRespondToFriendRequest = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['friend-requests'] });
       queryClient.invalidateQueries({ queryKey: ['friends'] });
-      toast.success(variables.status === 'accepted' ? 'Friend request accepted! (Mock mode)' : 'Friend request declined (Mock mode)');
+      toast.success(variables.status === 'accepted' ? 'Friend request accepted!' : 'Friend request declined');
     },
     onError: (error) => {
+      handleError(error, 'respondToFriendRequest');
       toast.error('Failed to respond to friend request');
-      console.error('Error responding to friend request:', error);
     }
   });
 };

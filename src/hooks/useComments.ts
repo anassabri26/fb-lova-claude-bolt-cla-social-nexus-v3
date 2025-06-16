@@ -1,17 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-
-export interface Comment {
-  id: string;
-  post_id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-  profiles: {
-    full_name: string;
-    avatar_url?: string;
-  } | null;
-}
+import { Comment } from '@/types';
+import { handleError } from '@/lib/utils';
+import { MOCK_IMAGES } from '@/lib/constants';
 
 // Mock comments data
 const mockComments: Record<string, Comment[]> = {
@@ -20,22 +11,24 @@ const mockComments: Record<string, Comment[]> = {
       id: 'comment_1',
       post_id: '1',
       user_id: 'user_4',
-      content: 'This looks amazing! Great work on the React app! 🔥',
+      content: "This looks amazing! Great work on the React app! 🔥",
       created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
       profiles: {
+        id: 'user_4',
         full_name: 'David Kim',
-        avatar_url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face'
+        avatar_url: MOCK_IMAGES.AVATARS[3]
       }
     },
     {
       id: 'comment_2',
       post_id: '1',
       user_id: 'user_5',
-      content: 'Would love to see the code! Is it open source?',
+      content: "Would love to see the code! Is it open source?",
       created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
       profiles: {
+        id: 'user_5',
         full_name: 'Lisa Wang',
-        avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face'
+        avatar_url: MOCK_IMAGES.AVATARS[4]
       }
     }
   ],
@@ -47,8 +40,9 @@ const mockComments: Record<string, Comment[]> = {
       content: 'Beautiful shot! Where was this taken?',
       created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       profiles: {
+        id: 'user_6',
         full_name: 'Alex Rodriguez',
-        avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
+        avatar_url: MOCK_IMAGES.AVATARS[5]
       }
     }
   ]
@@ -85,6 +79,7 @@ export const useCreateComment = () => {
         content: content.trim(),
         created_at: new Date().toISOString(),
         profiles: {
+          id: 'current_user',
           full_name: 'John Doe',
           avatar_url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
         }
@@ -95,10 +90,10 @@ export const useCreateComment = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['comments', data.post_id] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Comment added! (Mock mode)');
+      toast.success('Comment added!');
     },
     onError: (error) => {
-      console.error('Error creating comment:', error);
+      handleError(error, 'createComment');
       toast.error('Failed to add comment. Please try again.');
     }
   });
@@ -118,10 +113,10 @@ export const useDeleteComment = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['comments', data.postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Comment deleted! (Mock mode)');
+      toast.success('Comment deleted!');
     },
     onError: (error) => {
-      console.error('Error deleting comment:', error);
+      handleError(error, 'deleteComment');
       toast.error('Failed to delete comment. Please try again.');
     }
   });
