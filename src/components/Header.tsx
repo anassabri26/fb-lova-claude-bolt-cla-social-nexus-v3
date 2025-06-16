@@ -47,7 +47,6 @@ const Header = () => {
     if (searchQuery.trim()) {
       toast.success(`Searching for: ${searchQuery}`);
       console.log(`Search query: ${searchQuery}`);
-      // In a real app, this would navigate to search results
     }
   };
 
@@ -59,25 +58,25 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+      <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200 safe-area-top">
+        <div className="container-responsive">
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Left section - Logo */}
             <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
               <div 
-                className="flex items-center space-x-1 sm:space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+                className="flex items-center space-x-1 sm:space-x-2 cursor-pointer hover:opacity-80 transition-opacity touch-target"
                 onClick={() => handleNavigation('/', 'Home')}
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-lg sm:text-xl">f</span>
                 </div>
-                <span className="hidden sm:block text-lg sm:text-xl font-bold text-blue-600">facebook</span>
+                <span className="hide-mobile text-lg sm:text-xl font-bold text-blue-600">facebook</span>
               </div>
             </div>
 
             {/* Center section - Search and Navigation */}
             <div className="flex items-center space-x-2 sm:space-x-4 flex-1 max-w-lg mx-2 sm:mx-4">
-              <form onSubmit={handleSearch} className="hidden md:flex flex-1">
+              <form onSubmit={handleSearch} className="hide-mobile flex-1">
                 <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
@@ -85,12 +84,12 @@ const Header = () => {
                     placeholder="Search Facebook"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-gray-100 border-none rounded-full"
+                    className="pl-10 bg-gray-100 border-none rounded-full text-responsive-sm"
                   />
                 </div>
               </form>
               
-              <div className="hidden lg:flex items-center space-x-1">
+              <div className="hide-mobile flex items-center space-x-1">
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
@@ -98,7 +97,7 @@ const Header = () => {
                       key={item.id}
                       variant="ghost" 
                       size="lg" 
-                      className={`relative px-4 sm:px-6 py-2 sm:py-3 hover:bg-gray-100 rounded-xl transition-colors ${
+                      className={`relative button-responsive hover:bg-gray-100 rounded-xl transition-colors ${
                         isActive ? 'text-blue-600' : 'text-gray-600'
                       }`}
                       onClick={() => handleNavigation(item.path, item.label)}
@@ -119,7 +118,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="touch-target rounded-full hover:bg-gray-100 transition-colors"
                 onClick={handleCreatePost}
                 aria-label="Create post"
               >
@@ -129,7 +128,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="relative touch-target rounded-full hover:bg-gray-100 transition-colors"
                 onClick={handleNotificationsClick}
                 aria-label="Notifications"
               >
@@ -140,7 +139,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="lg:hidden p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="show-mobile touch-target rounded-full hover:bg-gray-100 transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Menu"
               >
@@ -148,7 +147,7 @@ const Header = () => {
               </Button>
               
               <Avatar 
-                className="w-7 h-7 sm:w-8 sm:h-8 cursor-pointer hover:opacity-80 transition-opacity" 
+                className="avatar-responsive cursor-pointer hover:opacity-80 transition-opacity touch-target" 
                 onClick={handleProfileClick}
               >
                 <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
@@ -158,7 +157,7 @@ const Header = () => {
           </div>
 
           {/* Mobile search */}
-          <div className="md:hidden px-2 pb-3">
+          <div className="show-mobile px-2 pb-3">
             <form onSubmit={handleSearch}>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -167,7 +166,7 @@ const Header = () => {
                   placeholder="Search Facebook"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-gray-100 border-none rounded-full"
+                  className="pl-10 bg-gray-100 border-none rounded-full text-responsive-sm"
                 />
               </div>
             </form>
@@ -175,20 +174,20 @@ const Header = () => {
 
           {/* Mobile menu */}
           {isMenuOpen && (
-            <div className="lg:hidden bg-white border-t border-gray-200 py-4">
+            <div className="show-mobile bg-white border-t border-gray-200 py-4">
               <div className="grid grid-cols-2 gap-2 px-2 sm:px-4">
                 {navItems.map((item) => (
                   <Button
                     key={item.id}
                     variant="ghost"
-                    className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start"
+                    className="flex items-center space-x-2 button-responsive rounded-lg text-left justify-start"
                     onClick={() => {
                       handleNavigation(item.path, item.label);
                       setIsMenuOpen(false);
                     }}
                   >
                     <item.icon className="w-5 h-5" />
-                    <span>{item.label}</span>
+                    <span className="text-responsive-sm">{item.label}</span>
                   </Button>
                 ))}
               </div>

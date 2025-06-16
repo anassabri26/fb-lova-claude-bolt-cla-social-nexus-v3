@@ -45,9 +45,7 @@ const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
       <Button
         ref={ref}
         className={`
-          focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 
-          focus:outline-none transition-all duration-200
-          min-h-[44px] min-w-[44px] touch-manipulation
+          focus-responsive transition-all duration-200 touch-target
           ${loading ? 'cursor-not-allowed opacity-70' : ''}
           ${className}
         `}
@@ -59,7 +57,7 @@ const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
         {loading ? (
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-xs sm:text-sm">{loadingText}</span>
+            <span className="text-responsive-sm">{loadingText}</span>
           </div>
         ) : (
           children

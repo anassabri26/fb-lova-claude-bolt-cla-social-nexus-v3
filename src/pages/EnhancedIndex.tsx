@@ -24,7 +24,7 @@ const EnhancedIndex = () => {
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600 text-responsive-base">Loading...</p>
         </div>
       </div>
     );
@@ -46,8 +46,8 @@ const EnhancedIndex = () => {
           </div>
         )}
         
-        {/* Main Content - Direct News Feed */}
-        <main className={`flex-1 ${!isMobile ? 'ml-80 mr-80' : ''} max-w-full mx-auto py-6`}>
+        {/* Main Content */}
+        <main className={`flex-1 ${!isMobile ? 'ml-80 mr-80' : ''} max-w-full mx-auto container-responsive`}>
           <RealNewsFeed />
         </main>
         

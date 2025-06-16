@@ -66,18 +66,18 @@ const Sidebar = () => {
   const visibleItems = showMore ? menuItems : menuItems.slice(0, 8);
 
   return (
-    <aside className="hidden md:block w-64 lg:w-80 p-2 lg:p-4 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-y-auto sticky top-14 sm:top-16">
+    <aside className="hide-mobile w-64 lg:w-80 p-2 lg:p-4 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-y-auto sticky top-14 sm:top-16">
       <div className="space-y-4 lg:space-y-6">
         {/* User Profile */}
         <div 
-          className="flex items-center space-x-2 lg:space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
+          className="flex items-center space-x-2 lg:space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors touch-target"
           onClick={handleProfileClick}
         >
-          <Avatar className="w-8 h-8 lg:w-9 lg:h-9">
+          <Avatar className="avatar-responsive">
             <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
-          <span className="font-medium text-gray-900 text-sm lg:text-base">John Doe</span>
+          <span className="font-medium text-gray-900 text-responsive-sm lg:text-responsive-base">John Doe</span>
         </div>
 
         {/* Main Menu */}
@@ -88,7 +88,7 @@ const Sidebar = () => {
               <AccessibleButton
                 key={item.label}
                 variant="ghost"
-                className={`w-full flex items-center justify-between p-2 rounded-lg text-left font-normal transition-colors text-sm lg:text-base ${
+                className={`w-full flex items-center justify-between button-responsive rounded-lg text-left font-normal transition-colors text-responsive-sm lg:text-responsive-base ${
                   isActive 
                     ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' 
                     : 'text-gray-700 hover:bg-gray-100'
@@ -113,7 +113,7 @@ const Sidebar = () => {
         {/* See More Button */}
         <AccessibleButton
           variant="ghost"
-          className="w-full flex items-center space-x-2 lg:space-x-3 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors text-sm lg:text-base"
+          className="w-full flex items-center space-x-2 lg:space-x-3 button-responsive rounded-lg text-gray-700 hover:bg-gray-100 transition-colors text-responsive-sm lg:text-responsive-base"
           onClick={() => {
             setShowMore(!showMore);
             toast.info(showMore ? 'Showing fewer options' : 'Showing more options');
@@ -147,16 +147,16 @@ const Sidebar = () => {
             <AccessibleButton
               key={shortcut.name}
               variant="ghost"
-              className="w-full flex items-center space-x-2 lg:space-x-3 p-2 rounded-lg text-left hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center space-x-2 lg:space-x-3 button-responsive rounded-lg text-left hover:bg-gray-100 transition-colors"
               onClick={() => handleNavigation(shortcut.path, shortcut.name)}
             >
               <img
                 src={shortcut.image}
                 alt={shortcut.name}
-                className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg object-cover flex-shrink-0"
+                className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg object-cover flex-shrink-0 image-responsive"
               />
               <div className="flex-1 min-w-0">
-                <p className="text-gray-900 font-medium truncate text-sm lg:text-base">{shortcut.name}</p>
+                <p className="text-gray-900 font-medium truncate text-responsive-sm lg:text-responsive-base">{shortcut.name}</p>
                 <p className="text-xs text-gray-500">{shortcut.members} members</p>
               </div>
             </AccessibleButton>
@@ -170,7 +170,7 @@ const Sidebar = () => {
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
+              className="flex flex-col items-center space-y-1 button-responsive h-auto"
               onClick={() => {
                 navigate('/');
                 toast.success('Create post opened');
@@ -183,7 +183,7 @@ const Sidebar = () => {
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-2 lg:p-3 h-auto"
+              className="flex flex-col items-center space-y-1 button-responsive h-auto"
               onClick={() => {
                 navigate('/events');
                 toast.success('Create event opened');
