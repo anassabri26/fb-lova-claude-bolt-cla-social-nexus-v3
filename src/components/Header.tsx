@@ -60,22 +60,22 @@ const Header = () => {
     <>
       <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200 safe-area-top">
         <div className="container-responsive">
-          <div className="flex items-center justify-between h-14 sm:h-16">
+          <div className="flex items-center justify-between h-12 sm:h-14">
             {/* Left section - Logo */}
-            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
+            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
               <div 
                 className="flex items-center space-x-1 sm:space-x-2 cursor-pointer hover:opacity-80 transition-opacity touch-target"
                 onClick={() => handleNavigation('/', 'Home')}
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg sm:text-xl">f</span>
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-base sm:text-lg">f</span>
                 </div>
-                <span className="hide-mobile text-lg sm:text-xl font-bold text-blue-600">facebook</span>
+                <span className="hide-mobile text-base sm:text-lg font-bold text-blue-600">facebook</span>
               </div>
             </div>
 
             {/* Center section - Search and Navigation */}
-            <div className="flex items-center space-x-2 sm:space-x-4 flex-1 max-w-lg mx-2 sm:mx-4">
+            <div className="flex items-center space-x-1 sm:space-x-3 flex-1 max-w-lg mx-2 sm:mx-3">
               <form onSubmit={handleSearch} className="hide-mobile flex-1">
                 <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -96,16 +96,16 @@ const Header = () => {
                     <Button 
                       key={item.id}
                       variant="ghost" 
-                      size="lg" 
+                      size="sm" 
                       className={`relative button-responsive hover:bg-gray-100 rounded-xl transition-colors ${
                         isActive ? 'text-blue-600' : 'text-gray-600'
                       }`}
                       onClick={() => handleNavigation(item.path, item.label)}
                       aria-label={item.label}
                     >
-                      <item.icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       {isActive && (
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 sm:w-12 h-1 bg-blue-600 rounded-t-full"></div>
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 sm:w-8 h-1 bg-blue-600 rounded-t-full"></div>
                       )}
                     </Button>
                   );
@@ -157,7 +157,7 @@ const Header = () => {
           </div>
 
           {/* Mobile search */}
-          <div className="show-mobile px-2 pb-3">
+          <div className="show-mobile px-2 pb-2">
             <form onSubmit={handleSearch}>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -174,7 +174,7 @@ const Header = () => {
 
           {/* Mobile menu */}
           {isMenuOpen && (
-            <div className="show-mobile bg-white border-t border-gray-200 py-4">
+            <div className="show-mobile bg-white border-t border-gray-200 py-3">
               <div className="grid grid-cols-2 gap-2 px-2 sm:px-4">
                 {navItems.map((item) => (
                   <Button
