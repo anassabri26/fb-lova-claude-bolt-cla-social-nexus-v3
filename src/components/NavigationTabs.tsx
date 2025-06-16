@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Home, Users, MessageCircle, Video, Store, Calendar, Bell, Settings } from 'lucide-react';
 import RealNewsFeed from './RealNewsFeed';
@@ -10,9 +10,20 @@ import EventsTab from './EventsTab';
 import NotificationsTab from './NotificationsTab';
 import SettingsTab from './SettingsTab';
 
-const NavigationTabs = () => {
+interface NavigationTabsProps {
+  onTabChange?: (tab: string) => void;
+}
+
+const NavigationTabs = ({ onTabChange }: NavigationTabsProps) => {
+  const [activeTab, setActiveTab] = useState('home');
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    onTabChange?.(value);
+  };
+
   return (
-    <Tabs defaultValue="home" className="w-full">
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <TabsList className="grid w-full grid-cols-8 bg-white border-b border-gray-200 rounded-none h-14">
         <TabsTrigger value="home" className="flex items-center space-x-2">
           <Home className="w-5 h-5" />
