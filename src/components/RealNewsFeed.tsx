@@ -1,16 +1,46 @@
-
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
+import { FixedSizeList as List } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
 import { useAuth } from '@/contexts/AuthContext';
-import { usePosts } from '@/hooks/usePosts';
+import { useInfinitePosts } from '@/hooks/usePosts';
 import CreatePost from './CreatePost';
-import RealPost from './RealPost';
+import VirtualizedPost from './VirtualizedPost';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, RefreshCw, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const RealNewsFeed = () => {
   const { user } = useAuth();
-  const { data: posts, isLoading, error, refetch } = usePosts();
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+    refetch
+  } = useInfinitePosts(20);
+
+  // Flatten all pages into a single array of posts
+  const allPosts = useMemo(() => {
+    return data?.pages.flatMap(page => page.posts) ?? [];
+  }, [data]);
+
+  // Calculate total item count for infinite loader
+  const itemCount = hasNextPage ? allPosts.length + 1 : allPosts.length;
+
+  // Check if an item is loaded
+  const isItemLoaded = useCallback((index: number) => {
+    return !!allPosts[index];
+  }, [allPosts]);
+
+  // Load more items
+  const loadMoreItems = useCallback(() => {
+    if (!isFetchingNextPage && hasNextPage) {
+      return fetchNextPage();
+    }
+    return Promise.resolve();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (!user) {
     return (
@@ -28,7 +58,7 @@ const RealNewsFeed = () => {
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         <CreatePost />
-        {Array.from({ length: 3 }).map((_, i) => (
+        {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="bg-white rounded-lg shadow-sm p-4 space-y-4">
             <div className="flex items-center space-x-3">
               <Skeleton className="h-10 w-10 rounded-full" />
@@ -75,11 +105,72 @@ const RealNewsFeed = () => {
     <div className="max-w-2xl mx-auto space-y-6">
       <CreatePost />
       
-      {posts && posts.length > 0 ? (
-        <div className="space-y-6">
-          {posts.map((post) => (
-            <RealPost key={post.id} post={post} />
-          ))}
+      {allPosts.length > 0 ? (
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
+              <div className="text-sm text-gray-500">
+                {allPosts.length} posts loaded
+                {hasNextPage && (
+                  <span className="ml-2 text-blue-600">
+                    {isFetchingNextPage ? 'Loading...' : 'Scroll for more'}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Virtual Scrolling Container */}
+          <div className="h-[calc(100vh-300px)] min-h-[600px]">
+            <InfiniteLoader
+              isItemLoaded={isItemLoaded}
+              itemCount={itemCount}
+              loadMoreItems={loadMoreItems}
+              threshold={5} // Start loading when 5 items from the end
+            >
+              {({ onItemsRendered, ref }) => (
+                <List
+                  ref={ref}
+                  height={600} // Fixed height for the virtual list
+                  itemCount={itemCount}
+                  itemSize={400} // Estimated height per post
+                  onItemsRendered={onItemsRendered}
+                  itemData={{
+                    posts: allPosts,
+                    hasNextPage,
+                    fetchNextPage,
+                    isFetchingNextPage
+                  }}
+                  overscanCount={3} // Render 3 extra items outside visible area
+                  className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                >
+                  {VirtualizedPost}
+                </List>
+              )}
+            </InfiniteLoader>
+          </div>
+          
+          {/* Loading indicator at the bottom */}
+          {isFetchingNextPage && (
+            <div className="p-4 text-center border-t border-gray-100">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-sm text-gray-600">Loading more posts...</span>
+              </div>
+            </div>
+          )}
+          
+          {/* End of feed indicator */}
+          {!hasNextPage && allPosts.length > 0 && (
+            <div className="p-6 text-center border-t border-gray-100 bg-gray-50">
+              <div className="text-gray-500">
+                <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">You're all caught up!</p>
+                <p className="text-xs mt-1">Check back later for new posts from your friends.</p>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-sm p-8 text-center">
