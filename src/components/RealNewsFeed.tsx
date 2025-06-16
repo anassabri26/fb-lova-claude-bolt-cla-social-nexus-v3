@@ -34,8 +34,8 @@ const RealNewsFeed = () => {
     return !!allPosts[index];
   }, [allPosts]);
 
-  // Load more items
-  const loadMoreItems = useCallback(async () => {
+  // Load more items function for InfiniteLoader
+  const loadMoreItems = useCallback(async (startIndex: number, stopIndex: number) => {
     if (!isFetchingNextPage && hasNextPage) {
       try {
         await fetchNextPage();
@@ -142,7 +142,6 @@ const RealNewsFeed = () => {
                   itemData={{
                     posts: allPosts,
                     hasNextPage: hasNextPage ?? false,
-                    fetchNextPage,
                     isFetchingNextPage
                   }}
                   overscanCount={3} // Render 3 extra items outside visible area

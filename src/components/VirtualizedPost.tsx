@@ -1,32 +1,19 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo } from 'react';
+import { ListChildComponentProps } from 'react-window';
 import { Post } from '@/hooks/usePosts';
 import RealPost from './RealPost';
 
-interface VirtualizedPostProps {
-  index: number;
-  style: React.CSSProperties;
-  data: {
-    posts: Post[];
-    hasNextPage: boolean;
-    fetchNextPage: () => Promise<any>;
-    isFetchingNextPage: boolean;
-  };
+interface VirtualizedPostData {
+  posts: Post[];
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
 }
 
-const VirtualizedPost = memo(({ index, style, data }: VirtualizedPostProps) => {
-  const { posts, hasNextPage, fetchNextPage, isFetchingNextPage } = data;
-  const post = posts[index];
+interface VirtualizedPostProps extends ListChildComponentProps<VirtualizedPostData> {}
 
-  // Trigger loading more posts when approaching the end
-  useEffect(() => {
-    if (
-      index >= posts.length - 5 && // Load when 5 posts from the end
-      hasNextPage &&
-      !isFetchingNextPage
-    ) {
-      fetchNextPage().catch(console.error);
-    }
-  }, [index, posts.length, hasNextPage, fetchNextPage, isFetchingNextPage]);
+const VirtualizedPost = memo(({ index, style, data }: VirtualizedPostProps) => {
+  const { posts } = data;
+  const post = posts[index];
 
   if (!post) {
     // Loading skeleton for posts that haven't loaded yet
