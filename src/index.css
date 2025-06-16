@@ -137,37 +137,34 @@
   background-color: rgb(243 244 246);
 }
 
-/* Optimized styles for virtual scrolling performance */
-.react-window-list {
+/* CRITICAL: Virtual News Feed Specific Styles */
+.virtual-news-feed-list {
   scroll-behavior: smooth;
   contain: layout style paint;
   background-color: rgb(249 250 251); /* Gray-50 background */
 }
 
-.react-window-list-item {
-  will-change: transform;
-  contain: layout style paint;
-  transform: translateZ(0); /* Force hardware acceleration */
+/* CRITICAL: Fix for virtual list item positioning */
+.virtual-news-feed-list > div {
+  /* This targets the outer container created by react-window */
+  position: relative !important;
+  overflow: visible !important;
 }
 
-/* Critical fix for virtual list item spacing */
-.react-window-list > div {
-  overflow: visible !important;
-  /* Remove any default margins that could cause overlapping */
+/* CRITICAL: Fix for virtual list item spacing */
+.virtual-news-feed-list > div > div {
+  /* This targets each individual virtual item */
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  /* Remove any default margins/padding that could cause issues */
   margin: 0 !important;
   padding: 0 !important;
-}
-
-/* Ensure proper post spacing within virtual items */
-.react-window-list-item {
-  /* Remove any margins that could interfere with virtual positioning */
-  margin: 0 !important;
-}
-
-/* Fix for RealPost component within virtual list */
-.react-window-list-item .shadow-sm {
-  /* Ensure cards don't have conflicting margins */
-  margin-bottom: 0 !important;
+  box-sizing: border-box !important;
+  /* Ensure proper stacking */
+  z-index: auto !important;
 }
 
 /* Smooth transitions for loading states */
@@ -186,50 +183,44 @@
 
 /* Performance optimizations for mobile */
 @media (max-width: 768px) {
-  .react-window-list-item {
+  .virtual-news-feed-list {
     transform: translate3d(0, 0, 0);
   }
   
   /* Adjust item size for mobile */
-  .react-window-list {
+  .virtual-news-feed-list {
     font-size: 14px;
   }
 }
 
-/* Ensure proper container sizing */
-.react-window-list-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-/* Enhanced scrollbar for react-window */
-.react-window-list::-webkit-scrollbar {
+/* Enhanced scrollbar for virtual news feed */
+.virtual-news-feed-list::-webkit-scrollbar {
   width: 8px;
 }
 
-.react-window-list::-webkit-scrollbar-track {
+.virtual-news-feed-list::-webkit-scrollbar-track {
   background: rgb(243 244 246);
   border-radius: 4px;
 }
 
-.react-window-list::-webkit-scrollbar-thumb {
+.virtual-news-feed-list::-webkit-scrollbar-thumb {
   background: rgb(209 213 219);
   border-radius: 4px;
   border: 1px solid rgb(243 244 246);
 }
 
-.react-window-list::-webkit-scrollbar-thumb:hover {
+.virtual-news-feed-list::-webkit-scrollbar-thumb:hover {
   background: rgb(156 163 175);
 }
 
-/* Critical: Prevent any margin collapse or interference */
-.react-window-list * {
+/* CRITICAL: Ensure no interference between virtual items */
+.virtual-news-feed-list * {
   box-sizing: border-box;
 }
 
-/* Ensure virtual list items don't interfere with each other */
-.react-window-list [style*="position: absolute"] {
-  /* Virtual list items are absolutely positioned, ensure they don't overlap */
+/* CRITICAL: Prevent any layout shifts */
+.virtual-news-feed-list [style*="position: absolute"] {
+  /* Ensure virtual items don't interfere with each other */
   z-index: auto;
+  contain: layout style paint;
 }

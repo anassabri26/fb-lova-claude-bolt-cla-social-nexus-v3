@@ -175,7 +175,7 @@ const RealNewsFeed = () => {
                   ref={ref}
                   height={listHeight}
                   itemCount={itemCount}
-                  itemSize={420} // Reduced item size to account for padding in VirtualizedPost
+                  itemSize={450} // Increased to account for proper spacing
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
@@ -183,7 +183,7 @@ const RealNewsFeed = () => {
                     isFetchingNextPage
                   }}
                   overscanCount={2} // Render 2 extra items outside visible area
-                  className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 react-window-list"
+                  className="virtual-news-feed-list"
                   style={{ 
                     overflowX: 'hidden',
                     backgroundColor: 'rgb(249 250 251)', // Gray-50 background

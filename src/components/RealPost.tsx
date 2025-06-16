@@ -74,7 +74,7 @@ const RealPost = ({ post }: RealPostProps) => {
   };
 
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow bg-white">
+    <Card className="shadow-sm hover:shadow-md transition-shadow bg-white border border-gray-200">
       <CardContent className="p-0">
         {/* Post Header */}
         <div className="p-4 flex items-center justify-between">
