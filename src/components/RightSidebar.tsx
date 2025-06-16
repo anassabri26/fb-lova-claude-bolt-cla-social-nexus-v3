@@ -31,76 +31,76 @@ const RightSidebar = () => {
   ];
 
   return (
-    <div className="right-sidebar-responsive">
-      <div className="right-sidebar-content">
+    <div className="w-full h-full overflow-y-auto scrollbar-thin">
+      <div className="p-2 space-y-4">
         {/* Friend Requests */}
-        <div className="right-sidebar-panel">
+        <div className="mb-4">
           <FriendRequestsPanel />
         </div>
         
         {/* People You May Know */}
-        <div className="right-sidebar-panel">
+        <div className="mb-4">
           <PeopleYouMayKnow />
         </div>
 
         {/* Online Friends */}
-        <Card className="right-sidebar-card">
-          <CardHeader className="right-sidebar-card-header">
-            <CardTitle className="right-sidebar-card-title">
-              <Users className="right-sidebar-icon" />
+        <Card className="mb-4">
+          <CardHeader className="p-3">
+            <CardTitle className="text-base font-semibold flex items-center">
+              <Users className="w-5 h-5 mr-2 text-gray-600" />
               <span>Contacts ({friends?.length || 0})</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="right-sidebar-card-content">
+          <CardContent className="p-2 pt-0">
             {onlineFriends.map((friend) => (
-              <div key={friend.id} className="right-sidebar-friend-item">
-                <div className="right-sidebar-friend-avatar-container">
-                  <Avatar className="right-sidebar-friend-avatar">
+              <div key={friend.id} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <div className="relative">
+                  <Avatar className="w-8 h-8">
                     <AvatarImage src={friend.avatar} />
                     <AvatarFallback className="text-xs">{friend.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   {friend.isOnline && (
-                    <div className="right-sidebar-online-indicator"></div>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                   )}
                 </div>
-                <span className="right-sidebar-friend-name">{friend.name}</span>
+                <span className="text-sm font-medium text-gray-900 truncate">{friend.name}</span>
               </div>
             ))}
           </CardContent>
         </Card>
 
         {/* Your Pages and Profiles */}
-        <Card className="right-sidebar-card">
-          <CardHeader className="right-sidebar-card-header">
-            <CardTitle className="right-sidebar-card-title">Your Pages and profiles</CardTitle>
+        <Card className="mb-4">
+          <CardHeader className="p-3">
+            <CardTitle className="text-base font-semibold">Your Pages and profiles</CardTitle>
           </CardHeader>
-          <CardContent className="right-sidebar-card-content">
-            <div className="right-sidebar-page-item">
-              <div className="right-sidebar-page-icon">
-                <span className="right-sidebar-page-icon-text">YP</span>
+          <CardContent className="p-2 pt-0">
+            <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">YP</span>
               </div>
-              <span className="right-sidebar-page-name">Your Page</span>
+              <span className="text-sm font-medium text-gray-900">Your Page</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Group conversations */}
-        <Card className="right-sidebar-card">
-          <CardHeader className="right-sidebar-card-header">
-            <CardTitle className="right-sidebar-card-title">Group conversations</CardTitle>
+        <Card>
+          <CardHeader className="p-3">
+            <CardTitle className="text-base font-semibold">Group conversations</CardTitle>
           </CardHeader>
-          <CardContent className="right-sidebar-card-content">
-            <div className="right-sidebar-group-item">
-              <div className="right-sidebar-group-icon right-sidebar-group-icon-purple">
-                <Users className="right-sidebar-group-icon-svg" />
+          <CardContent className="p-2 pt-0">
+            <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                <Users className="w-4 h-4 text-white" />
               </div>
-              <span className="right-sidebar-group-name">Design Team</span>
+              <span className="text-sm font-medium text-gray-900">Design Team</span>
             </div>
-            <div className="right-sidebar-group-item">
-              <div className="right-sidebar-group-icon right-sidebar-group-icon-green">
-                <Users className="right-sidebar-group-icon-svg" />
+            <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                <Users className="w-4 h-4 text-white" />
               </div>
-              <span className="right-sidebar-group-name">Weekend Plans</span>
+              <span className="text-sm font-medium text-gray-900">Weekend Plans</span>
             </div>
           </CardContent>
         </Card>

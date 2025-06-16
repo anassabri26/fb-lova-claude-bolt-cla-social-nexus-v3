@@ -42,17 +42,27 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       <div className="min-h-screen bg-gray-100">
         <Header />
         
-        <div className="main-layout">
-          {/* Left Sidebar */}
-          {showSidebars && !isMobile && <Sidebar />}
+        <div className="flex">
+          {/* Left Sidebar - Hidden on mobile */}
+          {showSidebars && !isMobile && (
+            <aside className="sidebar-responsive">
+              <Sidebar />
+            </aside>
+          )}
           
           {/* Main Content */}
-          <main className={`${showSidebars && !isMobile ? "main-content" : "w-full"}`}>
+          <main className={`flex-1 ${!isMobile ? 'md:ml-[14rem] lg:ml-[16rem] xl:ml-[17rem] 2xl:ml-[18rem]' : ''} ${
+            showRightSidebar && !isMobile ? 'md:mr-[14rem] lg:mr-[16rem] xl:mr-[17rem] 2xl:mr-[18rem]' : ''
+          } transition-all duration-300`}>
             {children}
           </main>
           
-          {/* Right Sidebar - Only shown on home page */}
-          {showSidebars && !isMobile && showRightSidebar && <RightSidebar />}
+          {/* Right Sidebar - Only shown on home page and not on mobile */}
+          {showSidebars && !isMobile && showRightSidebar && (
+            <aside className="right-sidebar-responsive">
+              <RightSidebar />
+            </aside>
+          )}
         </div>
         
         {/* Mobile Navigation */}

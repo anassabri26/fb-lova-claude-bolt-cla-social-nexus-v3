@@ -33,7 +33,7 @@ const NavigationTabs: React.FC<NavigationTabsProps> = ({ onTabChange }) => {
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="grid w-full grid-cols-8 bg-white border-b border-gray-200 rounded-none h-14">
+      <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 bg-white border-b border-gray-200 rounded-none h-14 sticky top-0 z-10">
         <TabsTrigger value="home" className="flex items-center space-x-2">
           <Home className="w-5 h-5" />
           <span className="hidden sm:inline">Home</span>

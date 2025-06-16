@@ -19,15 +19,15 @@ const FriendRequestsPanel = () => {
 
   if (isLoading) {
     return (
-      <Card className="right-sidebar-card">
-        <CardHeader className="right-sidebar-card-header">
-          <CardTitle className="right-sidebar-card-title">
-            <UserPlus className="right-sidebar-icon" />
+      <Card>
+        <CardHeader className="p-3">
+          <CardTitle className="text-base font-semibold flex items-center">
+            <UserPlus className="w-5 h-5 mr-2" />
             <span>Friend Requests</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="right-sidebar-card-content">
-          <p className="text-gray-500 text-responsive-sm">Loading...</p>
+        <CardContent className="p-2">
+          <p className="text-gray-500 text-sm">Loading...</p>
         </CardContent>
       </Card>
     );
@@ -35,29 +35,29 @@ const FriendRequestsPanel = () => {
 
   if (!requests || requests.length === 0) {
     return (
-      <Card className="right-sidebar-card">
-        <CardHeader className="right-sidebar-card-header">
-          <CardTitle className="right-sidebar-card-title">
-            <UserPlus className="right-sidebar-icon" />
+      <Card>
+        <CardHeader className="p-3">
+          <CardTitle className="text-base font-semibold flex items-center">
+            <UserPlus className="w-5 h-5 mr-2" />
             <span>Friend Requests</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="right-sidebar-card-content">
-          <p className="text-gray-500 text-responsive-sm">No pending friend requests</p>
+        <CardContent className="p-2">
+          <p className="text-gray-500 text-sm">No pending friend requests</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="right-sidebar-card">
-      <CardHeader className="right-sidebar-card-header">
-        <CardTitle className="right-sidebar-card-title">
-          <UserPlus className="right-sidebar-icon" />
+    <Card>
+      <CardHeader className="p-3">
+        <CardTitle className="text-base font-semibold flex items-center">
+          <UserPlus className="w-5 h-5 mr-2" />
           <span>Friend Requests ({requests.length})</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="right-sidebar-card-content">
+      <CardContent className="p-2">
         <div className="space-y-2">
           {requests.map((request) => (
             <div key={request.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
@@ -69,7 +69,7 @@ const FriendRequestsPanel = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="font-semibold text-responsive-sm text-gray-900 truncate">
+                  <p className="font-semibold text-sm text-gray-900 truncate">
                     {request.requester_profile?.full_name || 'Unknown User'}
                   </p>
                   <p className="text-xs text-gray-500 truncate">wants to be friends</p>

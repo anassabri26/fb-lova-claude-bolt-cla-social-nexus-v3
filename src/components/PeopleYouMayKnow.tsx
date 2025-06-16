@@ -34,15 +34,15 @@ const PeopleYouMayKnow = () => {
 
   if (isLoading) {
     return (
-      <Card className="right-sidebar-card">
-        <CardHeader className="right-sidebar-card-header">
-          <CardTitle className="right-sidebar-card-title">
-            <Users className="right-sidebar-icon" />
+      <Card>
+        <CardHeader className="p-3">
+          <CardTitle className="text-base font-semibold flex items-center">
+            <Users className="w-5 h-5 mr-2" />
             <span>People You May Know</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="right-sidebar-card-content">
-          <p className="text-gray-500 text-responsive-sm">Loading...</p>
+        <CardContent className="p-2">
+          <p className="text-gray-500 text-sm">Loading...</p>
         </CardContent>
       </Card>
     );
@@ -50,29 +50,29 @@ const PeopleYouMayKnow = () => {
 
   if (!suggestions || suggestions.length === 0) {
     return (
-      <Card className="right-sidebar-card">
-        <CardHeader className="right-sidebar-card-header">
-          <CardTitle className="right-sidebar-card-title">
-            <Users className="right-sidebar-icon" />
+      <Card>
+        <CardHeader className="p-3">
+          <CardTitle className="text-base font-semibold flex items-center">
+            <Users className="w-5 h-5 mr-2" />
             <span>People You May Know</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="right-sidebar-card-content">
-          <p className="text-gray-500 text-responsive-sm">No suggestions available</p>
+        <CardContent className="p-2">
+          <p className="text-gray-500 text-sm">No suggestions available</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="right-sidebar-card">
-      <CardHeader className="right-sidebar-card-header">
-        <CardTitle className="right-sidebar-card-title">
-          <Users className="right-sidebar-icon" />
+    <Card>
+      <CardHeader className="p-3">
+        <CardTitle className="text-base font-semibold flex items-center">
+          <Users className="w-5 h-5 mr-2" />
           <span>People You May Know</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="right-sidebar-card-content">
+      <CardContent className="p-2">
         <div className="space-y-2">
           {suggestions.map((person) => (
             <div key={person.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
@@ -82,7 +82,7 @@ const PeopleYouMayKnow = () => {
                   <AvatarFallback>{person.full_name?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="font-semibold text-responsive-sm text-gray-900 truncate">{person.full_name || 'Unknown User'}</p>
+                  <p className="font-semibold text-sm text-gray-900 truncate">{person.full_name || 'Unknown User'}</p>
                   <p className="text-xs text-gray-500 truncate">Suggested friend</p>
                 </div>
               </div>

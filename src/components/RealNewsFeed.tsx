@@ -58,7 +58,7 @@ const RealNewsFeed = () => {
 
   if (!user) {
     return (
-      <div className="news-feed-container">
+      <div className="max-w-full mx-auto px-4 py-6">
         <div className="text-center bg-white rounded-lg shadow-sm card-responsive">
           <div className="py-8">
             <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
@@ -72,7 +72,7 @@ const RealNewsFeed = () => {
 
   if (isLoading) {
     return (
-      <div className="news-feed-container space-y-4">
+      <div className="max-w-full mx-auto px-4 py-6 space-y-4">
         <CreatePost />
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="bg-white rounded-lg shadow-sm card-responsive space-y-4">
@@ -98,7 +98,7 @@ const RealNewsFeed = () => {
   if (error) {
     console.error('Posts loading error:', error);
     return (
-      <div className="news-feed-container space-y-4">
+      <div className="max-w-full mx-auto px-4 py-6 space-y-4">
         <CreatePost />
         <div className="bg-white rounded-lg shadow-sm card-responsive text-center">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
@@ -118,7 +118,7 @@ const RealNewsFeed = () => {
   }
 
   return (
-    <div className="news-feed-container space-y-4">
+    <div className="news-feed-container mx-auto px-4 py-6 space-y-4">
       <CreatePost />
       
       {allPosts.length > 0 ? (
