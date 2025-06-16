@@ -122,37 +122,7 @@ const RealNewsFeed = () => {
       
       {allPosts.length > 0 ? (
         <div className="space-y-6">
-          {/* Feed Header with Stats */}
-          <div className="bg-white rounded-lg shadow-sm p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                  <BarChart3 className="w-3 h-3 mr-1" />
-                  {allPosts.length} posts
-                </Badge>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                {hasNextPage && (
-                  <Badge variant="outline" className="text-green-600 border-green-200">
-                    {isFetchingNextPage || isLoadingMore ? (
-                      <>
-                        <div className="w-3 h-3 border border-green-600 border-t-transparent rounded-full animate-spin mr-1"></div>
-                        Loading...
-                      </>
-                    ) : (
-                      'Scroll for more'
-                    )}
-                  </Badge>
-                )}
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <Settings className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Posts List */}
+          {/* Posts List - Header removed */}
           <div className="space-y-6">
             {allPosts.map((post, index) => (
               <div key={`${post.id}-${index}`} className="w-full">
