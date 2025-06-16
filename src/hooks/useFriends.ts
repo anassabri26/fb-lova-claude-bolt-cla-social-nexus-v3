@@ -1,6 +1,4 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface Friendship {
@@ -19,39 +17,68 @@ export interface Friendship {
   };
 }
 
+// Mock friend requests data
+const mockFriendRequests: Friendship[] = [
+  {
+    id: 'req_1',
+    requester_id: 'user_7',
+    addressee_id: 'current_user',
+    status: 'pending',
+    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    requester_profile: {
+      full_name: 'Alex Rodriguez',
+      avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
+    }
+  },
+  {
+    id: 'req_2',
+    requester_id: 'user_8',
+    addressee_id: 'current_user',
+    status: 'pending',
+    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    requester_profile: {
+      full_name: 'Jessica Park',
+      avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face'
+    }
+  }
+];
+
+// Mock friends data
+const mockFriends: Friendship[] = [
+  {
+    id: 'friend_1',
+    requester_id: 'current_user',
+    addressee_id: 'user_1',
+    status: 'accepted',
+    created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    addressee_profile: {
+      full_name: 'Sarah Johnson',
+      avatar_url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
+    }
+  },
+  {
+    id: 'friend_2',
+    requester_id: 'user_2',
+    addressee_id: 'current_user',
+    status: 'accepted',
+    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    requester_profile: {
+      full_name: 'Mike Chen',
+      avatar_url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+    }
+  }
+];
+
 export const useFriendRequests = () => {
   return useQuery({
     queryKey: ['friend-requests'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      // Get friend requests
-      const { data: requests, error } = await supabase
-        .from('friendships')
-        .select('*')
-        .eq('addressee_id', user.id)
-        .eq('status', 'pending');
-
-      if (error) throw error;
-
-      // Get profiles for each request
-      const requestsWithProfiles = await Promise.all(
-        (requests || []).map(async (request) => {
-          const { data: requesterProfile } = await supabase
-            .from('profiles')
-            .select('full_name, avatar_url')
-            .eq('id', request.requester_id)
-            .maybeSingle();
-
-          return {
-            ...request,
-            requester_profile: requesterProfile
-          };
-        })
-      );
-
-      return requestsWithProfiles as Friendship[];
+      console.log('Fetching mock friend requests...');
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      return mockFriendRequests;
     }
   });
 };
@@ -60,43 +87,12 @@ export const useFriends = () => {
   return useQuery({
     queryKey: ['friends'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      // Get friendships
-      const { data: friendships, error } = await supabase
-        .from('friendships')
-        .select('*')
-        .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
-        .eq('status', 'accepted');
-
-      if (error) throw error;
-
-      // Get profiles for each friendship
-      const friendshipsWithProfiles = await Promise.all(
-        (friendships || []).map(async (friendship) => {
-          const [requesterProfile, addresseeProfile] = await Promise.all([
-            supabase
-              .from('profiles')
-              .select('full_name, avatar_url')
-              .eq('id', friendship.requester_id)
-              .maybeSingle(),
-            supabase
-              .from('profiles')
-              .select('full_name, avatar_url')
-              .eq('id', friendship.addressee_id)
-              .maybeSingle()
-          ]);
-
-          return {
-            ...friendship,
-            requester_profile: requesterProfile.data,
-            addressee_profile: addresseeProfile.data
-          };
-        })
-      );
-
-      return friendshipsWithProfiles as Friendship[];
+      console.log('Fetching mock friends...');
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      return mockFriends;
     }
   });
 };
@@ -106,23 +102,15 @@ export const useSendFriendRequest = () => {
   
   return useMutation({
     mutationFn: async ({ addresseeId }: { addresseeId: string }) => {
-      const user = await supabase.auth.getUser();
-      const { data, error } = await supabase
-        .from('friendships')
-        .insert([
-          {
-            requester_id: user.data.user?.id,
-            addressee_id: addresseeId,
-            status: 'pending'
-          }
-        ]);
-
-      if (error) throw error;
-      return data;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      console.log(`Mock friend request sent to ${addresseeId}`);
+      return { addresseeId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friend-requests'] });
-      toast.success('Friend request sent!');
+      toast.success('Friend request sent! (Mock mode)');
     },
     onError: (error) => {
       toast.error('Failed to send friend request');
@@ -136,18 +124,16 @@ export const useRespondToFriendRequest = () => {
   
   return useMutation({
     mutationFn: async ({ requestId, status }: { requestId: string; status: 'accepted' | 'declined' }) => {
-      const { data, error } = await supabase
-        .from('friendships')
-        .update({ status })
-        .eq('id', requestId);
-
-      if (error) throw error;
-      return data;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      console.log(`Mock friend request ${requestId} ${status}`);
+      return { requestId, status };
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['friend-requests'] });
       queryClient.invalidateQueries({ queryKey: ['friends'] });
-      toast.success(variables.status === 'accepted' ? 'Friend request accepted!' : 'Friend request declined');
+      toast.success(variables.status === 'accepted' ? 'Friend request accepted! (Mock mode)' : 'Friend request declined (Mock mode)');
     },
     onError: (error) => {
       toast.error('Failed to respond to friend request');

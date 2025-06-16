@@ -1,6 +1,4 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface Comment {
@@ -15,56 +13,57 @@ export interface Comment {
   } | null;
 }
 
+// Mock comments data
+const mockComments: Record<string, Comment[]> = {
+  '1': [
+    {
+      id: 'comment_1',
+      post_id: '1',
+      user_id: 'user_4',
+      content: 'This looks amazing! Great work on the React app! 🔥',
+      created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+      profiles: {
+        full_name: 'David Kim',
+        avatar_url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face'
+      }
+    },
+    {
+      id: 'comment_2',
+      post_id: '1',
+      user_id: 'user_5',
+      content: 'Would love to see the code! Is it open source?',
+      created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+      profiles: {
+        full_name: 'Lisa Wang',
+        avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face'
+      }
+    }
+  ],
+  '2': [
+    {
+      id: 'comment_3',
+      post_id: '2',
+      user_id: 'user_6',
+      content: 'Beautiful shot! Where was this taken?',
+      created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      profiles: {
+        full_name: 'Alex Rodriguez',
+        avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
+      }
+    }
+  ]
+};
+
 export const useComments = (postId: string) => {
   return useQuery({
     queryKey: ['comments', postId],
     queryFn: async () => {
-      console.log('Fetching comments for post:', postId);
+      console.log('Fetching mock comments for post:', postId);
       
-      try {
-        // Get comments first
-        const { data: comments, error: commentsError } = await supabase
-          .from('comments')
-          .select('*')
-          .eq('post_id', postId)
-          .order('created_at', { ascending: true });
-
-        if (commentsError) {
-          console.error('Error fetching comments:', commentsError);
-          throw commentsError;
-        }
-
-        if (!comments || comments.length === 0) {
-          return [];
-        }
-
-        // Get user profiles separately
-        const userIds = [...new Set(comments.map(comment => comment.user_id))];
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, full_name, avatar_url')
-          .in('id', userIds);
-
-        if (profilesError) {
-          console.error('Error fetching profiles:', profilesError);
-          // Continue with comments but without profile data
-        }
-
-        // Combine comments with profile data
-        const commentsWithProfiles = comments.map(comment => ({
-          ...comment,
-          profiles: profiles?.find(profile => profile.id === comment.user_id) || {
-            full_name: 'Anonymous User',
-            avatar_url: null
-          }
-        }));
-
-        console.log('Comments with profiles:', commentsWithProfiles);
-        return commentsWithProfiles as Comment[];
-      } catch (error) {
-        console.error('Error in useComments:', error);
-        return [];
-      }
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      return mockComments[postId] || [];
     },
     enabled: !!postId,
     staleTime: 30000,
@@ -76,44 +75,27 @@ export const useCreateComment = () => {
   
   return useMutation({
     mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        throw new Error('User not authenticated');
-      }
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const newComment: Comment = {
+        id: `comment_${Date.now()}`,
+        post_id: postId,
+        user_id: 'current_user',
+        content: content.trim(),
+        created_at: new Date().toISOString(),
+        profiles: {
+          full_name: 'John Doe',
+          avatar_url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+        }
+      };
 
-      const { data, error } = await supabase
-        .from('comments')
-        .insert([
-          {
-            post_id: postId,
-            content: content.trim(),
-            user_id: user.id
-          }
-        ])
-        .select('*')
-        .single();
-
-      if (error) {
-        console.error('Error creating comment:', error);
-        throw error;
-      }
-
-      // Get user profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name, avatar_url')
-        .eq('id', user.id)
-        .single();
-
-      return {
-        ...data,
-        profiles: profile || { full_name: 'Anonymous User', avatar_url: null }
-      } as Comment;
+      return newComment;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['comments', data.post_id] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Comment added!');
+      toast.success('Comment added! (Mock mode)');
     },
     onError: (error) => {
       console.error('Error creating comment:', error);
@@ -127,28 +109,16 @@ export const useDeleteComment = () => {
   
   return useMutation({
     mutationFn: async ({ commentId, postId }: { commentId: string; postId: string }) => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        throw new Error('User not authenticated');
-      }
-
-      const { error } = await supabase
-        .from('comments')
-        .delete()
-        .eq('id', commentId)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error deleting comment:', error);
-        throw error;
-      }
-
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      console.log(`Mock delete comment ${commentId} from post ${postId}`);
       return { commentId, postId };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['comments', data.postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Comment deleted!');
+      toast.success('Comment deleted! (Mock mode)');
     },
     onError: (error) => {
       console.error('Error deleting comment:', error);

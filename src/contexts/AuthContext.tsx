@@ -1,11 +1,25 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+// Mock user type to replace Supabase User
+interface MockUser {
+  id: string;
+  email: string;
+  user_metadata: {
+    full_name?: string;
+    avatar_url?: string;
+  };
+}
+
+// Mock session type to replace Supabase Session
+interface MockSession {
+  user: MockUser;
+  access_token: string;
+}
+
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: MockUser | null;
+  session: MockSession | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
@@ -23,110 +37,107 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<MockUser | null>(null);
+  const [session, setSession] = useState<MockSession | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+    // Check for existing session in localStorage
+    const savedSession = localStorage.getItem('mock_session');
+    if (savedSession) {
+      try {
+        const parsedSession = JSON.parse(savedSession);
+        setSession(parsedSession);
+        setUser(parsedSession.user);
+      } catch (error) {
+        console.error('Error parsing saved session:', error);
+        localStorage.removeItem('mock_session');
       }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const { error } = await supabase.auth.signUp({
+      // Create mock user
+      const mockUser: MockUser = {
+        id: `user_${Date.now()}`,
         email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName
-          }
+        user_metadata: {
+          full_name: fullName,
+          avatar_url: `https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face`
         }
-      });
+      };
 
-      if (error) {
-        console.error('Supabase sign-up error:', error);
-        toast.error(error.message);
-      } else {
-        toast.success('Check your email to confirm your account!');
-      }
+      const mockSession: MockSession = {
+        user: mockUser,
+        access_token: `mock_token_${Date.now()}`
+      };
 
+      // Save to localStorage
+      localStorage.setItem('mock_session', JSON.stringify(mockSession));
+      
+      setUser(mockUser);
+      setSession(mockSession);
+      
+      toast.success('Account created successfully! (Mock mode)');
+      return { error: null };
+    } catch (error) {
+      console.error('Mock sign-up error:', error);
+      toast.error('Sign-up failed. Please try again.');
       return { error };
-    } catch (networkError: any) {
-      console.error('Network error during sign-up:', networkError);
-      
-      // Provide more specific error messages based on the type of network error
-      if (networkError.message === 'Failed to fetch') {
-        toast.error('Unable to connect to authentication service. Please check your internet connection and try again.');
-      } else if (networkError.name === 'TypeError' && networkError.message.includes('fetch')) {
-        toast.error('Network connection failed. Please ensure you have internet access.');
-      } else {
-        toast.error('An unexpected error occurred. Please try again.');
-      }
-      
-      return { error: networkError };
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Create mock user (in real app, this would validate credentials)
+      const mockUser: MockUser = {
+        id: `user_${Date.now()}`,
         email,
-        password
-      });
+        user_metadata: {
+          full_name: email.split('@')[0], // Use email prefix as name
+          avatar_url: `https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face`
+        }
+      };
 
-      if (error) {
-        console.error('Supabase sign-in error:', error);
-        toast.error(error.message);
-      } else {
-        toast.success('Welcome back!');
-      }
+      const mockSession: MockSession = {
+        user: mockUser,
+        access_token: `mock_token_${Date.now()}`
+      };
 
+      // Save to localStorage
+      localStorage.setItem('mock_session', JSON.stringify(mockSession));
+      
+      setUser(mockUser);
+      setSession(mockSession);
+      
+      toast.success('Welcome back! (Mock mode)');
+      return { error: null };
+    } catch (error) {
+      console.error('Mock sign-in error:', error);
+      toast.error('Sign-in failed. Please try again.');
       return { error };
-    } catch (networkError: any) {
-      console.error('Network error during sign-in:', networkError);
-      
-      if (networkError.message === 'Failed to fetch') {
-        toast.error('Unable to connect to authentication service. Please check your internet connection and try again.');
-      } else if (networkError.name === 'TypeError' && networkError.message.includes('fetch')) {
-        toast.error('Network connection failed. Please ensure you have internet access.');
-      } else {
-        toast.error('An unexpected error occurred. Please try again.');
-      }
-      
-      return { error: networkError };
     }
   };
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Supabase sign-out error:', error);
-        toast.error(error.message);
-      } else {
-        toast.success('Signed out successfully');
-      }
-    } catch (networkError: any) {
-      console.error('Network error during sign-out:', networkError);
+      // Remove from localStorage
+      localStorage.removeItem('mock_session');
+      
+      setUser(null);
+      setSession(null);
+      
+      toast.success('Signed out successfully (Mock mode)');
+    } catch (error) {
+      console.error('Mock sign-out error:', error);
       toast.error('Failed to sign out. Please try again.');
     }
   };

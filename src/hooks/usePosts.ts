@@ -1,6 +1,4 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface Post {
@@ -19,106 +17,72 @@ export interface Post {
   user_has_liked?: boolean;
 }
 
+// Mock data for development
+const mockPosts: Post[] = [
+  {
+    id: '1',
+    user_id: 'user_1',
+    content: 'Just finished building an amazing React application! The satisfaction of seeing your code come to life is unmatched. 🚀 #ReactJS #WebDevelopment',
+    image_url: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop',
+    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    profiles: {
+      full_name: 'Sarah Johnson',
+      avatar_url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
+    },
+    likes_count: 42,
+    comments_count: 8,
+    user_has_liked: false
+  },
+  {
+    id: '2',
+    user_id: 'user_2',
+    content: 'Beautiful sunset from my evening walk. Sometimes you need to step away from the screen and enjoy nature! 🌅',
+    image_url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
+    created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
+    updated_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+    profiles: {
+      full_name: 'Mike Chen',
+      avatar_url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+    },
+    likes_count: 78,
+    comments_count: 15,
+    user_has_liked: true
+  },
+  {
+    id: '3',
+    user_id: 'user_3',
+    content: 'Excited to share my latest project! Working on a social media platform with some amazing features. Can\'t wait to show you all what we\'ve been building! 💻✨',
+    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+    updated_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    profiles: {
+      full_name: 'Emma Wilson',
+      avatar_url: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face'
+    },
+    likes_count: 156,
+    comments_count: 23,
+    user_has_liked: false
+  }
+];
+
 export const usePosts = () => {
   return useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
-      console.log('Fetching posts...');
+      console.log('Fetching mock posts...');
       
-      try {
-        // Get current user
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
-          console.error('User not authenticated:', userError);
-          throw new Error('User not authenticated');
-        }
-
-        // Get posts first
-        const { data: posts, error: postsError } = await supabase
-          .from('posts')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (postsError) {
-          console.error('Error fetching posts:', postsError);
-          throw postsError;
-        }
-
-        if (!posts || posts.length === 0) {
-          console.log('No posts found');
-          return [];
-        }
-
-        // Get user profiles separately
-        const userIds = [...new Set(posts.map(post => post.user_id))];
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, full_name, avatar_url')
-          .in('id', userIds);
-
-        if (profilesError) {
-          console.error('Error fetching profiles:', profilesError);
-        }
-
-        // Get likes and comments counts for each post
-        const postsWithCounts = await Promise.all(
-          posts.map(async (post) => {
-            try {
-              // Get likes count and user's like status
-              const [likesResult, userLikeResult, commentsResult] = await Promise.all([
-                supabase
-                  .from('likes')
-                  .select('id', { count: 'exact' })
-                  .eq('post_id', post.id),
-                supabase
-                  .from('likes')
-                  .select('id')
-                  .eq('post_id', post.id)
-                  .eq('user_id', user.id)
-                  .maybeSingle(),
-                supabase
-                  .from('comments')
-                  .select('id', { count: 'exact' })
-                  .eq('post_id', post.id)
-              ]);
-
-              const profile = profiles?.find(p => p.id === post.user_id) || {
-                full_name: 'Anonymous User',
-                avatar_url: null
-              };
-
-              return {
-                ...post,
-                profiles: profile,
-                likes_count: likesResult.count || 0,
-                comments_count: commentsResult.count || 0,
-                user_has_liked: userLikeResult.data !== null,
-              };
-            } catch (error) {
-              console.error('Error getting post counts:', error);
-              return {
-                ...post,
-                profiles: {
-                  full_name: 'Anonymous User',
-                  avatar_url: null
-                },
-                likes_count: 0,
-                comments_count: 0,
-                user_has_liked: false,
-              };
-            }
-          })
-        );
-
-        console.log('Posts with counts:', postsWithCounts);
-        return postsWithCounts as Post[];
-      } catch (error) {
-        console.error('Error in usePosts:', error);
-        return [];
-      }
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Return mock posts with some randomization
+      return mockPosts.map(post => ({
+        ...post,
+        likes_count: post.likes_count + Math.floor(Math.random() * 5),
+        comments_count: post.comments_count + Math.floor(Math.random() * 3)
+      }));
     },
     staleTime: 30000,
-    retry: 3,
+    retry: 1,
   });
 };
 
@@ -127,33 +91,30 @@ export const useCreatePost = () => {
   
   return useMutation({
     mutationFn: async ({ content, imageUrl }: { content: string; imageUrl?: string }) => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        throw new Error('User not authenticated');
-      }
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newPost: Post = {
+        id: `post_${Date.now()}`,
+        user_id: 'current_user',
+        content: content.trim(),
+        image_url: imageUrl,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        profiles: {
+          full_name: 'John Doe',
+          avatar_url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+        },
+        likes_count: 0,
+        comments_count: 0,
+        user_has_liked: false
+      };
 
-      const { data, error } = await supabase
-        .from('posts')
-        .insert([
-          {
-            content: content.trim(),
-            image_url: imageUrl,
-            user_id: user.id
-          }
-        ])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating post:', error);
-        throw error;
-      }
-
-      return data;
+      return newPost;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Post created successfully!');
+      toast.success('Post created successfully! (Mock mode)');
     },
     onError: (error) => {
       console.error('Error creating post:', error);
@@ -167,39 +128,11 @@ export const useLikePost = () => {
   
   return useMutation({
     mutationFn: async ({ postId, isLiked }: { postId: string; isLiked: boolean }) => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        throw new Error('User not authenticated');
-      }
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
       
-      if (isLiked) {
-        // Unlike - remove the like
-        const { error } = await supabase
-          .from('likes')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id);
-        
-        if (error) {
-          console.error('Error removing like:', error);
-          throw error;
-        }
-      } else {
-        // Like - add the like
-        const { error } = await supabase
-          .from('likes')
-          .insert([
-            {
-              post_id: postId,
-              user_id: user.id
-            }
-          ]);
-        
-        if (error) {
-          console.error('Error adding like:', error);
-          throw error;
-        }
-      }
+      console.log(`Mock ${isLiked ? 'unlike' : 'like'} for post ${postId}`);
+      return { postId, isLiked: !isLiked };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
@@ -216,25 +149,15 @@ export const useDeletePost = () => {
   
   return useMutation({
     mutationFn: async (postId: string) => {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        throw new Error('User not authenticated');
-      }
-
-      const { error } = await supabase
-        .from('posts')
-        .delete()
-        .eq('id', postId)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error deleting post:', error);
-        throw error;
-      }
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      console.log(`Mock delete for post ${postId}`);
+      return postId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Post deleted successfully!');
+      toast.success('Post deleted successfully! (Mock mode)');
     },
     onError: (error) => {
       console.error('Error deleting post:', error);
