@@ -3,7 +3,6 @@ import { Home, Users, MessageCircle, Video, Store } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AccessibleButton from './AccessibleButton';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { toast } from 'sonner';
 
 const MobileNavigation = () => {
   const navigate = useNavigate();
@@ -20,19 +19,17 @@ const MobileNavigation = () => {
     { id: 'messages', icon: MessageCircle, label: 'Messages', path: '/messages' },
   ];
 
-  const handleNavigation = (path: string, label: string) => {
+  const handleNavigation = (path: string) => {
     // Haptic feedback for mobile devices
     if ('vibrate' in navigator) {
       navigator.vibrate(50);
     }
     
     navigate(path);
-    toast.success(`Navigated to ${label}`);
-    console.log(`Mobile navigation: ${label} - ${path}`);
+    console.log(`Mobile navigation: ${path}`);
   };
 
   const handleLongPress = (item: any) => {
-    toast.info(`Long pressed on ${item.label}`);
     console.log(`Long press: ${item.label}`);
   };
 
@@ -53,7 +50,7 @@ const MobileNavigation = () => {
                   ? 'text-blue-600 bg-blue-50 transform scale-105' 
                   : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
               }`}
-              onClick={() => handleNavigation(item.path, item.label)}
+              onClick={() => handleNavigation(item.path)}
               onMouseDown={() => {
                 pressTimer = setTimeout(() => handleLongPress(item), 500);
               }}

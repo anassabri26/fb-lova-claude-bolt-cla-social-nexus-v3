@@ -46,15 +46,13 @@ const Sidebar = () => {
     },
   ];
 
-  const handleNavigation = (path: string, label: string) => {
+  const handleNavigation = (path: string) => {
     navigate(path);
-    toast.success(`Navigated to ${label}`);
-    console.log(`Sidebar navigation: ${label} - ${path}`);
+    console.log(`Sidebar navigation: ${path}`);
   };
 
   const handleProfileClick = () => {
     navigate('/profile');
-    toast.success('Navigated to Profile');
     console.log('Profile clicked from sidebar');
   };
 
@@ -93,7 +91,7 @@ const Sidebar = () => {
                     ? 'sidebar-nav-item-active' 
                     : 'sidebar-nav-item-inactive'
                 }`}
-                onClick={() => handleNavigation(item.path, item.label)}
+                onClick={() => handleNavigation(item.path)}
                 aria-label={item.label}
               >
                 <div className="sidebar-nav-content">
@@ -150,7 +148,7 @@ const Sidebar = () => {
               key={shortcut.name}
               variant="ghost"
               className="sidebar-shortcut-item"
-              onClick={() => handleNavigation(shortcut.path, shortcut.name)}
+              onClick={() => handleNavigation(shortcut.path)}
             >
               <img
                 src={shortcut.image}
@@ -175,7 +173,6 @@ const Sidebar = () => {
               className="sidebar-quick-action"
               onClick={() => {
                 navigate('/');
-                toast.success('Create post opened');
                 console.log('Quick action: Create post');
               }}
             >
@@ -188,7 +185,6 @@ const Sidebar = () => {
               className="sidebar-quick-action"
               onClick={() => {
                 navigate('/events');
-                toast.success('Create event opened');
                 console.log('Quick action: Create event');
               }}
             >

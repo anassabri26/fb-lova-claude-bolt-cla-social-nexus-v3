@@ -22,15 +22,13 @@ const Header = () => {
     { id: 'messages', icon: MessageCircle, path: '/messages', label: 'Messages' },
   ];
 
-  const handleNavigation = (path: string, label: string) => {
+  const handleNavigation = (path: string) => {
     navigate(path);
-    toast.success(`Navigated to ${label}`);
-    console.log(`Header navigation: ${label} - ${path}`);
+    console.log(`Header navigation: ${path}`);
   };
 
   const handleProfileClick = () => {
     navigate('/profile');
-    toast.success('Navigated to Profile');
     console.log('Profile clicked');
   };
 
@@ -52,7 +50,6 @@ const Header = () => {
 
   const handleCreatePost = () => {
     navigate('/');
-    toast.success('Create post focused');
     console.log('Create post clicked');
   };
 
@@ -65,7 +62,7 @@ const Header = () => {
             <div className="flex items-center space-x-1 min-w-0">
               <div 
                 className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity touch-target"
-                onClick={() => handleNavigation('/', 'Home')}
+                onClick={() => handleNavigation('/')}
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-base sm:text-lg">f</span>
@@ -100,7 +97,7 @@ const Header = () => {
                       className={`relative p-2 rounded-xl transition-colors ${
                         isActive ? 'text-blue-600' : 'text-gray-600'
                       }`}
-                      onClick={() => handleNavigation(item.path, item.label)}
+                      onClick={() => handleNavigation(item.path)}
                       aria-label={item.label}
                     >
                       <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -182,7 +179,7 @@ const Header = () => {
                     variant="ghost"
                     className="flex items-center space-x-2 p-2 rounded-lg text-left justify-start"
                     onClick={() => {
-                      handleNavigation(item.path, item.label);
+                      handleNavigation(item.path);
                       setIsMenuOpen(false);
                     }}
                   >
