@@ -23,7 +23,7 @@ export interface PostsPage {
   hasMore: boolean;
 }
 
-// CRITICAL FIX: Enhanced mock data generator with more posts
+// CRITICAL FIX: Enhanced mock data generator with guaranteed posts
 const generateMockPosts = (page: number, pageSize: number): PostsPage => {
   const posts: Post[] = [];
   const startIndex = page * pageSize;
@@ -92,11 +92,12 @@ const generateMockPosts = (page: number, pageSize: number): PostsPage => {
     'The best part about being a developer? Every day brings new challenges and opportunities to grow! 📈'
   ];
 
+  // CRITICAL FIX: Always generate the exact number of posts requested
   for (let i = 0; i < pageSize; i++) {
     const postIndex = startIndex + i;
     const profile = profiles[postIndex % profiles.length];
     const content = contents[postIndex % contents.length];
-    const hasImage = Math.random() > 0.4; // 60% chance of having an image
+    const hasImage = Math.random() > 0.3; // 70% chance of having an image
     const image = hasImage ? images[postIndex % images.length] : undefined;
 
     posts.push({
@@ -113,11 +114,11 @@ const generateMockPosts = (page: number, pageSize: number): PostsPage => {
     });
   }
 
-  // CRITICAL FIX: Generate more pages (200 pages = 4000 posts total)
+  // CRITICAL FIX: Generate more pages (300 pages = 4500+ posts total)
   return {
     posts,
-    nextCursor: page < 199 ? `page_${page + 1}` : undefined,
-    hasMore: page < 199
+    nextCursor: page < 299 ? `page_${page + 1}` : undefined,
+    hasMore: page < 299
   };
 };
 
@@ -137,13 +138,14 @@ export const usePosts = () => {
   });
 };
 
-export const useInfinitePosts = (pageSize: number = 20) => {
+export const useInfinitePosts = (pageSize: number = 15) => {
   return useInfiniteQuery({
     queryKey: ['posts', 'infinite', pageSize],
     queryFn: async ({ pageParam = 0 }) => {
       console.log(`Fetching posts page ${pageParam} with ${pageSize} items...`);
       
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 300 + 100));
+      // Faster loading for better UX
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 200 + 100));
       
       return generateMockPosts(pageParam, pageSize);
     },

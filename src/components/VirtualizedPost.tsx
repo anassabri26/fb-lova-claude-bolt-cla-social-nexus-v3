@@ -15,35 +15,32 @@ const VirtualizedPost = memo<VirtualizedPostProps>(({ index, style, data }) => {
   const { posts, hasNextPage, isFetchingNextPage } = data;
   const post = posts[index];
 
-  // CRITICAL FIX: Better loading state handling
-  if (!post && index >= posts.length) {
-    if (hasNextPage) {
-      return (
-        <div 
-          style={{
-            ...style,
-            padding: 0,
-            margin: 0,
-          }} 
-          className="w-full"
-        >
-          <div className="px-4 pb-6">
-            <div className="bg-white rounded-lg shadow-sm p-6 text-center max-w-2xl mx-auto">
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-gray-600">
-                  {isFetchingNextPage ? 'Loading more posts...' : 'Scroll to load more'}
-                </span>
-              </div>
+  // CRITICAL FIX: Handle loading indicator at the end
+  if (index === posts.length && hasNextPage) {
+    return (
+      <div 
+        style={{
+          ...style,
+          padding: 0,
+          margin: 0,
+        }} 
+        className="w-full"
+      >
+        <div className="px-4 pb-6">
+          <div className="bg-white rounded-lg shadow-sm p-6 text-center max-w-2xl mx-auto">
+            <div className="flex items-center justify-center space-x-3">
+              <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-gray-600">
+                {isFetchingNextPage ? 'Loading more posts...' : 'Scroll to load more'}
+              </span>
             </div>
           </div>
         </div>
-      );
-    }
-    return null;
+      </div>
+    );
   }
 
-  // CRITICAL FIX: Show skeleton for missing posts
+  // CRITICAL FIX: Show skeleton only when post is missing but should exist
   if (!post) {
     return (
       <div 
@@ -79,6 +76,7 @@ const VirtualizedPost = memo<VirtualizedPostProps>(({ index, style, data }) => {
     );
   }
 
+  // CRITICAL FIX: Render the actual post
   return (
     <div 
       style={{

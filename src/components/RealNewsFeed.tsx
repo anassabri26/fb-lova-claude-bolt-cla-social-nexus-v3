@@ -22,40 +22,40 @@ const RealNewsFeed = () => {
     isLoading,
     error,
     refetch
-  } = useInfinitePosts(20);
+  } = useInfinitePosts(15); // Reduced page size for better loading
 
   const allPosts = useMemo(() => {
     return data?.pages.flatMap(page => page.posts) ?? [];
   }, [data]);
 
-  // CRITICAL FIX: Proper item count calculation
+  // CRITICAL FIX: Proper item count and loading logic
   const itemCount = hasNextPage ? allPosts.length + 1 : allPosts.length;
 
   const isItemLoaded = useCallback((index: number) => {
-    // CRITICAL FIX: Handle loading state properly
+    // CRITICAL: Return true if we have the post, false if we need to load it
     return index < allPosts.length;
   }, [allPosts]);
 
   const loadMoreItems = useCallback(async (startIndex: number, stopIndex: number) => {
     if (!isFetchingNextPage && hasNextPage) {
       try {
-        console.log(`Loading items ${startIndex} to ${stopIndex}`);
+        console.log(`Loading items ${startIndex} to ${stopIndex}, current posts: ${allPosts.length}`);
         await fetchNextPage();
       } catch (error) {
         console.error('Error loading more posts:', error);
       }
     }
     return Promise.resolve();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, allPosts.length]);
 
   React.useEffect(() => {
     const updateHeight = () => {
       const viewportHeight = window.innerHeight;
       const headerHeight = 64;
       const createPostHeight = 140;
-      const padding = 120;
+      const padding = 100;
       const calculatedHeight = viewportHeight - headerHeight - createPostHeight - padding;
-      setListHeight(Math.max(500, Math.min(800, calculatedHeight)));
+      setListHeight(Math.max(400, Math.min(700, calculatedHeight)));
     };
 
     updateHeight();
@@ -162,22 +162,22 @@ const RealNewsFeed = () => {
               isItemLoaded={isItemLoaded}
               itemCount={itemCount}
               loadMoreItems={loadMoreItems}
-              threshold={5}
-              minimumBatchSize={5}
+              threshold={2}
+              minimumBatchSize={3}
             >
               {({ onItemsRendered, ref }) => (
                 <List
                   ref={ref}
                   height={listHeight}
                   itemCount={itemCount}
-                  itemSize={520}
+                  itemSize={480}
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
                     hasNextPage: hasNextPage ?? false,
                     isFetchingNextPage
                   }}
-                  overscanCount={3}
+                  overscanCount={2}
                   className="virtual-news-feed-list"
                   style={{ 
                     overflowX: 'hidden',
