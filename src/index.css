@@ -150,14 +150,24 @@
   transform: translateZ(0); /* Force hardware acceleration */
 }
 
-/* Consistent spacing for virtual list items */
+/* Critical fix for virtual list item spacing */
 .react-window-list > div {
   overflow: visible !important;
+  /* Remove any default margins that could cause overlapping */
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Ensure proper post spacing within virtual items */
-.react-window-list-item > div {
-  margin-bottom: 0 !important; /* Remove any default margins from RealPost */
+.react-window-list-item {
+  /* Remove any margins that could interfere with virtual positioning */
+  margin: 0 !important;
+}
+
+/* Fix for RealPost component within virtual list */
+.react-window-list-item .shadow-sm {
+  /* Ensure cards don't have conflicting margins */
+  margin-bottom: 0 !important;
 }
 
 /* Smooth transitions for loading states */
@@ -186,11 +196,6 @@
   }
 }
 
-/* Fix for consistent card spacing in virtual list */
-.react-window-list .card {
-  margin-bottom: 0 !important;
-}
-
 /* Ensure proper container sizing */
 .react-window-list-container {
   width: 100%;
@@ -198,7 +203,7 @@
   position: relative;
 }
 
-/* Smooth scroll behavior */
+/* Enhanced scrollbar for react-window */
 .react-window-list::-webkit-scrollbar {
   width: 8px;
 }
@@ -216,4 +221,15 @@
 
 .react-window-list::-webkit-scrollbar-thumb:hover {
   background: rgb(156 163 175);
+}
+
+/* Critical: Prevent any margin collapse or interference */
+.react-window-list * {
+  box-sizing: border-box;
+}
+
+/* Ensure virtual list items don't interfere with each other */
+.react-window-list [style*="position: absolute"] {
+  /* Virtual list items are absolutely positioned, ensure they don't overlap */
+  z-index: auto;
 }

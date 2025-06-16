@@ -175,7 +175,7 @@ const RealNewsFeed = () => {
                   ref={ref}
                   height={listHeight}
                   itemCount={itemCount}
-                  itemSize={450} // Consistent height per post item (includes margins)
+                  itemSize={420} // Reduced item size to account for padding in VirtualizedPost
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
@@ -186,8 +186,7 @@ const RealNewsFeed = () => {
                   className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 react-window-list"
                   style={{ 
                     overflowX: 'hidden',
-                    paddingTop: '16px', // Add top padding to the list
-                    paddingBottom: '16px' // Add bottom padding to the list
+                    backgroundColor: 'rgb(249 250 251)', // Gray-50 background
                   }}
                 >
                   {VirtualizedPost}
