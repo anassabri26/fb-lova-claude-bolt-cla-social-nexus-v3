@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Post } from '@/hooks/usePosts';
 import RealPost from './RealPost';
 
@@ -18,7 +18,7 @@ const VirtualizedPost = memo(({ index, style, data }: VirtualizedPostProps) => {
   const post = posts[index];
 
   // Trigger loading more posts when approaching the end
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       index >= posts.length - 5 && // Load when 5 posts from the end
       hasNextPage &&
