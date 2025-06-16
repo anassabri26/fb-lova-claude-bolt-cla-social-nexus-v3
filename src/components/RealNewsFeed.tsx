@@ -55,10 +55,10 @@ const RealNewsFeed = () => {
     const updateHeight = () => {
       const viewportHeight = window.innerHeight;
       const headerHeight = 64; // Approximate header height
-      const createPostHeight = 120; // Approximate create post height
-      const padding = 100; // Extra padding
+      const createPostHeight = 140; // Approximate create post height
+      const padding = 120; // Extra padding for better UX
       const calculatedHeight = viewportHeight - headerHeight - createPostHeight - padding;
-      setListHeight(Math.max(400, Math.min(800, calculatedHeight)));
+      setListHeight(Math.max(500, Math.min(800, calculatedHeight)));
     };
 
     updateHeight();
@@ -162,7 +162,7 @@ const RealNewsFeed = () => {
           </div>
           
           {/* Virtual Scrolling Container */}
-          <div style={{ height: listHeight }} className="relative">
+          <div style={{ height: listHeight }} className="relative bg-gray-50">
             <InfiniteLoader
               isItemLoaded={isItemLoaded}
               itemCount={itemCount}
@@ -175,7 +175,7 @@ const RealNewsFeed = () => {
                   ref={ref}
                   height={listHeight}
                   itemCount={itemCount}
-                  itemSize={420} // Estimated height per post (increased for better spacing)
+                  itemSize={450} // Consistent height per post item (includes margins)
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
@@ -184,7 +184,11 @@ const RealNewsFeed = () => {
                   }}
                   overscanCount={2} // Render 2 extra items outside visible area
                   className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 react-window-list"
-                  style={{ overflowX: 'hidden' }}
+                  style={{ 
+                    overflowX: 'hidden',
+                    paddingTop: '16px', // Add top padding to the list
+                    paddingBottom: '16px' // Add bottom padding to the list
+                  }}
                 >
                   {VirtualizedPost}
                 </List>
