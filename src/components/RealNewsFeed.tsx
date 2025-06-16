@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,11 +6,14 @@ import { useInfinitePosts } from '@/hooks/usePosts';
 import CreatePost from './CreatePost';
 import VirtualizedPost from './VirtualizedPost';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, RefreshCw, MessageCircle } from 'lucide-react';
+import { AlertCircle, RefreshCw, MessageCircle, Settings, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const RealNewsFeed = () => {
   const { user } = useAuth();
+  const [listHeight, setListHeight] = useState(600);
+  
   const {
     data,
     fetchNextPage,
@@ -38,12 +41,30 @@ const RealNewsFeed = () => {
   const loadMoreItems = useCallback(async (startIndex: number, stopIndex: number) => {
     if (!isFetchingNextPage && hasNextPage) {
       try {
+        console.log(`Loading items ${startIndex} to ${stopIndex}`);
         await fetchNextPage();
       } catch (error) {
         console.error('Error loading more posts:', error);
       }
     }
+    return Promise.resolve();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  // Adjust list height based on viewport
+  React.useEffect(() => {
+    const updateHeight = () => {
+      const viewportHeight = window.innerHeight;
+      const headerHeight = 64; // Approximate header height
+      const createPostHeight = 120; // Approximate create post height
+      const padding = 100; // Extra padding
+      const calculatedHeight = viewportHeight - headerHeight - createPostHeight - padding;
+      setListHeight(Math.max(400, Math.min(800, calculatedHeight)));
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
 
   if (!user) {
     return (
@@ -110,42 +131,60 @@ const RealNewsFeed = () => {
       
       {allPosts.length > 0 ? (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-gray-100">
+          {/* Feed Header with Stats */}
+          <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
-              <div className="text-sm text-gray-500">
-                {allPosts.length} posts loaded
+              <div className="flex items-center space-x-3">
+                <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                  <BarChart3 className="w-3 h-3 mr-1" />
+                  {allPosts.length} posts
+                </Badge>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
                 {hasNextPage && (
-                  <span className="ml-2 text-blue-600">
-                    {isFetchingNextPage ? 'Loading...' : 'Scroll for more'}
-                  </span>
+                  <Badge variant="outline" className="text-green-600 border-green-200">
+                    {isFetchingNextPage ? (
+                      <>
+                        <div className="w-3 h-3 border border-green-600 border-t-transparent rounded-full animate-spin mr-1"></div>
+                        Loading...
+                      </>
+                    ) : (
+                      'Scroll for more'
+                    )}
+                  </Badge>
                 )}
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Settings className="w-4 h-4" />
+                </Button>
               </div>
             </div>
           </div>
           
           {/* Virtual Scrolling Container */}
-          <div className="h-[calc(100vh-300px)] min-h-[600px]">
+          <div style={{ height: listHeight }} className="relative">
             <InfiniteLoader
               isItemLoaded={isItemLoaded}
               itemCount={itemCount}
               loadMoreItems={loadMoreItems}
-              threshold={5} // Start loading when 5 items from the end
+              threshold={3} // Start loading when 3 items from the end
+              minimumBatchSize={10} // Load at least 10 items at a time
             >
               {({ onItemsRendered, ref }) => (
                 <List
                   ref={ref}
-                  height={600} // Fixed height for the virtual list
+                  height={listHeight}
                   itemCount={itemCount}
-                  itemSize={400} // Estimated height per post
+                  itemSize={420} // Estimated height per post (increased for better spacing)
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
                     hasNextPage: hasNextPage ?? false,
                     isFetchingNextPage
                   }}
-                  overscanCount={3} // Render 3 extra items outside visible area
-                  className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                  overscanCount={2} // Render 2 extra items outside visible area
+                  className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 react-window-list"
+                  style={{ overflowX: 'hidden' }}
                 >
                   {VirtualizedPost}
                 </List>
@@ -153,23 +192,18 @@ const RealNewsFeed = () => {
             </InfiniteLoader>
           </div>
           
-          {/* Loading indicator at the bottom */}
-          {isFetchingNextPage && (
-            <div className="p-4 text-center border-t border-gray-100">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-sm text-gray-600">Loading more posts...</span>
-              </div>
-            </div>
-          )}
-          
           {/* End of feed indicator */}
           {!hasNextPage && allPosts.length > 0 && (
             <div className="p-6 text-center border-t border-gray-100 bg-gray-50">
               <div className="text-gray-500">
                 <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">You're all caught up!</p>
+                <p className="text-sm font-medium">You're all caught up!</p>
                 <p className="text-xs mt-1">Check back later for new posts from your friends.</p>
+                <div className="mt-3 flex items-center justify-center space-x-4 text-xs">
+                  <span>Total posts loaded: {allPosts.length}</span>
+                  <span>•</span>
+                  <span>Virtual scrolling active</span>
+                </div>
               </div>
             </div>
           )}
