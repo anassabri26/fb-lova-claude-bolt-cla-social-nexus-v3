@@ -359,7 +359,7 @@ const RecentTab = () => {
                         Show All Categories
                       </Button>
                     )}
-                    <Button onClick={() => navigate('/')}>
+                    <Button>
                       Create a Post
                     </Button>
                   </div>
