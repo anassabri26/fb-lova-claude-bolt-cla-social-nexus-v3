@@ -229,12 +229,12 @@
   }
 }
 
-/* Tablet: Narrow left sidebar only */
+/* Tablet: Both sidebars visible with optimized widths */
 @media (min-width: 48.0625rem) and (max-width: 64rem) { /* 769px - 1024px */
   .main-content {
-    margin-left: 4.5rem; /* 72px - icon only sidebar */
-    margin-right: 0;
-    width: calc(100% - 4.5rem);
+    margin-left: 14rem; /* 224px - left sidebar with full text */
+    margin-right: 14rem; /* 224px - right sidebar visible */
+    width: calc(100% - 28rem);
   }
 }
 
@@ -272,11 +272,11 @@
   max-width: 18rem; /* 288px maximum */
 }
 
-/* Tablet: Icon-only sidebar */
+/* Tablet: Full sidebar with text visible */
 @media (min-width: 48.0625rem) and (max-width: 64rem) { /* 769px - 1024px */
   .sidebar-responsive {
     display: block;
-    width: 4.5rem; /* 72px - icon only mode */
+    width: 14rem; /* 224px - full sidebar with text */
   }
 }
 
@@ -522,62 +522,6 @@
   font-size: 0.75rem;
 }
 
-/* Hide sidebar text on tablet */
-@media (min-width: 48.0625rem) and (max-width: 64rem) { /* 769px - 1024px */
-  .sidebar-text,
-  .sidebar-shortcut-name,
-  .sidebar-shortcut-members,
-  .sidebar-section-title,
-  .sidebar-quick-action-text {
-    display: none;
-  }
-  
-  .sidebar-nav-content {
-    justify-content: center;
-  }
-  
-  .sidebar-shortcut-content {
-    display: none;
-  }
-  
-  .sidebar-section-header {
-    justify-content: center;
-  }
-  
-  .sidebar-edit-button {
-    display: none;
-  }
-  
-  .sidebar-badge {
-    position: absolute;
-    top: -0.25rem;
-    right: -0.25rem;
-    width: 1rem;
-    height: 1rem;
-    font-size: 0.625rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-  }
-  
-  .sidebar-nav-item {
-    position: relative;
-    justify-content: center;
-    padding: 0.5rem;
-  }
-  
-  .sidebar-profile-item {
-    justify-content: center;
-    padding: 0.5rem;
-  }
-  
-  .sidebar-shortcut-item {
-    justify-content: center;
-    padding: 0.5rem;
-  }
-}
-
 /* RIGHT SIDEBAR RESPONSIVE STYLES - OPTIMIZED WIDTHS */
 .right-sidebar-responsive {
   position: fixed;
@@ -587,10 +531,18 @@
   background: rgb(249 250 251);
   overflow-y: auto;
   z-index: 10;
-  display: none; /* Hidden on mobile and tablet */
+  display: none; /* Hidden on mobile */
   width: fit-content; /* Adjust to content width */
   min-width: 12rem; /* 192px minimum */
   max-width: 18rem; /* 288px maximum */
+}
+
+/* Tablet: Show right sidebar - content-optimized */
+@media (min-width: 48.0625rem) and (max-width: 64rem) { /* 769px - 1024px */
+  .right-sidebar-responsive {
+    display: block;
+    width: 14rem; /* 224px - visible in tablet mode */
+  }
 }
 
 /* Desktop: Show right sidebar - content-optimized */
