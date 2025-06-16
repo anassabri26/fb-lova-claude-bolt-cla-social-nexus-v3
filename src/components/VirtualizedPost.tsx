@@ -15,7 +15,35 @@ const VirtualizedPost = memo<VirtualizedPostProps>(({ index, style, data }) => {
   const { posts, hasNextPage, isFetchingNextPage } = data;
   const post = posts[index];
 
-  // Show loading skeleton for items that haven't loaded yet
+  // CRITICAL FIX: Better loading state handling
+  if (!post && index >= posts.length) {
+    if (hasNextPage) {
+      return (
+        <div 
+          style={{
+            ...style,
+            padding: 0,
+            margin: 0,
+          }} 
+          className="w-full"
+        >
+          <div className="px-4 pb-6">
+            <div className="bg-white rounded-lg shadow-sm p-6 text-center max-w-2xl mx-auto">
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-gray-600">
+                  {isFetchingNextPage ? 'Loading more posts...' : 'Scroll to load more'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
+
+  // CRITICAL FIX: Show skeleton for missing posts
   if (!post) {
     return (
       <div 
@@ -44,31 +72,6 @@ const VirtualizedPost = memo<VirtualizedPostProps>(({ index, style, data }) => {
               <div className="h-8 w-16 bg-gray-200 rounded"></div>
               <div className="h-8 w-20 bg-gray-200 rounded"></div>
               <div className="h-8 w-16 bg-gray-200 rounded"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show loading indicator for the last item when fetching more
-  if (index === posts.length && hasNextPage) {
-    return (
-      <div 
-        style={{
-          ...style,
-          padding: 0,
-          margin: 0,
-        }} 
-        className="w-full"
-      >
-        <div className="px-4 pb-6">
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center max-w-2xl mx-auto">
-            <div className="flex items-center justify-center space-x-3">
-              <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-gray-600">
-                {isFetchingNextPage ? 'Loading more posts...' : 'Scroll to load more'}
-              </span>
             </div>
           </div>
         </div>

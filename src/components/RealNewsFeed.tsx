@@ -28,10 +28,12 @@ const RealNewsFeed = () => {
     return data?.pages.flatMap(page => page.posts) ?? [];
   }, [data]);
 
+  // CRITICAL FIX: Proper item count calculation
   const itemCount = hasNextPage ? allPosts.length + 1 : allPosts.length;
 
   const isItemLoaded = useCallback((index: number) => {
-    return !!allPosts[index];
+    // CRITICAL FIX: Handle loading state properly
+    return index < allPosts.length;
   }, [allPosts]);
 
   const loadMoreItems = useCallback(async (startIndex: number, stopIndex: number) => {
@@ -160,22 +162,22 @@ const RealNewsFeed = () => {
               isItemLoaded={isItemLoaded}
               itemCount={itemCount}
               loadMoreItems={loadMoreItems}
-              threshold={3}
-              minimumBatchSize={10}
+              threshold={5}
+              minimumBatchSize={5}
             >
               {({ onItemsRendered, ref }) => (
                 <List
                   ref={ref}
                   height={listHeight}
                   itemCount={itemCount}
-                  itemSize={500}
+                  itemSize={520}
                   onItemsRendered={onItemsRendered}
                   itemData={{
                     posts: allPosts,
                     hasNextPage: hasNextPage ?? false,
                     isFetchingNextPage
                   }}
-                  overscanCount={2}
+                  overscanCount={3}
                   className="virtual-news-feed-list"
                   style={{ 
                     overflowX: 'hidden',

@@ -127,17 +127,24 @@
   background-color: rgb(243 244 246);
 }
 
+/* CRITICAL: Virtual News Feed Specific Styles */
 .virtual-news-feed-list {
   scroll-behavior: smooth;
   contain: layout style paint;
   background-color: rgb(249 250 251);
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
+/* CRITICAL: Fix for virtual list container */
 .virtual-news-feed-list > div {
   position: relative !important;
   overflow: visible !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
+/* CRITICAL: Fix for virtual list items */
 .virtual-news-feed-list > div > div {
   position: absolute !important;
   top: 0 !important;
@@ -148,6 +155,7 @@
   padding: 0 !important;
   box-sizing: border-box !important;
   z-index: auto !important;
+  contain: layout style paint;
 }
 
 .animate-pulse {

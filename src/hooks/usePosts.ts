@@ -23,7 +23,7 @@ export interface PostsPage {
   hasMore: boolean;
 }
 
-// Enhanced mock data generator for virtual scrolling
+// CRITICAL FIX: Enhanced mock data generator with more posts
 const generateMockPosts = (page: number, pageSize: number): PostsPage => {
   const posts: Post[] = [];
   const startIndex = page * pageSize;
@@ -48,6 +48,18 @@ const generateMockPosts = (page: number, pageSize: number): PostsPage => {
     {
       full_name: 'Lisa Wang',
       avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face'
+    },
+    {
+      full_name: 'Alex Rodriguez',
+      avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'
+    },
+    {
+      full_name: 'Jessica Park',
+      avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face'
+    },
+    {
+      full_name: 'Robert Smith',
+      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face'
     }
   ];
 
@@ -56,7 +68,10 @@ const generateMockPosts = (page: number, pageSize: number): PostsPage => {
     'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
     'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop',
     'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop'
+    'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=600&fit=crop'
   ];
 
   const contents = [
@@ -69,22 +84,27 @@ const generateMockPosts = (page: number, pageSize: number): PostsPage => {
     'Reflecting on the journey so far. Every challenge has been a learning opportunity. Grateful for this amazing community! 🙏',
     'Late night debugging session turned into a breakthrough moment. Sometimes the best solutions come when you least expect them! 💡',
     'Coffee and code - the perfect combination for a productive morning! ☕️ What\'s your favorite coding fuel?',
-    'Deployed my first full-stack application today! The feeling of seeing your work live on the internet is incredible! 🌐'
+    'Deployed my first full-stack application today! The feeling of seeing your work live on the internet is incredible! 🌐',
+    'Learning something new every day in this field. Today it was about advanced React patterns and I\'m mind blown! 🤯',
+    'Team collaboration at its finest! Just wrapped up an amazing sprint with the most talented developers. 👥',
+    'Open source contribution feels so rewarding. Giving back to the community that has given me so much! 🌍',
+    'Debugging is like being a detective in a crime movie where you are also the murderer. But when you find the bug... 🕵️‍♂️',
+    'The best part about being a developer? Every day brings new challenges and opportunities to grow! 📈'
   ];
 
   for (let i = 0; i < pageSize; i++) {
     const postIndex = startIndex + i;
     const profile = profiles[postIndex % profiles.length];
     const content = contents[postIndex % contents.length];
-    const hasImage = Math.random() > 0.3; // 70% chance of having an image
+    const hasImage = Math.random() > 0.4; // 60% chance of having an image
     const image = hasImage ? images[postIndex % images.length] : undefined;
 
     posts.push({
       id: `post_${postIndex}`,
-      user_id: `user_${postIndex % 5}`,
+      user_id: `user_${postIndex % 8}`,
       content: `${content} (Post #${postIndex + 1})`,
       image_url: image,
-      created_at: new Date(Date.now() - (postIndex * 30 * 60 * 1000)).toISOString(), // 30 minutes apart
+      created_at: new Date(Date.now() - (postIndex * 30 * 60 * 1000)).toISOString(),
       updated_at: new Date(Date.now() - (postIndex * 30 * 60 * 1000)).toISOString(),
       profiles: profile,
       likes_count: Math.floor(Math.random() * 500) + 10,
@@ -93,21 +113,20 @@ const generateMockPosts = (page: number, pageSize: number): PostsPage => {
     });
   }
 
+  // CRITICAL FIX: Generate more pages (200 pages = 4000 posts total)
   return {
     posts,
-    nextCursor: page < 99 ? `page_${page + 1}` : undefined, // Generate 100 pages (2000 posts total)
-    hasMore: page < 99
+    nextCursor: page < 199 ? `page_${page + 1}` : undefined,
+    hasMore: page < 199
   };
 };
 
-// Original posts hook for backward compatibility
 export const usePosts = () => {
   return useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
       console.log('Fetching mock posts...');
       
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
       const mockData = generateMockPosts(0, 20);
@@ -118,15 +137,13 @@ export const usePosts = () => {
   });
 };
 
-// Enhanced infinite posts hook for virtual scrolling
 export const useInfinitePosts = (pageSize: number = 20) => {
   return useInfiniteQuery({
     queryKey: ['posts', 'infinite', pageSize],
     queryFn: async ({ pageParam = 0 }) => {
       console.log(`Fetching posts page ${pageParam} with ${pageSize} items...`);
       
-      // Simulate realistic API delay
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 500 + 200));
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 300 + 100));
       
       return generateMockPosts(pageParam, pageSize);
     },
@@ -134,8 +151,8 @@ export const useInfinitePosts = (pageSize: number = 20) => {
       return lastPage.hasMore ? allPages.length : undefined;
     },
     initialPageParam: 0,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     retry: 2,
     refetchOnWindowFocus: false,
   });
@@ -146,7 +163,6 @@ export const useCreatePost = () => {
   
   return useMutation({
     mutationFn: async ({ content, imageUrl }: { content: string; imageUrl?: string }) => {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const newPost: Post = {
@@ -184,7 +200,6 @@ export const useLikePost = () => {
   
   return useMutation({
     mutationFn: async ({ postId, isLiked }: { postId: string; isLiked: boolean }) => {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 300));
       
       console.log(`Mock ${isLiked ? 'unlike' : 'like'} for post ${postId}`);
@@ -206,7 +221,6 @@ export const useDeletePost = () => {
   
   return useMutation({
     mutationFn: async (postId: string) => {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
       console.log(`Mock delete for post ${postId}`);
