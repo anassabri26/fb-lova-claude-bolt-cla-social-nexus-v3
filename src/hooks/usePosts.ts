@@ -23,7 +23,7 @@ export interface PostsPage {
   hasMore: boolean;
 }
 
-// CRITICAL FIX: Enhanced mock data generator with guaranteed posts
+// COMPLETELY REWRITTEN: Simple and reliable mock data generator
 const generateMockPosts = (page: number, pageSize: number): PostsPage => {
   const posts: Post[] = [];
   const startIndex = page * pageSize;
@@ -92,33 +92,33 @@ const generateMockPosts = (page: number, pageSize: number): PostsPage => {
     'The best part about being a developer? Every day brings new challenges and opportunities to grow! 📈'
   ];
 
-  // CRITICAL FIX: Always generate the exact number of posts requested
+  // Generate exactly the requested number of posts
   for (let i = 0; i < pageSize; i++) {
     const postIndex = startIndex + i;
     const profile = profiles[postIndex % profiles.length];
     const content = contents[postIndex % contents.length];
-    const hasImage = Math.random() > 0.3; // 70% chance of having an image
+    const hasImage = Math.random() > 0.4; // 60% chance of having an image
     const image = hasImage ? images[postIndex % images.length] : undefined;
 
     posts.push({
-      id: `post_${postIndex}`,
+      id: `post_${postIndex + 1}`, // Start from 1 for better UX
       user_id: `user_${postIndex % 8}`,
       content: `${content} (Post #${postIndex + 1})`,
       image_url: image,
-      created_at: new Date(Date.now() - (postIndex * 30 * 60 * 1000)).toISOString(),
-      updated_at: new Date(Date.now() - (postIndex * 30 * 60 * 1000)).toISOString(),
+      created_at: new Date(Date.now() - (postIndex * 15 * 60 * 1000)).toISOString(), // 15 minutes apart
+      updated_at: new Date(Date.now() - (postIndex * 15 * 60 * 1000)).toISOString(),
       profiles: profile,
       likes_count: Math.floor(Math.random() * 500) + 10,
       comments_count: Math.floor(Math.random() * 100) + 2,
-      user_has_liked: Math.random() > 0.6
+      user_has_liked: Math.random() > 0.7
     });
   }
 
-  // CRITICAL FIX: Generate more pages (300 pages = 4500+ posts total)
+  // Generate 500 pages total (5000+ posts)
   return {
     posts,
-    nextCursor: page < 299 ? `page_${page + 1}` : undefined,
-    hasMore: page < 299
+    nextCursor: page < 499 ? `page_${page + 1}` : undefined,
+    hasMore: page < 499
   };
 };
 
@@ -128,7 +128,7 @@ export const usePosts = () => {
     queryFn: async () => {
       console.log('Fetching mock posts...');
       
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       const mockData = generateMockPosts(0, 20);
       return mockData.posts;
@@ -138,16 +138,18 @@ export const usePosts = () => {
   });
 };
 
-export const useInfinitePosts = (pageSize: number = 15) => {
+export const useInfinitePosts = (pageSize: number = 10) => {
   return useInfiniteQuery({
     queryKey: ['posts', 'infinite', pageSize],
     queryFn: async ({ pageParam = 0 }) => {
       console.log(`Fetching posts page ${pageParam} with ${pageSize} items...`);
       
-      // Faster loading for better UX
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 200 + 100));
+      // Fast loading for better UX
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 150 + 50));
       
-      return generateMockPosts(pageParam, pageSize);
+      const result = generateMockPosts(pageParam, pageSize);
+      console.log(`Generated ${result.posts.length} posts for page ${pageParam}`);
+      return result;
     },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.hasMore ? allPages.length : undefined;

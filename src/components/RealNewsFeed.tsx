@@ -1,10 +1,8 @@
-import React, { useMemo, useCallback, useState } from 'react';
-import { FixedSizeList as List } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
+import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useInfinitePosts } from '@/hooks/usePosts';
 import CreatePost from './CreatePost';
-import VirtualizedPost from './VirtualizedPost';
+import RealPost from './RealPost';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, RefreshCw, MessageCircle, Settings, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 
 const RealNewsFeed = () => {
   const { user } = useAuth();
-  const [listHeight, setListHeight] = useState(600);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loadingRef = useRef<HTMLDivElement>(null);
   
   const {
     data,
@@ -22,46 +21,41 @@ const RealNewsFeed = () => {
     isLoading,
     error,
     refetch
-  } = useInfinitePosts(15); // Reduced page size for better loading
+  } = useInfinitePosts(10); // Smaller page size for faster loading
 
+  // Flatten all pages into a single array of posts
   const allPosts = useMemo(() => {
     return data?.pages.flatMap(page => page.posts) ?? [];
   }, [data]);
 
-  // CRITICAL FIX: Proper item count and loading logic
-  const itemCount = hasNextPage ? allPosts.length + 1 : allPosts.length;
-
-  const isItemLoaded = useCallback((index: number) => {
-    // CRITICAL: Return true if we have the post, false if we need to load it
-    return index < allPosts.length;
-  }, [allPosts]);
-
-  const loadMoreItems = useCallback(async (startIndex: number, stopIndex: number) => {
-    if (!isFetchingNextPage && hasNextPage) {
-      try {
-        console.log(`Loading items ${startIndex} to ${stopIndex}, current posts: ${allPosts.length}`);
-        await fetchNextPage();
-      } catch (error) {
-        console.error('Error loading more posts:', error);
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && hasNextPage && !isFetchingNextPage && !isLoadingMore) {
+          setIsLoadingMore(true);
+          fetchNextPage().finally(() => {
+            setIsLoadingMore(false);
+          });
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '100px'
       }
+    );
+
+    if (loadingRef.current) {
+      observer.observe(loadingRef.current);
     }
-    return Promise.resolve();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage, allPosts.length]);
 
-  React.useEffect(() => {
-    const updateHeight = () => {
-      const viewportHeight = window.innerHeight;
-      const headerHeight = 64;
-      const createPostHeight = 140;
-      const padding = 100;
-      const calculatedHeight = viewportHeight - headerHeight - createPostHeight - padding;
-      setListHeight(Math.max(400, Math.min(700, calculatedHeight)));
+    return () => {
+      if (loadingRef.current) {
+        observer.unobserve(loadingRef.current);
+      }
     };
-
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
-  }, []);
+  }, [hasNextPage, isFetchingNextPage, isLoadingMore, fetchNextPage]);
 
   if (!user) {
     return (
@@ -127,8 +121,9 @@ const RealNewsFeed = () => {
       <CreatePost />
       
       {allPosts.length > 0 ? (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="space-y-6">
+          {/* Feed Header with Stats */}
+          <div className="bg-white rounded-lg shadow-sm p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <h2 className="text-lg font-semibold text-gray-900">Your Feed</h2>
@@ -140,7 +135,7 @@ const RealNewsFeed = () => {
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 {hasNextPage && (
                   <Badge variant="outline" className="text-green-600 border-green-200">
-                    {isFetchingNextPage ? (
+                    {isFetchingNextPage || isLoadingMore ? (
                       <>
                         <div className="w-3 h-3 border border-green-600 border-t-transparent rounded-full animate-spin mr-1"></div>
                         Loading...
@@ -157,41 +152,30 @@ const RealNewsFeed = () => {
             </div>
           </div>
           
-          <div style={{ height: listHeight }} className="relative bg-gray-50">
-            <InfiniteLoader
-              isItemLoaded={isItemLoaded}
-              itemCount={itemCount}
-              loadMoreItems={loadMoreItems}
-              threshold={2}
-              minimumBatchSize={3}
-            >
-              {({ onItemsRendered, ref }) => (
-                <List
-                  ref={ref}
-                  height={listHeight}
-                  itemCount={itemCount}
-                  itemSize={480}
-                  onItemsRendered={onItemsRendered}
-                  itemData={{
-                    posts: allPosts,
-                    hasNextPage: hasNextPage ?? false,
-                    isFetchingNextPage
-                  }}
-                  overscanCount={2}
-                  className="virtual-news-feed-list"
-                  style={{ 
-                    overflowX: 'hidden',
-                    backgroundColor: 'rgb(249 250 251)',
-                  }}
-                >
-                  {VirtualizedPost}
-                </List>
-              )}
-            </InfiniteLoader>
+          {/* Posts List */}
+          <div className="space-y-6">
+            {allPosts.map((post, index) => (
+              <div key={`${post.id}-${index}`} className="w-full">
+                <RealPost post={post} />
+              </div>
+            ))}
+          </div>
+
+          {/* Loading Trigger */}
+          <div ref={loadingRef} className="w-full">
+            {(isFetchingNextPage || isLoadingMore) && (
+              <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+                <div className="flex items-center justify-center space-x-3">
+                  <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-gray-600">Loading more posts...</span>
+                </div>
+              </div>
+            )}
           </div>
           
+          {/* End of feed indicator */}
           {!hasNextPage && allPosts.length > 0 && (
-            <div className="p-6 text-center border-t border-gray-100 bg-gray-50">
+            <div className="bg-white rounded-lg shadow-sm p-6 text-center border-gray-100 bg-gray-50">
               <div className="text-gray-500">
                 <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm font-medium">You're all caught up!</p>
@@ -199,7 +183,7 @@ const RealNewsFeed = () => {
                 <div className="mt-3 flex items-center justify-center space-x-4 text-xs">
                   <span>Total posts loaded: {allPosts.length}</span>
                   <span>•</span>
-                  <span>Virtual scrolling active</span>
+                  <span>Infinite scroll active</span>
                 </div>
               </div>
             </div>
