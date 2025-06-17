@@ -11,9 +11,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     // Commented out componentTagger plugin as it was causing pre-transform errors
-    // mode === 'development' &&
-    // componentTagger(),
-  ].filter(Boolean),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

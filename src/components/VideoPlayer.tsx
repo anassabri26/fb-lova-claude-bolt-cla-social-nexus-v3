@@ -36,8 +36,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   onTimeUpdate,
   onEnded
 }) => {
-  const [isPlaying, setIsPlaying] = useState(false); // Initialize to false
-  const [isMuted, setIsMuted] = useState(autoPlay); // Start muted if autoplay is enabled
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(autoPlay);
   const [isLiked, setIsLiked] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -112,7 +112,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       if (playPromise !== undefined) {
         playPromise.catch(error => {
           console.error('Auto-play was prevented:', error);
-          // Don't set isPlaying here - let the event listeners handle it
         });
       }
     }
@@ -166,7 +165,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const video = videoRef.current;
     if (!video) return;
 
-    // Check the video element's actual paused state instead of component state
     if (video.paused) {
       const playPromise = video.play();
       if (playPromise !== undefined) {
@@ -177,7 +175,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     } else {
       video.pause();
     }
-    // Remove direct state setting - let event listeners handle it
   };
 
   const toggleMute = () => {
