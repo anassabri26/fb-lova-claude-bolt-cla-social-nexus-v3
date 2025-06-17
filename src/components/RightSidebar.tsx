@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users } from 'lucide-react';
+import { Users, MessageCircle } from 'lucide-react';
 import FriendRequestsPanel from './FriendRequestsPanel';
 import PeopleYouMayKnow from './PeopleYouMayKnow';
+import ActivityFeed from './ActivityFeed';
+import TrendingTopics from './TrendingTopics';
+import QuickActions from './QuickActions';
+import LiveChat from './LiveChat';
 import { useFriends } from '@/hooks/useFriends';
 import { MOCK_IMAGES } from '@/lib/constants';
 
 const RightSidebar = () => {
   const { data: friends } = useFriends();
+  const [activeChatContact, setActiveChatContact] = useState<any>(null);
 
   const onlineFriends = [
     {
@@ -31,6 +36,10 @@ const RightSidebar = () => {
     }
   ];
 
+  const handleStartChat = (friend: any) => {
+    setActiveChatContact(friend);
+  };
+
   return (
     <div className="w-full h-full overflow-y-auto scrollbar-thin">
       <div className="p-4 space-y-4">
@@ -44,6 +53,21 @@ const RightSidebar = () => {
           <PeopleYouMayKnow />
         </div>
 
+        {/* Quick Actions */}
+        <div className="mb-4">
+          <QuickActions />
+        </div>
+
+        {/* Trending Topics */}
+        <div className="mb-4">
+          <TrendingTopics />
+        </div>
+
+        {/* Activity Feed */}
+        <div className="mb-4">
+          <ActivityFeed />
+        </div>
+
         {/* Online Friends */}
         <Card className="mb-4">
           <CardHeader className="p-3">
@@ -54,7 +78,11 @@ const RightSidebar = () => {
           </CardHeader>
           <CardContent className="p-2 pt-0">
             {onlineFriends.map((friend) => (
-              <div key={friend.id} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              <div 
+                key={friend.id} 
+                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => handleStartChat(friend)}
+              >
                 <div className="relative">
                   <Avatar className="w-8 h-8">
                     <AvatarImage src={friend.avatar} />
@@ -64,7 +92,8 @@ const RightSidebar = () => {
                     <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                   )}
                 </div>
-                <span className="text-sm font-medium text-gray-900 truncate">{friend.name}</span>
+                <span className="text-sm font-medium text-gray-900 truncate flex-1">{friend.name}</span>
+                <MessageCircle className="w-4 h-4 text-gray-400" />
               </div>
             ))}
           </CardContent>
@@ -106,6 +135,15 @@ const RightSidebar = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Live Chat */}
+      {activeChatContact && (
+        <LiveChat
+          isOpen={!!activeChatContact}
+          onClose={() => setActiveChatContact(null)}
+          contact={activeChatContact}
+        />
+      )}
     </div>
   );
 };

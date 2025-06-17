@@ -123,11 +123,8 @@ export const storage = {
 // Error handling
 export const handleError = (error: unknown, context?: string): void => {
   const message = error instanceof Error ? error.message : 'Unknown error';
-  console.error(`Error${context ? ` in ${context}` : ''}:`, message);
-  
   if (APP_CONFIG.FEATURES.ANALYTICS) {
-    // Analytics tracking would go here
-    console.log('Analytics: Error tracked', { message, context });
+    // Analytics tracking would go here in production
   }
 };
 

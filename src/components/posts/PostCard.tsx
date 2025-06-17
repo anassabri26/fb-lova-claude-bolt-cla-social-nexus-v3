@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, ThumbsUp } from 'lucide-react';
+import { Heart, MessageCircle, Share, MoreHorizontal, ThumbsUp, Bookmark } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,7 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isLiked, setIsLiked] = useState(post.user_has_liked || false);
+  const [isSaved, setIsSaved] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes_count || 0);
   const { user } = useAuth();
   const likeMutation = useLikePost();
@@ -37,6 +38,11 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
       setIsLiked(isLiked);
       setLikesCount(post.likes_count || 0);
     }
+  };
+
+  const handleSave = () => {
+    setIsSaved(!isSaved);
+    toast.success(isSaved ? 'Removed from saved' : 'Post saved!');
   };
 
   const handleShare = () => {
@@ -144,36 +150,47 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
 
         {/* Action Buttons */}
         <div className="px-4 py-2 flex items-center justify-between">
-          <AccessibleButton
-            variant="ghost"
-            className={`flex items-center space-x-2 button-responsive rounded-lg transition-colors ${
-              isLiked 
-                ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-            onClick={handleLike}
-            disabled={likeMutation.isPending}
-          >
-            <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-            <span className="font-medium text-responsive-sm">Like</span>
-          </AccessibleButton>
+          <div className="flex items-center space-x-1">
+            <AccessibleButton
+              variant="ghost"
+              className={`flex items-center space-x-2 button-responsive rounded-lg transition-colors ${
+                isLiked 
+                  ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+              onClick={handleLike}
+              disabled={likeMutation.isPending}
+            >
+              <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+              <span className="font-medium text-responsive-sm">Like</span>
+            </AccessibleButton>
+
+            <AccessibleButton
+              variant="ghost"
+              className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+              onClick={() => setShowComments(!showComments)}
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span className="font-medium text-responsive-sm">Comment</span>
+            </AccessibleButton>
+
+            <AccessibleButton
+              variant="ghost"
+              className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+              onClick={handleShare}
+            >
+              <Share className="w-5 h-5" />
+              <span className="font-medium text-responsive-sm">Share</span>
+            </AccessibleButton>
+          </div>
 
           <AccessibleButton
             variant="ghost"
-            className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
-            onClick={() => setShowComments(!showComments)}
+            size="sm"
+            onClick={handleSave}
+            className={`${isSaved ? 'text-yellow-600' : 'text-gray-600'} hover:bg-gray-100`}
           >
-            <MessageCircle className="w-5 h-5" />
-            <span className="font-medium text-responsive-sm">Comment</span>
-          </AccessibleButton>
-
-          <AccessibleButton
-            variant="ghost"
-            className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
-            onClick={handleShare}
-          >
-            <Share className="w-5 h-5" />
-            <span className="font-medium text-responsive-sm">Share</span>
+            <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
           </AccessibleButton>
         </div>
 

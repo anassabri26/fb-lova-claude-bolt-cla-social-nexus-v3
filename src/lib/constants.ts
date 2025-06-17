@@ -23,6 +23,10 @@ export const APP_CONFIG = {
     REAL_TIME_UPDATES: true,
     OFFLINE_SUPPORT: false,
     ANALYTICS: true,
+    STORIES: true,
+    LIVE_CHAT: true,
+    ACTIVITY_FEED: true,
+    TRENDING_TOPICS: true,
   }
 } as const;
 

@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useInfinitePosts } from '@/hooks/usePosts';
 import CreatePost from './posts/CreatePost';
 import PostCard from './posts/PostCard';
+import Stories from './Stories';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { AlertCircle, RefreshCw, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -96,6 +97,7 @@ const RealNewsFeed = () => {
     if (isLoading) {
       return (
         <div className={containerClasses}>
+          <Stories />
           <CreatePost />
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="bg-white rounded-lg shadow-sm card-responsive">
@@ -126,6 +128,7 @@ const RealNewsFeed = () => {
       console.error('Posts loading error:', error);
       return (
         <div className={containerClasses}>
+          <Stories />
           <CreatePost />
           <div className="bg-white rounded-lg shadow-sm card-responsive text-center">
             <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
@@ -146,6 +149,7 @@ const RealNewsFeed = () => {
 
     return (
       <div className={containerClasses}>
+        <Stories />
         <CreatePost />
         
         {allPosts.length > 0 ? (

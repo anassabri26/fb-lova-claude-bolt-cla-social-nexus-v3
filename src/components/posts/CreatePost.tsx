@@ -3,11 +3,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Image, Smile, MapPin } from 'lucide-react';
+import { Image, Smile, MapPin, Users, Calendar, Video, Mic } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCreatePost } from '@/hooks/usePosts';
 import { usePerformance } from '@/hooks/usePerformance';
 import AccessibleButton from '@/components/AccessibleButton';
+import { toast } from 'sonner';
 
 const CreatePost: React.FC = () => {
   const [content, setContent] = useState('');
@@ -43,6 +44,10 @@ const CreatePost: React.FC = () => {
     endInteraction();
   };
 
+  const handleFeatureClick = (feature: string) => {
+    toast.info(`${feature} feature coming soon!`);
+  };
+
   if (!user) return null;
 
   return (
@@ -70,19 +75,75 @@ const CreatePost: React.FC = () => {
                   className="border-0 resize-none focus:ring-0 text-responsive-base p-0 min-h-[80px] sm:min-h-[100px]"
                   autoFocus
                 />
+                
+                {/* Enhanced Quick Actions */}
+                <div className="flex flex-wrap gap-2 py-2 border-t border-gray-100">
+                  <AccessibleButton 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-green-600 h-auto py-2 px-3"
+                    onClick={() => handleFeatureClick('Photo/Video')}
+                  >
+                    <Image className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Photo/Video</span>
+                  </AccessibleButton>
+                  <AccessibleButton 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-blue-600 h-auto py-2 px-3"
+                    onClick={() => handleFeatureClick('Tag People')}
+                  >
+                    <Users className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Tag People</span>
+                  </AccessibleButton>
+                  <AccessibleButton 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-yellow-600 h-auto py-2 px-3"
+                    onClick={() => handleFeatureClick('Feeling/Activity')}
+                  >
+                    <Smile className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Feeling</span>
+                  </AccessibleButton>
+                  <AccessibleButton 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-red-600 h-auto py-2 px-3"
+                    onClick={() => handleFeatureClick('Check In')}
+                  >
+                    <MapPin className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Check In</span>
+                  </AccessibleButton>
+                  <AccessibleButton 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-purple-600 h-auto py-2 px-3"
+                    onClick={() => handleFeatureClick('Live Video')}
+                  >
+                    <Video className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Live</span>
+                  </AccessibleButton>
+                  <AccessibleButton 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-orange-600 h-auto py-2 px-3"
+                    onClick={() => handleFeatureClick('Create Event')}
+                  >
+                    <Calendar className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Event</span>
+                  </AccessibleButton>
+                </div>
+
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
-                  <div className="flex flex-wrap gap-2">
-                    <AccessibleButton variant="ghost" size="sm" className="text-green-600 h-auto py-1">
-                      <Image className="w-4 h-4 mr-1" />
-                      <span className="text-xs">Photo</span>
-                    </AccessibleButton>
-                    <AccessibleButton variant="ghost" size="sm" className="text-yellow-600 h-auto py-1">
-                      <Smile className="w-4 h-4 mr-1" />
-                      <span className="text-xs">Feeling</span>
-                    </AccessibleButton>
-                    <AccessibleButton variant="ghost" size="sm" className="text-red-600 h-auto py-1">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      <span className="text-xs">Check In</span>
+                  <div className="flex items-center space-x-2">
+                    <AccessibleButton 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-gray-600"
+                      onClick={() => handleFeatureClick('Voice Note')}
+                    >
+                      <Mic className="w-4 h-4 mr-1" />
+                      <span className="text-xs">Voice Note</span>
                     </AccessibleButton>
                   </div>
                   <div className="flex space-x-2 self-end sm:self-auto">
@@ -108,6 +169,41 @@ const CreatePost: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Quick Actions for collapsed state */}
+        {!isExpanded && (
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+            <div className="flex space-x-1 sm:space-x-2">
+              <AccessibleButton 
+                variant="ghost" 
+                size="sm" 
+                className="text-red-600 flex-1 sm:flex-none"
+                onClick={() => handleFeatureClick('Live Video')}
+              >
+                <Video className="w-4 h-4 mr-1" />
+                <span className="text-xs">Live video</span>
+              </AccessibleButton>
+              <AccessibleButton 
+                variant="ghost" 
+                size="sm" 
+                className="text-green-600 flex-1 sm:flex-none"
+                onClick={() => handleFeatureClick('Photo/Video')}
+              >
+                <Image className="w-4 h-4 mr-1" />
+                <span className="text-xs">Photo/video</span>
+              </AccessibleButton>
+              <AccessibleButton 
+                variant="ghost" 
+                size="sm" 
+                className="text-yellow-600 flex-1 sm:flex-none"
+                onClick={() => handleFeatureClick('Feeling/Activity')}
+              >
+                <Smile className="w-4 h-4 mr-1" />
+                <span className="text-xs">Feeling/activity</span>
+              </AccessibleButton>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
