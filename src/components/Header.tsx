@@ -62,7 +62,7 @@ const Header = () => {
         <div className="container-responsive mx-auto">
           <div className="flex items-center justify-between h-8 px-2">
             {/* Left section - Logo */}
-            <div className="flex items-center space-x-1 min-w-0">
+            <div className="flex items-center space-x-1 min-w-0 flex-shrink-0">
               <div 
                 className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => handleNavigation(ROUTES.HOME)}
@@ -75,13 +75,28 @@ const Header = () => {
             </div>
 
             {/* Center section - Search and Navigation */}
-            <div className="flex items-center space-x-0.5 flex-1 max-w-lg mx-1 sm:mx-2">
-              <form onSubmit={handleSearch} className="hide-mobile flex-1">
+            <div className="flex items-center space-x-0.5 flex-1 mx-1 sm:mx-2">
+              {/* Desktop Search */}
+              <form onSubmit={handleSearch} className="hide-mobile flex-1 max-w-lg">
                 <div className="relative w-full">
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
                   <Input
                     type="text"
                     placeholder="Search Facebook"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-7 bg-gray-100 border-none rounded-full text-xs h-6 py-0"
+                  />
+                </div>
+              </form>
+
+              {/* Mobile Search - Reduced width */}
+              <form onSubmit={handleSearch} className="show-mobile flex-1 max-w-[120px]">
+                <div className="relative w-full">
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-7 bg-gray-100 border-none rounded-full text-xs h-6 py-0"
@@ -116,7 +131,7 @@ const Header = () => {
             </div>
 
             {/* Right section - User actions */}
-            <div className="flex items-center">
+            <div className="flex items-center flex-shrink-0">
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -156,22 +171,6 @@ const Header = () => {
                 <AvatarFallback className="text-xs">JD</AvatarFallback>
               </Avatar>
             </div>
-          </div>
-
-          {/* Mobile search */}
-          <div className="show-mobile px-2 pb-1">
-            <form onSubmit={handleSearch}>
-              <div className="relative">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search Facebook"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-7 bg-gray-100 border-none rounded-full text-xs h-6 py-0"
-                />
-              </div>
-            </form>
           </div>
 
           {/* Mobile menu */}
