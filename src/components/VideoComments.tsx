@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import { MessageCircle, ThumbsUp, ThumbsDown, MoreHorizontal, Heart, Reply, Flag, Pin } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { MessageCircle, ThumbsUp, ThumbsDown, MoreHorizontal, Heart, Reply, Flag, Pin, Filter, ChevronDown, ChevronUp, Smile } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatTimeAgo } from '@/lib/utils';
 import { MOCK_IMAGES } from '@/lib/constants';
+import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-device';
 
 interface VideoComment {
   id: string;
@@ -74,14 +77,70 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
       likes: 156,
       dislikes: 12,
       replies: []
+    },
+    {
+      id: '3',
+      user: {
+        name: 'Emma Wilson',
+        avatar: MOCK_IMAGES.AVATARS[3],
+        verified: true
+      },
+      content: 'I\'ve been following your channel for years and the quality just keeps getting better. This video is no exception - absolutely stunning work!',
+      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+      likes: 342,
+      dislikes: 4,
+      replies: [
+        {
+          id: '3-1',
+          user: {
+            name: 'Nature Explorer',
+            avatar: MOCK_IMAGES.AVATARS[1],
+            isCreator: true
+          },
+          content: 'Thank you so much for your continued support, Emma! It means a lot to me. I\'m always trying to improve with each video.',
+          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+          likes: 67,
+          dislikes: 0,
+          replies: [],
+          isHearted: true
+        },
+        {
+          id: '3-2',
+          user: {
+            name: 'David Kim',
+            avatar: MOCK_IMAGES.AVATARS[4]
+          },
+          content: 'Totally agree! Been watching since the early days too.',
+          timestamp: new Date(Date.now() - 3.5 * 60 * 60 * 1000).toISOString(),
+          likes: 23,
+          dislikes: 0,
+          replies: []
+        }
+      ]
     }
   ]);
 
   const [newComment, setNewComment] = useState('');
   const [sortBy, setSortBy] = useState<'top' | 'newest'>('top');
-  const [showReplies, setShowReplies] = useState<Set<string>>(new Set());
+  const [showReplies, setShowReplies] = useState<Set<string>>(new Set(['1'])); // Show first comment replies by default
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterCreator, setFilterCreator] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedEmoji, setSelectedEmoji] = useState('');
+  const commentInputRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
+
+  // Simulate loading comments
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleLike = (commentId: string, isReply = false, parentId?: string) => {
     setComments(prev => prev.map(comment => {
@@ -90,7 +149,8 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
           ...comment,
           isLiked: !comment.isLiked,
           isDisliked: false,
-          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1
+          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1,
+          dislikes: comment.isDisliked ? comment.dislikes - 1 : comment.dislikes
         };
       }
       if (parentId && comment.id === parentId) {
@@ -102,7 +162,8 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
                   ...reply,
                   isLiked: !reply.isLiked,
                   isDisliked: false,
-                  likes: reply.isLiked ? reply.likes - 1 : reply.likes + 1
+                  likes: reply.isLiked ? reply.likes - 1 : reply.likes + 1,
+                  dislikes: reply.isDisliked ? reply.dislikes - 1 : reply.dislikes
                 }
               : reply
           )
@@ -110,6 +171,8 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
       }
       return comment;
     }));
+    
+    toast.success('Comment liked');
   };
 
   const handleDislike = (commentId: string, isReply = false, parentId?: string) => {
@@ -119,7 +182,8 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
           ...comment,
           isDisliked: !comment.isDisliked,
           isLiked: false,
-          dislikes: comment.isDisliked ? comment.dislikes - 1 : comment.dislikes + 1
+          dislikes: comment.isDisliked ? comment.dislikes - 1 : comment.dislikes + 1,
+          likes: comment.isLiked ? comment.likes - 1 : comment.likes
         };
       }
       if (parentId && comment.id === parentId) {
@@ -131,7 +195,8 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
                   ...reply,
                   isDisliked: !reply.isDisliked,
                   isLiked: false,
-                  dislikes: reply.isDisliked ? reply.dislikes - 1 : reply.dislikes + 1
+                  dislikes: reply.isDisliked ? reply.dislikes - 1 : reply.dislikes + 1,
+                  likes: reply.isLiked ? reply.likes - 1 : reply.likes
                 }
               : reply
           )
@@ -139,6 +204,8 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
       }
       return comment;
     }));
+    
+    toast.info('Comment disliked');
   };
 
   const handleAddComment = () => {
@@ -148,17 +215,20 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
       id: Date.now().toString(),
       user: {
         name: 'You',
-        avatar: MOCK_IMAGES.AVATARS[0]
+        avatar: MOCK_IMAGES.AVATARS[7]
       },
-      content: newComment,
+      content: newComment + (selectedEmoji ? ` ${selectedEmoji}` : ''),
       timestamp: new Date().toISOString(),
       likes: 0,
       dislikes: 0,
-      replies: []
+      replies: [],
+      isLiked: true
     };
 
     setComments(prev => [comment, ...prev]);
     setNewComment('');
+    setSelectedEmoji('');
+    toast.success('Comment added');
   };
 
   const handleAddReply = (parentId: string) => {
@@ -168,13 +238,14 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
       id: `${parentId}-${Date.now()}`,
       user: {
         name: 'You',
-        avatar: MOCK_IMAGES.AVATARS[0]
+        avatar: MOCK_IMAGES.AVATARS[7]
       },
       content: replyText,
       timestamp: new Date().toISOString(),
       likes: 0,
       dislikes: 0,
-      replies: []
+      replies: [],
+      isLiked: true
     };
 
     setComments(prev => prev.map(comment => 
@@ -185,6 +256,15 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
 
     setReplyText('');
     setReplyingTo(null);
+    
+    // Ensure replies are shown
+    setShowReplies(prev => {
+      const newSet = new Set(prev);
+      newSet.add(parentId);
+      return newSet;
+    });
+    
+    toast.success('Reply added');
   };
 
   const toggleReplies = (commentId: string) => {
@@ -199,6 +279,56 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
     });
   };
 
+  const handlePinComment = (commentId: string) => {
+    setComments(prev => prev.map(comment => ({
+      ...comment,
+      isPinned: comment.id === commentId
+    })));
+    
+    toast.success('Comment pinned');
+  };
+
+  const handleHeartComment = (commentId: string, isReply = false, parentId?: string) => {
+    setComments(prev => prev.map(comment => {
+      if (comment.id === commentId) {
+        return {
+          ...comment,
+          isHearted: !comment.isHearted
+        };
+      }
+      if (parentId && comment.id === parentId) {
+        return {
+          ...comment,
+          replies: comment.replies.map(reply => 
+            reply.id === commentId 
+              ? {
+                  ...reply,
+                  isHearted: !reply.isHearted
+                }
+              : reply
+          )
+        };
+      }
+      return comment;
+    }));
+    
+    toast.success('Comment hearted by creator');
+  };
+
+  const handleReportComment = (commentId: string) => {
+    toast.info('Comment reported. Thank you for your feedback.');
+  };
+
+  const handleEmojiSelect = (emoji: string) => {
+    setSelectedEmoji(emoji);
+    setShowEmojiPicker(false);
+    
+    // Focus back on input
+    if (commentInputRef.current) {
+      commentInputRef.current.focus();
+    }
+  };
+
   const sortedComments = [...comments].sort((a, b) => {
     if (a.isPinned && !b.isPinned) return -1;
     if (!a.isPinned && b.isPinned) return 1;
@@ -209,6 +339,14 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     }
   });
+
+  // Filter comments if creator filter is enabled
+  const filteredComments = filterCreator 
+    ? sortedComments.filter(comment => 
+        comment.user.isCreator || 
+        comment.replies.some(reply => reply.user.isCreator)
+      )
+    : sortedComments;
 
   const renderComment = (comment: VideoComment, isReply = false, parentId?: string) => (
     <div key={comment.id} className={`${isReply ? 'ml-12' : ''} mb-4`}>
@@ -231,7 +369,10 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
             )}
             <span className="text-xs text-gray-500">{formatTimeAgo(comment.timestamp)}</span>
             {comment.isPinned && (
-              <Pin className="w-3 h-3 text-gray-500" />
+              <div className="flex items-center space-x-1 text-xs text-gray-500">
+                <Pin className="w-3 h-3" />
+                <span>Pinned</span>
+              </div>
             )}
           </div>
           
@@ -245,7 +386,7 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
                 onClick={() => handleLike(comment.id, isReply, parentId)}
                 className={`h-8 px-2 ${comment.isLiked ? 'text-blue-600' : 'text-gray-600'}`}
               >
-                <ThumbsUp className="w-4 h-4 mr-1" />
+                <ThumbsUp className={`w-4 h-4 mr-1 ${comment.isLiked ? 'fill-current' : ''}`} />
                 <span className="text-xs">{comment.likes}</span>
               </Button>
               
@@ -255,7 +396,7 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
                 onClick={() => handleDislike(comment.id, isReply, parentId)}
                 className={`h-8 px-2 ${comment.isDisliked ? 'text-red-600' : 'text-gray-600'}`}
               >
-                <ThumbsDown className="w-4 h-4 mr-1" />
+                <ThumbsDown className={`w-4 h-4 mr-1 ${comment.isDisliked ? 'fill-current' : ''}`} />
                 <span className="text-xs">{comment.dislikes}</span>
               </Button>
             </div>
@@ -273,19 +414,70 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
             )}
             
             {comment.isHearted && (
-              <Heart className="w-4 h-4 text-red-500 fill-current" />
+              <div className="flex items-center space-x-1 text-red-500">
+                <Heart className="w-4 h-4 fill-current" />
+                <span className="text-xs">Creator</span>
+              </div>
             )}
             
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-gray-600">
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
+            <div className="relative">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 px-2 text-gray-600"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const menu = document.getElementById(`comment-menu-${comment.id}`);
+                  if (menu) {
+                    menu.classList.toggle('hidden');
+                  }
+                }}
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+              
+              <div 
+                id={`comment-menu-${comment.id}`}
+                className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 hidden"
+              >
+                <div className="py-1">
+                  {!comment.isPinned && !isReply && (
+                    <button 
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                      onClick={() => handlePinComment(comment.id)}
+                    >
+                      <Pin className="w-4 h-4 mr-2" />
+                      Pin comment
+                    </button>
+                  )}
+                  
+                  {!comment.isHearted && (
+                    <button 
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                      onClick={() => handleHeartComment(comment.id, isReply, parentId)}
+                    >
+                      <Heart className="w-4 h-4 mr-2" />
+                      Heart comment
+                    </button>
+                  )}
+                  
+                  <button 
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                    onClick={() => handleReportComment(comment.id)}
+                  >
+                    <Flag className="w-4 h-4 mr-2" />
+                    Report comment
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           
           {/* Reply Input */}
           {replyingTo === comment.id && (
             <div className="mt-3 flex space-x-2">
               <Avatar className="w-8 h-8">
-                <AvatarImage src={MOCK_IMAGES.AVATARS[0]} />
+                <AvatarImage src={MOCK_IMAGES.AVATARS[7]} />
                 <AvatarFallback>Y</AvatarFallback>
               </Avatar>
               <div className="flex-1 flex space-x-2">
@@ -320,9 +512,19 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
                 variant="ghost"
                 size="sm"
                 onClick={() => toggleReplies(comment.id)}
-                className="text-blue-600 text-xs"
+                className="text-blue-600 text-xs flex items-center"
               >
-                {showReplies.has(comment.id) ? 'Hide' : 'Show'} {comment.replies.length} replies
+                {showReplies.has(comment.id) ? (
+                  <>
+                    <ChevronUp className="w-4 h-4 mr-1" />
+                    Hide {comment.replies.length} replies
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4 mr-1" />
+                    Show {comment.replies.length} replies
+                  </>
+                )}
               </Button>
               
               {showReplies.has(comment.id) && (
@@ -336,6 +538,9 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
       </div>
     </div>
   );
+
+  // Common emojis for comments
+  const commonEmojis = ['👍', '❤️', '😂', '😮', '😢', '😡', '🔥', '👏', '🎉', '🤔'];
 
   return (
     <Card className="mt-6">
@@ -358,23 +563,88 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
               >
                 Newest first
               </Button>
+              <Button
+                variant={showFilters ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="w-4 h-4 mr-1" />
+                Filters
+              </Button>
             </div>
           </div>
         </div>
         
+        {/* Filters */}
+        {showFilters && (
+          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+            <h4 className="font-medium mb-2">Filter comments</h4>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={filterCreator ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilterCreator(!filterCreator)}
+              >
+                Creator comments
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toast.info('Mentioned you filter coming soon')}
+              >
+                Mentioned you
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toast.info('Questions filter coming soon')}
+              >
+                Questions
+              </Button>
+            </div>
+          </div>
+        )}
+        
         {/* Add Comment */}
         <div className="flex space-x-3 mb-6">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={MOCK_IMAGES.AVATARS[0]} />
+            <AvatarImage src={MOCK_IMAGES.AVATARS[7]} />
             <AvatarFallback>Y</AvatarFallback>
           </Avatar>
           <div className="flex-1 flex space-x-2">
-            <Input
-              placeholder="Add a comment..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="flex-1"
-            />
+            <div className="relative flex-1">
+              <Input
+                ref={commentInputRef}
+                placeholder="Add a comment..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="flex-1 pr-10"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                <Smile className="w-4 h-4 text-gray-500" />
+              </Button>
+              
+              {showEmojiPicker && (
+                <div className="absolute top-full right-0 mt-1 bg-white shadow-lg rounded-lg p-2 z-10">
+                  <div className="grid grid-cols-5 gap-1">
+                    {commonEmojis.map(emoji => (
+                      <button
+                        key={emoji}
+                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded"
+                        onClick={() => handleEmojiSelect(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             <Button 
               onClick={handleAddComment}
               disabled={!newComment.trim()}
@@ -385,11 +655,72 @@ const VideoComments: React.FC<VideoCommentsProps> = ({ videoId, commentsCount })
         </div>
         
         {/* Comments List */}
-        <div className="space-y-4">
-          {sortedComments.map(comment => renderComment(comment))}
-        </div>
-        
-        {comments.length === 0 && (
+        {isLoading ? (
+          // Loading skeleton
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="flex space-x-3 animate-pulse">
+                <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredComments.length > 0 ? (
+          <div className="space-y-4">
+            {filteredComments.map(comment => renderComment(comment))}
+            
+            {/* Load More Comments */}
+            {filteredComments.length < commentsCount && (
+              <Button 
+                variant="outline" 
+                className="w-full mt-4"
+                onClick={() => {
+                  setIsLoading(true);
+                  setTimeout(() => {
+                    // Generate some new mock comments
+                    const newComments: VideoComment[] = [
+                      {
+                        id: `new-${Date.now()}-1`,
+                        user: {
+                          name: 'Alex Rodriguez',
+                          avatar: MOCK_IMAGES.AVATARS[5]
+                        },
+                        content: 'Just discovered your channel and I\'m binge watching all your videos! Amazing content!',
+                        timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+                        likes: 45,
+                        dislikes: 1,
+                        replies: []
+                      },
+                      {
+                        id: `new-${Date.now()}-2`,
+                        user: {
+                          name: 'Jessica Park',
+                          avatar: MOCK_IMAGES.AVATARS[6],
+                          verified: true
+                        },
+                        content: 'The editing on this video is top-notch. What software do you use?',
+                        timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(),
+                        likes: 78,
+                        dislikes: 0,
+                        replies: []
+                      }
+                    ];
+                    
+                    setComments(prev => [...prev, ...newComments]);
+                    setIsLoading(false);
+                    toast.success('More comments loaded');
+                  }, 1000);
+                }}
+              >
+                Load more comments
+              </Button>
+            )}
+          </div>
+        ) : (
           <div className="text-center py-8">
             <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">No comments yet. Be the first to comment!</p>
