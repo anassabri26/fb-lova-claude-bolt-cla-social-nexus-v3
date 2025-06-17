@@ -23,7 +23,7 @@ const ReactionPicker: React.FC<ReactionPickerProps> = ({
   ];
 
   return (
-    <Card className={`absolute ${position === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} left-0 p-1 shadow-lg z-50 ${className}`}>
+    <Card className={`absolute ${position === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} left-0 p-1 shadow-lg z-50 ${className} dark:bg-gray-800`}>
       <div className="flex space-x-1">
         {reactions.map((reaction) => (
           <Button

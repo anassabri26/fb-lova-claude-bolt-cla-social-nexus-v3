@@ -72,21 +72,25 @@ export const isValidUrl = (url: string): boolean => {
 
 // Device detection
 export const isMobile = (): boolean => {
+  if (typeof window === 'undefined') return false;
   return window.innerWidth < APP_CONFIG.MOBILE_BREAKPOINT;
 };
 
 export const isTablet = (): boolean => {
+  if (typeof window === 'undefined') return false;
   return window.innerWidth >= APP_CONFIG.MOBILE_BREAKPOINT && 
          window.innerWidth < APP_CONFIG.DESKTOP_BREAKPOINT;
 };
 
 export const isDesktop = (): boolean => {
+  if (typeof window === 'undefined') return false;
   return window.innerWidth >= APP_CONFIG.DESKTOP_BREAKPOINT;
 };
 
 // Storage utilities
 export const storage = {
   get: <T>(key: string, defaultValue?: T): T | null => {
+    if (typeof window === 'undefined') return defaultValue || null;
     try {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : defaultValue || null;
@@ -96,6 +100,7 @@ export const storage = {
   },
   
   set: <T>(key: string, value: T): void => {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
@@ -104,6 +109,7 @@ export const storage = {
   },
   
   remove: (key: string): void => {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.removeItem(key);
     } catch (error) {
@@ -112,6 +118,7 @@ export const storage = {
   },
   
   clear: (): void => {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.clear();
     } catch (error) {
@@ -163,4 +170,18 @@ export const optimizeImageUrl = (url: string, width?: number, height?: number): 
   params.set('auto', 'format');
   
   return `${url}?${params.toString()}`;
+};
+
+// Safe JSON parse
+export const safeJsonParse = <T>(json: string, fallback: T): T => {
+  try {
+    return JSON.parse(json) as T;
+  } catch (error) {
+    return fallback;
+  }
+};
+
+// Generate random ID
+export const generateId = (prefix = ''): string => {
+  return `${prefix}${Math.random().toString(36).substring(2, 9)}_${Date.now().toString(36)}`;
 };

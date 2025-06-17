@@ -39,13 +39,13 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 dark:bg-gray-900">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center dark:bg-gray-800">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2 dark:text-gray-100">
               Something went wrong
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-6 dark:text-gray-300">
               We're sorry, but something unexpected happened. Please try refreshing the page.
             </p>
             <div className="space-y-3">
@@ -56,17 +56,17 @@ class ErrorBoundary extends Component<Props, State> {
               <Button 
                 variant="outline" 
                 onClick={() => window.location.reload()}
-                className="w-full"
+                className="w-full dark:border-gray-600"
               >
                 Refresh Page
               </Button>
             </div>
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="mt-4 text-left">
-                <summary className="cursor-pointer text-sm text-gray-500">
+                <summary className="cursor-pointer text-sm text-gray-500 dark:text-gray-400">
                   Error Details (Development)
                 </summary>
-                <pre className="mt-2 text-xs bg-gray-100 p-2 rounded overflow-auto">
+                <pre className="mt-2 text-xs bg-gray-100 p-2 rounded overflow-auto dark:bg-gray-700 dark:text-gray-300">
                   {this.state.error.stack}
                 </pre>
               </details>

@@ -28,6 +28,13 @@ export const useIntersectionObserver = <T extends HTMLElement = HTMLDivElement>(
     // Skip if already triggered once and triggerOnce is true
     if (triggerOnce && hasTriggered) return;
 
+    // Check if IntersectionObserver is available
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsIntersecting(true);
+      if (triggerOnce) setHasTriggered(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isElementIntersecting = entry.isIntersecting;
