@@ -52,7 +52,7 @@ const FriendsTab = () => {
   const [activeSection, setActiveSection] = useState('all');
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [filterLocation, setFilterLocation] = useState('');
+  const [filterLocation, setFilterLocation] = useState('all');
   const [sortBy, setSortBy] = useState('recent');
 
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([
@@ -252,7 +252,7 @@ const FriendsTab = () => {
 
   const filteredFriends = friends.filter(friend => {
     const matchesSearch = friend.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLocation = !filterLocation || (friend.location && friend.location.toLowerCase().includes(filterLocation.toLowerCase()));
+    const matchesLocation = filterLocation === 'all' || (friend.location && friend.location.toLowerCase().includes(filterLocation.toLowerCase()));
     return matchesSearch && matchesLocation;
   });
 
@@ -336,7 +336,7 @@ const FriendsTab = () => {
                   <SelectValue placeholder="Filter by location" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Locations</SelectItem>
+                  <SelectItem value="all">All Locations</SelectItem>
                   <SelectItem value="San Francisco">San Francisco</SelectItem>
                   <SelectItem value="New York">New York</SelectItem>
                   <SelectItem value="Chicago">Chicago</SelectItem>
