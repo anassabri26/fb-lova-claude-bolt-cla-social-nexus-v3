@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Phone, Video, MoreHorizontal, Send, Smile, Paperclip, MessageCircle, Users, Filter, ArrowLeft, Check, CheckCheck, Clock, Bookmark, Star, Bell, X, Trash, Archive, Info, Image, Mic, Gif, Sticker, ThumbsUp } from 'lucide-react';
+import { Search, Phone, Video, MoreHorizontal, Send, Smile, Paperclip, MessageCircle, Users, Filter, ArrowLeft, Check, CheckCheck, Clock, Bookmark, Star, Bell, X, Trash, Archive, Info, Image, Mic, Gift as Gif, Sticker, ThumbsUp } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
