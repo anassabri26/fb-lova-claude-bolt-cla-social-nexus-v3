@@ -36,7 +36,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   onTimeUpdate,
   onEnded
 }) => {
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
+  const [isPlaying, setIsPlaying] = useState(false); // Initialize to false
   const [isMuted, setIsMuted] = useState(autoPlay); // Start muted if autoplay is enabled
   const [isLiked, setIsLiked] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -91,11 +91,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const handleWaiting = () => setIsBuffering(true);
     const handlePlaying = () => setIsBuffering(false);
 
+    // Add play and pause event listeners to sync state
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
     video.addEventListener('timeupdate', updateTime);
     video.addEventListener('loadedmetadata', updateDuration);
     video.addEventListener('ended', handleEnded);
     video.addEventListener('waiting', handleWaiting);
     video.addEventListener('playing', handlePlaying);
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
 
     // Set initial muted state
     video.muted = isMuted;
@@ -106,7 +112,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       if (playPromise !== undefined) {
         playPromise.catch(error => {
           console.error('Auto-play was prevented:', error);
-          setIsPlaying(false);
+          // Don't set isPlaying here - let the event listeners handle it
         });
       }
     }
@@ -117,6 +123,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       video.removeEventListener('ended', handleEnded);
       video.removeEventListener('waiting', handleWaiting);
       video.removeEventListener('playing', handlePlaying);
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
     };
   }, [autoPlay, onTimeUpdate, onEnded, isMuted]);
 
@@ -158,17 +166,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const video = videoRef.current;
     if (!video) return;
 
-    if (isPlaying) {
-      video.pause();
-    } else {
+    // Check the video element's actual paused state instead of component state
+    if (video.paused) {
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(error => {
           console.error('Play was prevented:', error);
         });
       }
+    } else {
+      video.pause();
     }
-    setIsPlaying(!isPlaying);
+    // Remove direct state setting - let event listeners handle it
   };
 
   const toggleMute = () => {
