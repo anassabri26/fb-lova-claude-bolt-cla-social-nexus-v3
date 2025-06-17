@@ -37,7 +37,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   onEnded
 }) => {
   const [isPlaying, setIsPlaying] = useState(autoPlay);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(autoPlay); // Start muted if autoplay is enabled
   const [isLiked, setIsLiked] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -97,6 +97,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     video.addEventListener('waiting', handleWaiting);
     video.addEventListener('playing', handlePlaying);
 
+    // Set initial muted state
+    video.muted = isMuted;
+
     // Auto play if specified
     if (autoPlay) {
       const playPromise = video.play();
@@ -115,7 +118,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       video.removeEventListener('waiting', handleWaiting);
       video.removeEventListener('playing', handlePlaying);
     };
-  }, [autoPlay, onTimeUpdate, onEnded]);
+  }, [autoPlay, onTimeUpdate, onEnded, isMuted]);
 
   // Handle fullscreen
   useEffect(() => {
