@@ -77,7 +77,7 @@ const Header = () => {
             {/* Center section - Search and Navigation */}
             <div className="flex items-center space-x-0.5 flex-1 mx-1 sm:mx-2">
               {/* Search Bar */}
-              <form onSubmit={handleSearch} className="flex-1 max-w-[120px] sm:max-w-lg">
+              <form onSubmit={handleSearch} className="flex-1 max-w-[100px] sm:max-w-lg">
                 <div className="relative w-full">
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
                   <Input
@@ -90,31 +90,29 @@ const Header = () => {
                 </div>
               </form>
               
-              {/* Navigation Icons - Show on tablet and desktop */}
-              {!isMobile && (
-                <div className="flex items-center space-x-0.5">
-                  {navItems.map((item) => {
-                    const isActive = location.pathname === item.path;
-                    return (
-                      <Button 
-                        key={item.id}
-                        variant="ghost" 
-                        size="sm" 
-                        className={`relative p-1 rounded-md transition-colors h-6 w-6 ${
-                          isActive ? 'text-blue-600' : 'text-gray-600'
-                        }`}
-                        onClick={() => handleNavigation(item.path)}
-                        aria-label={item.label}
-                      >
-                        <item.icon className="w-3.5 h-3.5" />
-                        {isActive && (
-                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-blue-600 rounded-t-full"></div>
-                        )}
-                      </Button>
-                    );
-                  })}
-                </div>
-              )}
+              {/* Navigation Icons - Show on all screen sizes */}
+              <div className="flex items-center space-x-0.5">
+                {navItems.map((item) => {
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <Button 
+                      key={item.id}
+                      variant="ghost" 
+                      size="sm" 
+                      className={`relative p-1 rounded-md transition-colors h-6 w-6 ${
+                        isActive ? 'text-blue-600' : 'text-gray-600'
+                      }`}
+                      onClick={() => handleNavigation(item.path)}
+                      aria-label={item.label}
+                    >
+                      <item.icon className="w-3.5 h-3.5" />
+                      {isActive && (
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-blue-600 rounded-t-full"></div>
+                      )}
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Right section - User actions */}
@@ -162,24 +160,32 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Mobile menu */}
+          {/* Mobile menu - Additional options */}
           {isMenuOpen && isMobile && (
             <div className="bg-white border-t border-gray-200 py-1">
               <div className="grid grid-cols-2 gap-1 px-2">
-                {navItems.map((item) => (
-                  <Button
-                    key={item.id}
-                    variant="ghost"
-                    className="flex items-center space-x-2 p-1.5 rounded-lg text-left justify-start h-7"
-                    onClick={() => {
-                      handleNavigation(item.path);
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    <item.icon className="w-3.5 h-3.5" />
-                    <span className="text-xs">{item.label}</span>
-                  </Button>
-                ))}
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 p-1.5 rounded-lg text-left justify-start h-7"
+                  onClick={() => {
+                    handleNavigation(ROUTES.GROUPS);
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span className="text-xs">Groups</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 p-1.5 rounded-lg text-left justify-start h-7"
+                  onClick={() => {
+                    handleNavigation(ROUTES.EVENTS);
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span className="text-xs">Events</span>
+                </Button>
               </div>
             </div>
           )}
