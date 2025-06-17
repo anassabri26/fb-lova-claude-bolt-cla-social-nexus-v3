@@ -6,8 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import AccessibleButton from './AccessibleButton';
-import { toast } from 'sonner';
 import { MOCK_IMAGES } from '@/lib/constants';
 
 const FriendsTab = () => {
@@ -66,19 +64,19 @@ const FriendsTab = () => {
   ];
 
   const handleAcceptRequest = (id: string, name: string) => {
-    toast.success(`Accepted friend request from ${name}`);
+    console.log(`Accepted friend request from ${name}`);
   };
 
   const handleDeclineRequest = (id: string, name: string) => {
-    toast.info(`Declined friend request from ${name}`);
+    console.log(`Declined friend request from ${name}`);
   };
 
   const handleAddFriend = (name: string) => {
-    toast.success(`Friend request sent to ${name}`);
+    console.log(`Friend request sent to ${name}`);
   };
 
   const handleMessage = (name: string) => {
-    toast.info(`Opening chat with ${name}`);
+    console.log(`Opening chat with ${name}`);
   };
 
   const filteredFriends = friends.filter(friend => 
@@ -97,7 +95,6 @@ const FriendsTab = () => {
     <div className="w-full">
       <div className="container-responsive mx-auto py-6">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <h1 className="text-2xl font-bold text-gray-900">Friends</h1>
             <div className="flex flex-wrap gap-2">
@@ -125,7 +122,6 @@ const FriendsTab = () => {
             </div>
           </div>
 
-          {/* Search */}
           <div className="relative mb-6">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
@@ -136,7 +132,6 @@ const FriendsTab = () => {
             />
           </div>
 
-          {/* Tabs Content */}
           <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
             <TabsContent value="requests" className="space-y-4">
               <h2 className="text-lg font-semibold">Friend Requests</h2>
@@ -211,9 +206,9 @@ const FriendsTab = () => {
                             <h3 className="font-semibold text-gray-900 truncate">{friend.name}</h3>
                             <p className="text-sm text-gray-500 truncate">{friend.lastSeen}</p>
                           </div>
-                          <AccessibleButton variant="ghost" size="sm" className="touch-target">
+                          <Button variant="ghost" size="sm" className="touch-target">
                             <MoreHorizontal className="w-4 h-4" />
-                          </AccessibleButton>
+                          </Button>
                         </div>
                         <div className="flex space-x-2">
                           <Button

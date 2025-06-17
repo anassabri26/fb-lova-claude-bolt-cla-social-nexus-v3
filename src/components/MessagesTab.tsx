@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import AccessibleButton from './AccessibleButton';
-import { toast } from 'sonner';
 import { MOCK_IMAGES } from '@/lib/constants';
 
 const MessagesTab = () => {
@@ -69,24 +67,22 @@ const MessagesTab = () => {
 
   const handleSendMessage = () => {
     if (messageText.trim()) {
-      toast.success('Message sent!');
       setMessageText('');
     }
   };
 
   const handleCall = () => {
-    toast.info('Starting voice call...');
+    console.log('Starting voice call...');
   };
 
   const handleVideoCall = () => {
-    toast.info('Starting video call...');
+    console.log('Starting video call...');
   };
 
   return (
     <div className="w-full">
       <div className="container-responsive mx-auto py-6">
         <div className="max-w-6xl mx-auto h-[calc(100vh-200px)] flex flex-col md:flex-row bg-white rounded-lg shadow-sm overflow-hidden">
-          {/* Conversations List */}
           <div className="w-full md:w-1/3 border-r border-gray-200 flex flex-col">
             <div className="p-4 border-b border-gray-200">
               <h2 className="text-xl font-semibold mb-3">Messages</h2>
@@ -143,11 +139,9 @@ const MessagesTab = () => {
             </div>
           </div>
 
-          {/* Chat Area */}
           <div className="flex-1 flex flex-col">
             {selectedChat ? (
               <>
-                {/* Chat Header */}
                 <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-10 h-10">
@@ -162,19 +156,18 @@ const MessagesTab = () => {
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    <AccessibleButton variant="outline" size="sm" onClick={handleCall}>
+                    <Button variant="outline" size="sm" onClick={handleCall}>
                       <Phone className="w-4 h-4" />
-                    </AccessibleButton>
-                    <AccessibleButton variant="outline" size="sm" onClick={handleVideoCall}>
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleVideoCall}>
                       <Video className="w-4 h-4" />
-                    </AccessibleButton>
-                    <AccessibleButton variant="outline" size="sm">
+                    </Button>
+                    <Button variant="outline" size="sm">
                       <MoreHorizontal className="w-4 h-4" />
-                    </AccessibleButton>
+                    </Button>
                   </div>
                 </div>
 
-                {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {messages.map((message) => (
                     <div
@@ -197,12 +190,11 @@ const MessagesTab = () => {
                   ))}
                 </div>
 
-                {/* Message Input */}
                 <div className="p-4 border-t border-gray-200">
                   <div className="flex items-center space-x-2">
-                    <AccessibleButton variant="outline" size="sm">
+                    <Button variant="outline" size="sm">
                       <Paperclip className="w-4 h-4" />
-                    </AccessibleButton>
+                    </Button>
                     <div className="flex-1 flex space-x-2">
                       <Input
                         placeholder="Type a message..."
@@ -214,9 +206,9 @@ const MessagesTab = () => {
                           }
                         }}
                       />
-                      <AccessibleButton variant="outline" size="sm">
+                      <Button variant="outline" size="sm">
                         <Smile className="w-4 h-4" />
-                      </AccessibleButton>
+                      </Button>
                     </div>
                     <Button onClick={handleSendMessage} disabled={!messageText.trim()}>
                       <Send className="w-4 h-4" />

@@ -6,10 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { formatTimeAgo } from '@/lib/utils';
 import { MOCK_IMAGES } from '@/lib/constants';
 import { useIsMobile } from '@/hooks/use-device';
-import { formatTimeAgo } from '@/lib/utils';
 
 interface Post {
   id: string;
@@ -120,23 +119,18 @@ const RecentTab = () => {
             }
           : post
       ));
-      const post = posts.find(p => p.id === postId);
-      toast.success(post?.isLiked ? 'Removed like' : 'Post liked!');
     } else if (action === 'bookmark') {
       setPosts(prev => prev.map(post => 
         post.id === postId ? { ...post, isBookmarked: !post.isBookmarked } : post
       ));
-      const post = posts.find(p => p.id === postId);
-      toast.success(post?.isBookmarked ? 'Removed from saved' : 'Post saved!');
-    } else {
-      toast.success(`${action === 'comment' ? 'Commented on' : 'Shared'} post`);
     }
+    console.log(`${action} action on post ${postId}`);
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      toast.success(`Searching for: ${searchQuery}`);
+      console.log(`Searching for: ${searchQuery}`);
     }
   };
 
@@ -154,7 +148,6 @@ const RecentTab = () => {
       case 'popular':
         return (b.engagement.likes + b.engagement.comments) - (a.engagement.likes + a.engagement.comments);
       case 'trending':
-        // Simple trending algorithm: (likes + comments) / hours since post
         const hoursA = (Date.now() - new Date(a.timestamp).getTime()) / (1000 * 60 * 60);
         const hoursB = (Date.now() - new Date(b.timestamp).getTime()) / (1000 * 60 * 60);
         const scoreA = (a.engagement.likes + a.engagement.comments) / Math.max(1, hoursA);
@@ -169,7 +162,6 @@ const RecentTab = () => {
     <div className="w-full">
       <div className="container-responsive mx-auto py-6">
         <div className="max-w-4xl mx-auto">
-          {/* Header with Gradient Background */}
           <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg text-white p-4 sm:p-6 mb-6">
             <div className="flex items-center space-x-3 mb-2">
               <Clock className="w-6 h-6 sm:w-8 sm:h-8" />
@@ -180,7 +172,6 @@ const RecentTab = () => {
             </p>
           </div>
 
-          {/* Search and Filters */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <form onSubmit={handleSearch} className="flex-1">
               <div className="relative">
@@ -211,7 +202,6 @@ const RecentTab = () => {
             </div>
           </div>
 
-          {/* Category Filters */}
           <div className="mb-6 overflow-x-auto">
             <div className="flex space-x-2 pb-2 scrollbar-thin">
               {categories.map((category) => (
@@ -228,13 +218,11 @@ const RecentTab = () => {
             </div>
           </div>
 
-          {/* Posts List */}
           <div className="space-y-6">
             {sortedPosts.length > 0 ? (
               sortedPosts.map((post) => (
                 <Card key={post.id} className="overflow-hidden hover:shadow-md transition-shadow">
                   <CardContent className="p-0">
-                    {/* Post Header */}
                     <div className="p-4 flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <Avatar className="w-10 h-10 flex-shrink-0">
@@ -264,12 +252,10 @@ const RecentTab = () => {
                       </Button>
                     </div>
 
-                    {/* Post Content */}
                     <div className="px-4 pb-3">
                       <p className="text-gray-900 text-responsive-base">{post.content}</p>
                     </div>
 
-                    {/* Post Image */}
                     {post.image && (
                       <div className="w-full">
                         <img
@@ -280,7 +266,6 @@ const RecentTab = () => {
                       </div>
                     )}
 
-                    {/* Post Stats */}
                     <div className="px-4 py-3 flex items-center justify-between text-sm text-gray-500 border-t border-b border-gray-100">
                       <div className="flex items-center space-x-2">
                         <div className="flex items-center space-x-1">
@@ -294,7 +279,6 @@ const RecentTab = () => {
                       </div>
                     </div>
 
-                    {/* Post Actions */}
                     <div className="px-4 py-2 flex flex-wrap sm:flex-nowrap gap-2 justify-between">
                       <Button 
                         variant="ghost" 
@@ -368,7 +352,6 @@ const RecentTab = () => {
             )}
           </div>
 
-          {/* Activity Summary */}
           {sortedPosts.length > 0 && (
             <Card className="mt-8">
               <CardHeader className="p-4">

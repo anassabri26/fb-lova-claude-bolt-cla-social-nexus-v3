@@ -5,9 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+import CreatePage from './CreatePage';
 import { MOCK_IMAGES } from '@/lib/constants';
-import AccessibleButton from './AccessibleButton';
 
 interface Page {
   id: number;
@@ -23,6 +22,7 @@ interface Page {
 const PagesTab = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const pages: Page[] = [
     {
@@ -100,26 +100,22 @@ const PagesTab = () => {
   ];
 
   const handlePageAction = (action: string, pageId: number) => {
-    toast.success(`${action} page ${pageId}`);
-    console.log(`${action} action on page:`, pageId);
+    console.log(`${action} page ${pageId}`);
   };
 
   const handleCreatePage = () => {
-    toast.success('Create page modal opened');
-    console.log('Create page clicked');
+    setIsCreateModalOpen(true);
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      toast.success(`Searching pages for: ${searchQuery}`);
       console.log('Page search:', searchQuery);
     }
   };
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    toast.info(`Category changed to: ${category}`);
   };
 
   const filteredPages = pages.filter(page =>
@@ -133,7 +129,6 @@ const PagesTab = () => {
     <div className="w-full">
       <div className="container-responsive mx-auto py-6">
         <div className="max-w-6xl mx-auto">
-          {/* Header with Gradient Background */}
           <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white p-4 sm:p-6 mb-6">
             <div className="flex items-center space-x-3 mb-2">
               <Flag className="w-6 h-6 sm:w-8 sm:h-8" />
@@ -144,7 +139,6 @@ const PagesTab = () => {
             </p>
           </div>
 
-          {/* Search and Create */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <form onSubmit={handleSearch} className="flex-1">
               <div className="relative">
@@ -164,7 +158,6 @@ const PagesTab = () => {
             </Button>
           </div>
 
-          {/* Category Filter */}
           <div className="mb-6 overflow-x-auto">
             <div className="flex space-x-2 pb-2 scrollbar-thin">
               {categories.map((category) => (
@@ -181,7 +174,6 @@ const PagesTab = () => {
             </div>
           </div>
 
-          {/* Pages Grid */}
           {filteredPages.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPages.map((page) => (
@@ -202,14 +194,9 @@ const PagesTab = () => {
                         <p className="text-sm text-gray-500 truncate">{page.category}</p>
                         <p className="text-xs text-gray-400">{page.followers} followers</p>
                       </div>
-                      <AccessibleButton 
-                        variant="ghost" 
-                        size="sm" 
-                        className="touch-target"
-                        aria-label="More options"
-                      >
+                      <Button variant="ghost" size="sm" className="touch-target">
                         <MoreHorizontal className="w-4 h-4" />
-                      </AccessibleButton>
+                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 flex-1 flex flex-col">
@@ -281,7 +268,6 @@ const PagesTab = () => {
             </div>
           )}
 
-          {/* Information Section */}
           {filteredPages.length > 0 && (
             <Card className="mt-8">
               <CardHeader className="p-4">
@@ -316,6 +302,11 @@ const PagesTab = () => {
           )}
         </div>
       </div>
+      
+      <CreatePage 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+      />
     </div>
   );
 };

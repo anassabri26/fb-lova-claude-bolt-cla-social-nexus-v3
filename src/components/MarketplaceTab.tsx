@@ -5,9 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import AccessibleButton from './AccessibleButton';
 import CreateMarketplaceItem from './CreateMarketplaceItem';
-import { toast } from 'sonner';
 import { MOCK_IMAGES } from '@/lib/constants';
 
 interface MarketplaceItem {
@@ -109,7 +107,7 @@ const MarketplaceTab = () => {
       description: 'Complete gaming setup including monitor, keyboard, mouse, and RGB lighting.',
       isSaved: false
     }
-  ]);
+  ];
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -126,13 +124,10 @@ const MarketplaceTab = () => {
         ? { ...item, isSaved: !item.isSaved }
         : item
     ));
-    const item = items.find(i => i.id === itemId);
-    toast.success(item?.isSaved ? 'Removed from saved' : 'Saved item!');
     console.log('Item saved/unsaved:', itemId);
   };
 
   const handleMessageSeller = (sellerName: string) => {
-    toast.info(`Opening conversation with ${sellerName}`);
     console.log('Messaging seller:', sellerName);
   };
 
@@ -145,23 +140,19 @@ const MarketplaceTab = () => {
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success(`Link copied to clipboard for "${itemTitle}"`);
     }
     console.log('Shared item:', itemTitle);
   };
 
   const handleCreateListing = () => {
     setIsCreateModalOpen(true);
-    console.log('Opening create listing modal');
   };
 
   const handleItemClick = (item: MarketplaceItem) => {
-    toast.info(`Viewing details for ${item.title}`);
     console.log('Item clicked:', item);
   };
 
   const handleApplyFilters = () => {
-    toast.success('Filters applied successfully!');
     console.log('Filters applied:', { selectedCategory, priceFilter, locationFilter });
   };
 
@@ -170,8 +161,6 @@ const MarketplaceTab = () => {
     setPriceFilter('All');
     setLocationFilter('');
     setSearchTerm('');
-    toast.info('All filters cleared');
-    console.log('Filters cleared');
   };
 
   const filteredItems = items.filter(item => {
@@ -214,20 +203,19 @@ const MarketplaceTab = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filters Sidebar */}
           <div className="lg:w-64 space-y-4">
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold">Filters</h3>
-                  <AccessibleButton
+                  <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleClearFilters}
                     className="text-blue-600 text-xs"
                   >
                     Clear All
-                  </AccessibleButton>
+                  </Button>
                 </div>
                 
                 <div className="space-y-4">
@@ -278,7 +266,6 @@ const MarketplaceTab = () => {
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
             <Card>
               <CardContent className="p-4">
                 <h3 className="font-semibold mb-2">Quick Stats</h3>
@@ -296,9 +283,7 @@ const MarketplaceTab = () => {
             </Card>
           </div>
 
-          {/* Main Content */}
           <div className="flex-1">
-            {/* Search */}
             <div className="relative mb-6">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
@@ -309,7 +294,6 @@ const MarketplaceTab = () => {
               />
             </div>
 
-            {/* Results Count */}
             <div className="mb-4">
               <p className="text-sm text-gray-600">
                 Showing {filteredItems.length} of {items.length} items
@@ -317,7 +301,6 @@ const MarketplaceTab = () => {
               </p>
             </div>
 
-            {/* Items Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.map((item) => (
                 <Card 
@@ -331,7 +314,7 @@ const MarketplaceTab = () => {
                       alt={item.title}
                       className="w-full h-48 object-cover"
                     />
-                    <AccessibleButton
+                    <Button
                       variant="ghost"
                       size="sm"
                       onClick={(e) => {
@@ -343,7 +326,7 @@ const MarketplaceTab = () => {
                       }`}
                     >
                       <Heart className={`w-4 h-4 ${item.isSaved ? 'fill-current' : ''}`} />
-                    </AccessibleButton>
+                    </Button>
                   </div>
 
                   <CardContent className="p-4 flex-1 flex flex-col">
@@ -390,7 +373,7 @@ const MarketplaceTab = () => {
                           <MessageCircle className="w-4 h-4 mr-1" />
                           Message
                         </Button>
-                        <AccessibleButton
+                        <Button
                           variant="outline"
                           size="sm"
                           onClick={(e) => {
@@ -399,7 +382,7 @@ const MarketplaceTab = () => {
                           }}
                         >
                           <Share2 className="w-4 h-4" />
-                        </AccessibleButton>
+                        </Button>
                       </div>
                     </div>
                   </CardContent>

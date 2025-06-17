@@ -6,8 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import AccessibleButton from './AccessibleButton';
-import { toast } from 'sonner';
+import CreateGroup from './CreateGroup';
 import { MOCK_IMAGES } from '@/lib/constants';
 
 interface Group {
@@ -45,56 +44,13 @@ const GroupsTab = () => {
       isJoined: false,
       category: 'Photography',
       lastActivity: '5 hours ago'
-    },
-    {
-      id: '3',
-      name: 'Startup Founders Network',
-      description: 'Private group for startup founders to discuss business strategies.',
-      image: MOCK_IMAGES.POSTS[4],
-      members: 542,
-      privacy: 'private',
-      isJoined: true,
-      category: 'Business',
-      lastActivity: '1 day ago'
-    },
-    {
-      id: '4',
-      name: 'Web Design Inspiration',
-      description: 'Showcase your web design projects and get feedback from other designers.',
-      image: MOCK_IMAGES.POSTS[1],
-      members: 1250,
-      privacy: 'public',
-      isJoined: false,
-      category: 'Design',
-      lastActivity: '3 hours ago'
-    },
-    {
-      id: '5',
-      name: 'JavaScript Enthusiasts',
-      description: 'For anyone passionate about JavaScript and its ecosystem.',
-      image: MOCK_IMAGES.POSTS[3],
-      members: 8750,
-      privacy: 'public',
-      isJoined: true,
-      category: 'Technology',
-      lastActivity: '30 minutes ago'
-    },
-    {
-      id: '6',
-      name: 'UX Research Group',
-      description: 'Discuss user experience research methods and findings.',
-      image: MOCK_IMAGES.POSTS[5],
-      members: 620,
-      privacy: 'private',
-      isJoined: false,
-      category: 'Design',
-      lastActivity: '2 days ago'
     }
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [activeTab, setActiveTab] = useState('all');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const categories = ['All', 'Technology', 'Photography', 'Business', 'Design', 'Sports', 'Food', 'Travel'];
 
@@ -104,12 +60,6 @@ const GroupsTab = () => {
         ? { ...group, isJoined: !group.isJoined }
         : group
     ));
-    const group = groups.find(g => g.id === groupId);
-    toast.success(group?.isJoined ? 'Left group' : 'Joined group!');
-  };
-
-  const handleCreateGroup = () => {
-    toast.info('Group creation feature coming soon!');
   };
 
   const filteredGroups = groups.filter(group => {
@@ -126,16 +76,14 @@ const GroupsTab = () => {
     <div className="w-full">
       <div className="container-responsive mx-auto py-6">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <h1 className="text-2xl font-bold text-gray-900">Groups</h1>
-            <Button onClick={handleCreateGroup} className="flex items-center space-x-2 sm:self-end">
+            <Button onClick={() => setIsCreateModalOpen(true)} className="flex items-center space-x-2">
               <Plus className="w-4 h-4" />
               <span>Create Group</span>
             </Button>
           </div>
 
-          {/* Search and Filters */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -146,20 +94,17 @@ const GroupsTab = () => {
                 className="pl-10"
               />
             </div>
-            <div className="flex-shrink-0">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full sm:w-auto border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full sm:w-auto border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="all">All Groups</TabsTrigger>
@@ -167,7 +112,6 @@ const GroupsTab = () => {
               <TabsTrigger value="discover">Discover</TabsTrigger>
             </TabsList>
 
-            {/* All Groups Tab */}
             <TabsContent value="all" className="space-y-6">
               {filteredGroups.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -225,7 +169,7 @@ const GroupsTab = () => {
                       ? `No results for "${searchTerm}"`
                       : "Try selecting a different category or create your own group."}
                   </p>
-                  <Button onClick={handleCreateGroup}>
+                  <Button onClick={() => setIsCreateModalOpen(true)}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create Group
                   </Button>
@@ -233,7 +177,6 @@ const GroupsTab = () => {
               )}
             </TabsContent>
 
-            {/* Your Groups Tab */}
             <TabsContent value="joined" className="space-y-6">
               {joinedGroups.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -250,9 +193,9 @@ const GroupsTab = () => {
                             <h3 className="font-medium text-gray-900 truncate">{group.name}</h3>
                             <p className="text-sm text-gray-500 truncate">{group.members.toLocaleString()} members</p>
                           </div>
-                          <AccessibleButton variant="ghost" size="sm" className="touch-target">
+                          <Button variant="ghost" size="sm" className="touch-target">
                             <MoreHorizontal className="w-4 h-4" />
-                          </AccessibleButton>
+                          </Button>
                         </div>
                         <div className="flex space-x-2">
                           <Button size="sm" className="flex-1 h-9">View Group</Button>
@@ -274,7 +217,6 @@ const GroupsTab = () => {
               )}
             </TabsContent>
 
-            {/* Discover Tab */}
             <TabsContent value="discover" className="space-y-6">
               {suggestedGroups.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -316,7 +258,7 @@ const GroupsTab = () => {
                       ? `No results for "${searchTerm}"`
                       : "We'll show you group suggestions based on your interests."}
                   </p>
-                  <Button onClick={handleCreateGroup}>
+                  <Button onClick={() => setIsCreateModalOpen(true)}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create Group
                   </Button>
@@ -326,6 +268,11 @@ const GroupsTab = () => {
           </Tabs>
         </div>
       </div>
+      
+      <CreateGroup 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+      />
     </div>
   );
 };
