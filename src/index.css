@@ -231,11 +231,17 @@
   }
 }
 
-/* Tablet: Left sidebar visible, no right sidebar */
+/* Tablet: Left sidebar visible, right sidebar visible on Home page */
 @media (min-width: 48.0625rem) and (max-width: 64rem) { /* 769px - 1024px */
-  .main-content {
+  .main-layout.without-right-sidebar .main-content {
     margin-left: 16rem; /* 256px - left sidebar with full text */
     width: calc(100% - 16rem);
+  }
+  
+  .main-layout.with-right-sidebar .main-content {
+    margin-left: 16rem; /* 256px - left sidebar */
+    margin-right: 16rem; /* 256px - right sidebar */
+    width: calc(100% - 32rem);
   }
 }
 
@@ -334,7 +340,7 @@
   }
 }
 
-/* RIGHT SIDEBAR RESPONSIVE STYLES - OPTIMIZED WIDTHS */
+/* RIGHT SIDEBAR RESPONSIVE STYLES - NOW INCLUDES TABLET */
 .right-sidebar-responsive {
   position: fixed;
   right: 0;
@@ -350,6 +356,14 @@
 /* Only show right sidebar when the layout has the with-right-sidebar class */
 .main-layout.with-right-sidebar .right-sidebar-responsive {
   display: block !important;
+}
+
+/* Tablet: Show right sidebar on Home page */
+@media (min-width: 48.0625rem) and (max-width: 64rem) { /* 769px - 1024px */
+  .main-layout.with-right-sidebar .right-sidebar-responsive {
+    display: block !important;
+    width: 16rem; /* 256px - same as left sidebar for balance */
+  }
 }
 
 /* Desktop: Show right sidebar - content-optimized */
