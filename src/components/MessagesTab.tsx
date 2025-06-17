@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Phone, Video, MoreHorizontal, Send, Smile, Paperclip, MessageCircle, Users, Filter, ArrowLeft, Check, CheckCheck, Clock, Bookmark, Star, Bell, X, Trash, Archive, Info, Image, Mic, Gift as Gif, Sticker, ThumbsUp } from 'lucide-react';
+import { Search, Phone, Video, MoreHorizontal, Send, Smile, Paperclip, MessageCircle, Users, Filter, ArrowLeft, Check, CheckCheck, Clock, Bookmark, Star, Bell, BellOff, X, Trash, Archive, Info, Image, Mic, Gift as Gif, Sticker, ThumbsUp, Plus, Download, File, Camera, Flag } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1119,7 +1119,7 @@ const MessagesTab = () => {
                     <MessageCircle className="w-10 h-10 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Your Messages</h3>
-                  <p className="text-gray-500 max-w-md mx-auto">
+                  <p className="text-gray-500">
                     Select a conversation to start messaging or start a new conversation with the + button.
                   </p>
                   <Button className="mt-4">
@@ -1226,184 +1226,10 @@ const MessagesTab = () => {
                     <Star className={`w-4 h-4 mr-2 ${selectedChat.isStarred ? 'fill-current text-yellow-500' : ''}`} />
                     {selectedChat.isStarred ? 'Unstar conversation' : 'Star conversation'}
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start"
-                  >
-                    <Bookmark className="w-4 h-4 mr-2" />
-                    Save messages
-                  </Button>
                 </div>
-              </div>
-              
-              <div className="space-y-2 pt-2 border-t">
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-                  onClick={() => {
-                    handleDeleteConversation(selectedChat.id);
-                    setIsInfoOpen(false);
-                  }}
-                >
-                  <Trash className="w-4 h-4 mr-2" />
-                  Delete conversation
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-                >
-                  <Flag className="w-4 h-4 mr-2" />
-                  Block {selectedChat.name}
-                </Button>
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
-      
-      {/* Group Info Dialog */}
-      <Dialog open={isGroupInfoOpen} onOpenChange={setIsGroupInfoOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Group Info</DialogTitle>
-          </DialogHeader>
-          
-          {selectedChat && selectedChat.isGroup && (
-            <div className="space-y-4">
-              <div className="text-center">
-                <Avatar className="w-24 h-24 mx-auto">
-                  <AvatarImage src={selectedChat.avatar} />
-                  <AvatarFallback>{selectedChat.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <h3 className="text-xl font-semibold mt-2">{selectedChat.name}</h3>
-                <p className="text-sm text-gray-500">
-                  {selectedChat.members?.length || 0} members
-                </p>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-medium">Members</h4>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {selectedChat.members?.map((member, index) => (
-                    <div key={index} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg">
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src={member.avatar} />
-                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{member.name}</p>
-                      </div>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-medium">Options</h4>
-                <div className="space-y-2">
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start"
-                    onClick={() => handleMuteConversation(selectedChat.id)}
-                  >
-                    {selectedChat.isMuted ? (
-                      <>
-                        <Bell className="w-4 h-4 mr-2" />
-                        Unmute notifications
-                      </>
-                    ) : (
-                      <>
-                        <BellOff className="w-4 h-4 mr-2" />
-                        Mute notifications
-                      </>
-                    )}
-                  </Button>
-                  <Button variant="ghost" className="w-full justify-start">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add members
-                  </Button>
-                  <Button variant="ghost" className="w-full justify-start">
-                    <Search className="w-4 h-4 mr-2" />
-                    Search in conversation
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="space-y-2 pt-2 border-t">
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Leave group
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-                  onClick={() => {
-                    handleDeleteConversation(selectedChat.id);
-                    setIsGroupInfoOpen(false);
-                  }}
-                >
-                  <Trash className="w-4 h-4 mr-2" />
-                  Delete conversation
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-      
-      {/* Call Dialog */}
-      <Dialog open={isCallDialogOpen} onOpenChange={setIsCallDialogOpen}>
-        <DialogContent className="max-w-md">
-          <div className="text-center py-8">
-            <Avatar className="w-24 h-24 mx-auto mb-4">
-              <AvatarImage src={selectedChat?.avatar} />
-              <AvatarFallback>{selectedChat?.name.charAt(0) || 'U'}</AvatarFallback>
-            </Avatar>
-            <h3 className="text-xl font-semibold mb-1">{selectedChat?.name}</h3>
-            <p className="text-gray-500 mb-6">
-              {callType === 'audio' ? 'Audio calling...' : 'Video calling...'}
-            </p>
-            
-            <div className="flex justify-center space-x-4">
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-full h-12 w-12 p-0 bg-gray-100"
-                onClick={() => setIsCallDialogOpen(false)}
-              >
-                <X className="w-6 h-6 text-red-500" />
-              </Button>
-              {callType === 'audio' ? (
-                <Button
-                  size="lg"
-                  className="rounded-full h-12 w-12 p-0 bg-green-500 hover:bg-green-600"
-                  onClick={() => {
-                    toast.success(`${callType} call connected`);
-                    setTimeout(() => setIsCallDialogOpen(false), 1500);
-                  }}
-                >
-                  <Phone className="w-6 h-6" />
-                </Button>
-              ) : (
-                <Button
-                  size="lg"
-                  className="rounded-full h-12 w-12 p-0 bg-green-500 hover:bg-green-600"
-                  onClick={() => {
-                    toast.success(`${callType} call connected`);
-                    setTimeout(() => setIsCallDialogOpen(false), 1500);
-                  }}
-                >
-                  <Video className="w-6 h-6" />
-                </Button>
-              )}
-            </div>
-          </div>
         </DialogContent>
       </Dialog>
     </div>
