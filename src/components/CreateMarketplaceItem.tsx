@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { X, Upload, MapPin, DollarSign, Camera } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import AccessibleButton from './AccessibleButton';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 interface CreateMarketplaceItemProps {
@@ -139,7 +138,7 @@ const CreateMarketplaceItem: React.FC<CreateMarketplaceItemProps> = ({ isOpen, o
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                 <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-600 mb-2">Add up to 10 photos</p>
-                <AccessibleButton 
+                <Button 
                   type="button" 
                   variant="outline" 
                   size="sm"
@@ -148,7 +147,7 @@ const CreateMarketplaceItem: React.FC<CreateMarketplaceItemProps> = ({ isOpen, o
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Choose Files
-                </AccessibleButton>
+                </Button>
               </div>
               
               {/* Photo Preview */}
@@ -161,7 +160,7 @@ const CreateMarketplaceItem: React.FC<CreateMarketplaceItemProps> = ({ isOpen, o
                         alt={`Upload ${index + 1}`}
                         className="w-full h-20 object-cover rounded border"
                       />
-                      <AccessibleButton
+                      <Button
                         type="button"
                         variant="ghost"
                         size="sm"
@@ -169,7 +168,7 @@ const CreateMarketplaceItem: React.FC<CreateMarketplaceItemProps> = ({ isOpen, o
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 p-0"
                       >
                         <X className="w-3 h-3" />
-                      </AccessibleButton>
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -287,7 +286,7 @@ const CreateMarketplaceItem: React.FC<CreateMarketplaceItemProps> = ({ isOpen, o
 
           {/* Form Actions */}
           <div className="flex space-x-3 pt-4 border-t">
-            <AccessibleButton 
+            <Button 
               type="button" 
               variant="outline" 
               onClick={handleCancel} 
@@ -295,14 +294,14 @@ const CreateMarketplaceItem: React.FC<CreateMarketplaceItemProps> = ({ isOpen, o
               disabled={isSubmitting}
             >
               Cancel
-            </AccessibleButton>
-            <AccessibleButton 
+            </Button>
+            <Button 
               type="submit" 
               className="flex-1" 
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Creating...' : 'List Item'}
-            </AccessibleButton>
+            </Button>
           </div>
         </form>
       </DialogContent>
