@@ -67,7 +67,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           </main>
           
           {/* Right Sidebar - Only shown when showRightSidebar is true (Home page + desktop) */}
-          {showSidebars && (
+          {showSidebars && showRightSidebar && (
             <aside className="right-sidebar-responsive">
               <RightSidebar />
             </aside>

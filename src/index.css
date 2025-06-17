@@ -349,13 +349,13 @@
 
 /* Only show right sidebar when the layout has the with-right-sidebar class */
 .main-layout.with-right-sidebar .right-sidebar-responsive {
-  display: block;
+  display: block !important;
 }
 
 /* Desktop: Show right sidebar - content-optimized */
 @media (min-width: 64.0625rem) and (max-width: 80rem) { /* 1025px - 1280px */
   .main-layout.with-right-sidebar .right-sidebar-responsive {
-    display: block;
+    display: block !important;
     width: 18rem; /* 288px - optimized for desktop */
   }
 }
@@ -363,7 +363,7 @@
 /* Large Desktop: Optimized right sidebar width */
 @media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
   .main-layout.with-right-sidebar .right-sidebar-responsive {
-    display: block;
+    display: block !important;
     width: 20rem; /* 320px - slightly wider for better balance */
   }
 }
@@ -371,7 +371,7 @@
 /* Extra Large Desktop: Maximum right sidebar width */
 @media (min-width: 100.0625rem) { /* 1601px+ */
   .main-layout.with-right-sidebar .right-sidebar-responsive {
-    display: block;
+    display: block !important;
     width: 22rem; /* 352px */
   }
 }
