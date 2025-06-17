@@ -18,6 +18,8 @@ const Friends = lazy(() => import("./pages/Friends"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Watch = lazy(() => import("./pages/Watch"));
+const VideoWatch = lazy(() => import("./pages/VideoWatch"));
+const ChannelPage = lazy(() => import("./components/ChannelPage"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Events = lazy(() => import("./pages/Events"));
 const Saved = lazy(() => import("./pages/Saved"));
@@ -88,6 +90,21 @@ function App() {
                       <Watch />
                     </AppLayout>
                   } />
+                  
+                  {/* Video watch page */}
+                  <Route path="/watch/:videoId" element={
+                    <AppLayout>
+                      <VideoWatch />
+                    </AppLayout>
+                  } />
+                  
+                  {/* Channel page */}
+                  <Route path="/channel/:channelId" element={
+                    <AppLayout>
+                      <ChannelPage />
+                    </AppLayout>
+                  } />
+                  
                   <Route path={ROUTES.MARKETPLACE} element={
                     <AppLayout>
                       <Marketplace />

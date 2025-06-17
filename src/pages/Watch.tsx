@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Pause, Volume2, VolumeX, MoreHorizontal, Heart, MessageCircle, Share, Eye, Filter, Search, Settings, Clock, Bookmark, Flag, Upload, List, Users, Plus, TrendingUp, Zap } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, MoreHorizontal, Heart, MessageCircle, Share, Eye, Filter, Search, Settings, Clock, Bookmark, Flag, Upload, List, Users, Plus, TrendingUp, Zap, Grid, Calendar } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 interface Video {
@@ -29,13 +30,16 @@ interface Video {
   description: string;
   isTrending?: boolean;
   isShort?: boolean;
+  isPremium?: boolean;
 }
 
 const Watch = () => {
+  const navigate = useNavigate();
+  
   const [videos] = useState<Video[]>([
     {
       id: '1',
-      title: 'Amazing Sunset Timelapse from Mount Wilson',
+      title: 'Amazing Sunset Timelapse from Mount Wilson Observatory',
       creator: {
         name: 'Nature Explorer',
         avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face',
@@ -45,9 +49,9 @@ const Watch = () => {
       },
       thumbnail: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
       duration: '3:45',
-      views: 12500,
-      likes: 890,
-      timestamp: '2 hours ago',
+      views: 125000,
+      likes: 8900,
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       category: 'Nature',
       description: 'Watch this breathtaking sunset timelapse captured from Mount Wilson Observatory.',
       isTrending: true
@@ -85,10 +89,29 @@ const Watch = () => {
       duration: '0:45',
       views: 8900,
       likes: 567,
-      timestamp: '1 day ago',
+      timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       category: 'Food',
       description: 'Quick 45-second pasta recipe!',
       isShort: true
+    },
+    {
+      id: '4',
+      title: 'Advanced Photography Masterclass',
+      creator: {
+        name: 'Pro Photographer',
+        avatar: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=400&fit=crop&crop=face',
+        verified: true,
+        isFollowing: false,
+        subscribers: '1.2M'
+      },
+      thumbnail: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop',
+      duration: '45:20',
+      views: 67000,
+      likes: 3400,
+      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      category: 'Education',
+      description: 'Learn advanced photography techniques from a professional.',
+      isPremium: true
     }
   ]);
 
@@ -99,47 +122,57 @@ const Watch = () => {
   const [savedVideos, setSavedVideos] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const categories = ['All', 'Technology', 'Nature', 'Food', 'Music', 'Gaming', 'Sports', 'Education', 'Health'];
 
   const handleVideoClick = (videoId: string) => {
-    setPlayingVideo(playingVideo === videoId ? null : videoId);
-    const video = videos.find(v => v.id === videoId);
-    console.log(`Video ${videoId} ${playingVideo === videoId ? 'paused' : 'playing'}`);
+    navigate(`/watch/${videoId}`);
   };
 
-  const handleLike = (videoId: string) => {
+  const handleChannelClick = (creatorName: string) => {
+    const channelId = creatorName.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/channel/${channelId}`);
+  };
+
+  const handleLike = (videoId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     const newLiked = new Set(likedVideos);
     
     if (likedVideos.has(videoId)) {
       newLiked.delete(videoId);
+      toast.success('Removed from liked videos');
     } else {
       newLiked.add(videoId);
+      toast.success('Added to liked videos');
     }
     setLikedVideos(newLiked);
-    console.log(`Video ${videoId} ${likedVideos.has(videoId) ? 'unliked' : 'liked'}`);
   };
 
-  const handleSave = (videoId: string) => {
+  const handleSave = (videoId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     const newSaved = new Set(savedVideos);
     
     if (savedVideos.has(videoId)) {
       newSaved.delete(videoId);
+      toast.success('Removed from saved videos');
     } else {
       newSaved.add(videoId);
+      toast.success('Saved to watch later');
     }
     setSavedVideos(newSaved);
-    console.log(`Video ${videoId} ${savedVideos.has(videoId) ? 'unsaved' : 'saved'}`);
   };
 
-  const handleFollow = (creatorName: string, videoId: string) => {
-    console.log(`Followed/Unfollowed ${creatorName}`);
+  const handleFollow = (creatorName: string, videoId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    toast.success(`Subscribed to ${creatorName}`);
   };
 
-  const handleShare = (videoId: string) => {
+  const handleShare = (videoId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     const video = videos.find(v => v.id === videoId);
     navigator.clipboard.writeText(`${window.location.origin}/watch/${videoId}`);
-    console.log(`Shared video: ${video?.title}`);
+    toast.success('Video link copied to clipboard');
   };
 
   const filteredVideos = videos.filter(video => {
@@ -168,13 +201,16 @@ const Watch = () => {
   const shortsVideos = videos.filter(v => v.isShort);
 
   const renderVideoCard = (video: Video) => (
-    <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card 
+      key={video.id} 
+      className="overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group"
+      onClick={() => handleVideoClick(video.id)}
+    >
       <div className="relative">
         <img
           src={video.thumbnail}
           alt={video.title}
-          className="w-full h-48 object-cover cursor-pointer"
-          onClick={() => handleVideoClick(video.id)}
+          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
         />
         
         {/* Live indicator */}
@@ -189,7 +225,7 @@ const Watch = () => {
         
         {video.isTrending && (
           <div className="absolute top-2 right-2">
-            <Badge className="bg-red-500 text-white animate-pulse">
+            <Badge className="bg-red-500 text-white">
               <TrendingUp className="w-3 h-3 mr-1" />
               TRENDING
             </Badge>
@@ -205,16 +241,19 @@ const Watch = () => {
           </div>
         )}
 
+        {video.isPremium && (
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-yellow-500 text-black">
+              Premium
+            </Badge>
+          </div>
+        )}
+
         {/* Play overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all cursor-pointer flex items-center justify-center"
-             onClick={() => handleVideoClick(video.id)}>
-          <div className="opacity-0 hover:opacity-100 transition-opacity">
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-              {playingVideo === video.id ? (
-                <Pause className="w-8 h-8 text-gray-800" />
-              ) : (
-                <Play className="w-8 h-8 text-gray-800 ml-1" />
-              )}
+              <Play className="w-8 h-8 text-gray-800 ml-1" />
             </div>
           </div>
         </div>
@@ -233,59 +272,52 @@ const Watch = () => {
       <CardContent className="p-4">
         {/* Creator info */}
         <div className="flex items-start space-x-3 mb-3">
-          <Avatar className="w-10 h-10">
+          <Avatar 
+            className="w-10 h-10 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleChannelClick(video.creator.name);
+            }}
+          >
             <AvatarImage src={video.creator.avatar} />
             <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm leading-tight">
+            <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm leading-tight group-hover:text-blue-600 transition-colors">
               {video.title}
             </h3>
             <div className="flex items-center space-x-1 mt-1">
-              <p className="text-sm text-gray-600">{video.creator.name}</p>
+              <p 
+                className="text-sm text-gray-600 hover:text-blue-600 cursor-pointer transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleChannelClick(video.creator.name);
+                }}
+              >
+                {video.creator.name}
+              </p>
               {video.creator.verified && (
                 <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white text-xs">✓</span>
                 </div>
               )}
-              <span className="text-xs text-gray-500">• {video.creator.subscribers} subscribers</span>
+            </div>
+            <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+              <span>{video.views.toLocaleString()} views</span>
+              <span>•</span>
+              <span>{video.timestamp.includes('ago') ? video.timestamp : new Date(video.timestamp).toLocaleDateString()}</span>
             </div>
             <p className="text-xs text-gray-500 mt-1 line-clamp-2">{video.description}</p>
-          </div>
-          <div className="flex flex-col space-y-1">
-            <Button
-              variant={video.creator.isFollowing ? "secondary" : "outline"}
-              size="sm"
-              onClick={() => handleFollow(video.creator.name, video.id)}
-            >
-              {video.creator.isFollowing ? 'Following' : 'Follow'}
-            </Button>
-          </div>
-        </div>
-
-        {/* Video stats */}
-        <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1">
-              <Eye className="w-4 h-4" />
-              <span>{video.views.toLocaleString()}</span>
-            </div>
-            <span>{video.timestamp}</span>
-            {video.category && (
-              <Badge variant="outline" className="text-xs">
-                {video.category}
-              </Badge>
-            )}
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
           <div className="flex items-center space-x-1">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => handleLike(video.id)}
+              onClick={(e) => handleLike(video.id, e)}
               className={`flex items-center space-x-1 ${
                 likedVideos.has(video.id) ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
               }`}
@@ -297,17 +329,7 @@ const Watch = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => console.log(`Comment on ${video.id}`)}
-              className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span className="text-sm">Comment</span>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleSave(video.id)}
+              onClick={(e) => handleSave(video.id, e)}
               className={`flex items-center space-x-1 ${
                 savedVideos.has(video.id) ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
               }`}
@@ -320,7 +342,7 @@ const Watch = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => handleShare(video.id)}
+              onClick={(e) => handleShare(video.id, e)}
               className="text-gray-600 hover:text-green-600"
             >
               <Share className="w-4 h-4" />
@@ -329,13 +351,29 @@ const Watch = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => console.log(`Report ${video.id}`)}
-              className="text-gray-600 hover:text-red-600"
+              onClick={(e) => {
+                e.stopPropagation();
+                toast.info('More options');
+              }}
+              className="text-gray-600 hover:text-gray-800"
             >
-              <Flag className="w-4 h-4" />
+              <MoreHorizontal className="w-4 h-4" />
             </Button>
           </div>
         </div>
+
+        {/* Subscribe button for non-following creators */}
+        {!video.creator.isFollowing && (
+          <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              size="sm"
+              onClick={(e) => handleFollow(video.creator.name, video.id, e)}
+              className="w-full bg-red-600 hover:bg-red-700"
+            >
+              Subscribe
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -345,7 +383,7 @@ const Watch = () => {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           {/* Tab list */}
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-2">
             <TabsTrigger value="home" className="flex items-center space-x-2">
               <Play className="w-4 h-4" />
               <span>Home</span>
@@ -361,6 +399,10 @@ const Watch = () => {
             <TabsTrigger value="subscriptions" className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
               <span>Subscriptions</span>
+            </TabsTrigger>
+            <TabsTrigger value="live" className="flex items-center space-x-2">
+              <Calendar className="w-4 h-4" />
+              <span>Live</span>
             </TabsTrigger>
           </TabsList>
 
@@ -417,6 +459,13 @@ const Watch = () => {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                  >
+                    {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     aria-label="Filter options"
                   >
                     <Filter className="w-4 h-4" />
@@ -446,7 +495,11 @@ const Watch = () => {
             </div>
 
             {/* Videos grid */}
-            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className={`grid gap-6 ${
+              viewMode === 'grid' 
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                : 'grid-cols-1'
+            }`}>
               {sortedVideos.map(renderVideoCard)}
             </div>
 
@@ -471,20 +524,19 @@ const Watch = () => {
             )}
           </TabsContent>
 
-          {/* Trending tab */}
+          {/* Other tabs with similar structure */}
           <TabsContent value="trending" className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
                 <TrendingUp className="w-5 h-5 mr-2 text-red-500" />
                 Trending Videos
               </h2>
-              <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {trendingVideos.map(renderVideoCard)}
               </div>
             </div>
           </TabsContent>
 
-          {/* Shorts tab */}
           <TabsContent value="shorts" className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
@@ -497,7 +549,6 @@ const Watch = () => {
             </div>
           </TabsContent>
 
-          {/* Subscriptions tab */}
           <TabsContent value="subscriptions" className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
@@ -513,6 +564,25 @@ const Watch = () => {
                   Discover Creators
                 </Button>
               </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="live" className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <Calendar className="w-5 h-5 mr-2 text-red-500" />
+                Live Now
+              </h2>
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                {liveVideos.map(renderVideoCard)}
+              </div>
+              {liveVideos.length === 0 && (
+                <div className="text-center py-12">
+                  <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No live streams</h3>
+                  <p className="text-gray-500">Check back later for live content from your favorite creators</p>
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
