@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import AccessibleButton from './AccessibleButton';
+import AccessibleButton from '@/components/AccessibleButton';
 import { toast } from 'sonner';
 import { MOCK_IMAGES } from '@/lib/constants';
 
@@ -25,7 +25,7 @@ interface Memory {
   };
 }
 
-const MemoriesTab = () => {
+const Memories = () => {
   const [memories] = useState<Memory[]>([
     {
       id: '1',
@@ -33,10 +33,7 @@ const MemoriesTab = () => {
       title: 'Trip to the Mountains',
       date: 'March 14, 2021',
       yearsAgo: 3,
-      images: [
-        MOCK_IMAGES.POSTS[0],
-        MOCK_IMAGES.POSTS[1]
-      ],
+      images: [MOCK_IMAGES.POSTS[2], MOCK_IMAGES.POSTS[3]],
       content: 'Amazing hiking trip with friends! The view from the top was absolutely breathtaking.',
       location: 'Yosemite National Park',
       peopleTagged: ['Sarah Johnson', 'Mike Chen'],
@@ -52,34 +49,15 @@ const MemoriesTab = () => {
       title: 'First Day at New Job',
       date: 'March 14, 2020',
       yearsAgo: 4,
-      images: [MOCK_IMAGES.POSTS[2]],
+      images: [MOCK_IMAGES.POSTS[0]],
       content: 'Excited to start this new chapter! Looking forward to the challenges ahead. 💻',
       interactions: {
         likes: 45,
         comments: 12,
         shares: 5
       }
-    },
-    {
-      id: '3',
-      type: 'event',
-      title: 'College Graduation',
-      date: 'March 14, 2019',
-      yearsAgo: 5,
-      images: [MOCK_IMAGES.POSTS[3]],
-      content: 'Finally graduated! Four years of hard work paid off. Thank you to everyone who supported me.',
-      location: 'University Campus',
-      interactions: {
-        likes: 89,
-        comments: 25,
-        shares: 8
-      }
     }
   ]);
-
-  const [selectedYear, setSelectedYear] = useState('All');
-
-  const years = ['All', '1 year ago', '2 years ago', '3 years ago', '4 years ago', '5+ years ago'];
 
   const handleShare = (memoryTitle: string) => {
     toast.success(`Shared memory: ${memoryTitle}`);
@@ -119,25 +97,10 @@ const MemoriesTab = () => {
             </CardContent>
           </Card>
 
-          {/* Filters */}
-          <div className="flex items-center space-x-4 mb-6 overflow-x-auto scrollbar-thin">
-            {years.map((year) => (
-              <Button
-                key={year}
-                variant={selectedYear === year ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setSelectedYear(year)}
-                className="whitespace-nowrap"
-              >
-                {year}
-              </Button>
-            ))}
-          </div>
-
           {/* Memories Timeline */}
           <div className="space-y-6">
             {memories.map((memory) => (
-              <Card key={memory.id} className="overflow-hidden hover:shadow-md transition-shadow">
+              <Card key={memory.id} className="overflow-hidden">
                 <CardContent className="p-0">
                   {/* Header */}
                   <div className="p-4 border-b border-gray-100">
@@ -256,7 +219,7 @@ const MemoriesTab = () => {
 
           {/* Empty State */}
           {memories.length === 0 && (
-            <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+            <div className="text-center py-12">
               <Clock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No memories for this day</h3>
               <p className="text-gray-500">Check back on other days to see your memories.</p>
@@ -268,4 +231,4 @@ const MemoriesTab = () => {
   );
 };
 
-export default MemoriesTab;
+export default Memories;

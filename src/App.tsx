@@ -11,20 +11,17 @@ import { ROUTES } from "@/lib/constants";
 
 // Lazy-loaded pages for better performance
 const Auth = lazy(() => import("./pages/Auth"));
-const EnhancedIndex = lazy(() => import("./pages/EnhancedIndex"));
-const EnhancedProfile = lazy(() => import("./pages/EnhancedProfile"));
-const EnhancedGroups = lazy(() => import("./pages/EnhancedGroups"));
-const EnhancedFriends = lazy(() => import("./pages/EnhancedFriends"));
-const EnhancedMessages = lazy(() => import("./pages/EnhancedMessages"));
+const Home = lazy(() => import("./pages/Home"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Groups = lazy(() => import("./pages/Groups"));
+const Friends = lazy(() => import("./pages/Friends"));
+const Messages = lazy(() => import("./pages/Messages"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Watch = lazy(() => import("./pages/Watch"));
-const EnhancedMarketplace = lazy(() => import("./pages/EnhancedMarketplace"));
-const EnhancedEvents = lazy(() => import("./pages/EnhancedEvents"));
+const Marketplace = lazy(() => import("./pages/Marketplace"));
+const Events = lazy(() => import("./pages/Events"));
 const Saved = lazy(() => import("./pages/Saved"));
-const EnhancedMemories = lazy(() => import("./pages/EnhancedMemories"));
-const TrendingPage = lazy(() => import("./components/TrendingPage"));
-const Recent = lazy(() => import("./pages/Recent"));
-const Pages = lazy(() => import("./pages/Pages"));
+const Memories = lazy(() => import("./pages/Memories"));
 const Settings = lazy(() => import("./pages/Settings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -54,27 +51,27 @@ function App() {
                   {/* Main routes with layout */}
                   <Route path={ROUTES.HOME} element={
                     <AppLayout>
-                      <EnhancedIndex />
+                      <Home />
                     </AppLayout>
                   } />
                   <Route path={ROUTES.PROFILE} element={
                     <AppLayout>
-                      <EnhancedProfile />
+                      <Profile />
                     </AppLayout>
                   } />
                   <Route path={ROUTES.GROUPS} element={
                     <AppLayout>
-                      <EnhancedGroups />
+                      <Groups />
                     </AppLayout>
                   } />
                   <Route path={ROUTES.FRIENDS} element={
                     <AppLayout>
-                      <EnhancedFriends />
+                      <Friends />
                     </AppLayout>
                   } />
                   <Route path={ROUTES.MESSAGES} element={
                     <AppLayout>
-                      <EnhancedMessages />
+                      <Messages />
                     </AppLayout>
                   } />
                   <Route path={ROUTES.NOTIFICATIONS} element={
@@ -87,19 +84,14 @@ function App() {
                       <Watch />
                     </AppLayout>
                   } />
-                  <Route path="/trending" element={
-                    <AppLayout>
-                      <TrendingPage />
-                    </AppLayout>
-                  } />
                   <Route path={ROUTES.MARKETPLACE} element={
                     <AppLayout>
-                      <EnhancedMarketplace />
+                      <Marketplace />
                     </AppLayout>
                   } />
                   <Route path={ROUTES.EVENTS} element={
                     <AppLayout>
-                      <EnhancedEvents />
+                      <Events />
                     </AppLayout>
                   } />
                   <Route path={ROUTES.SAVED} element={
@@ -109,17 +101,7 @@ function App() {
                   } />
                   <Route path={ROUTES.MEMORIES} element={
                     <AppLayout>
-                      <EnhancedMemories />
-                    </AppLayout>
-                  } />
-                  <Route path="/recent" element={
-                    <AppLayout>
-                      <Recent />
-                    </AppLayout>
-                  } />
-                  <Route path="/pages" element={
-                    <AppLayout>
-                      <Pages />
+                      <Memories />
                     </AppLayout>
                   } />
                   <Route path={ROUTES.SETTINGS} element={
