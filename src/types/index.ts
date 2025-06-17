@@ -31,6 +31,12 @@ export interface Post {
   likes_count?: number;
   comments_count?: number;
   user_has_liked?: boolean;
+  reactions?: Record<string, number>;
+  feeling?: string;
+  location?: string;
+  tagged_friends?: string[];
+  privacy?: string;
+  is_live?: boolean;
 }
 
 export interface Comment {
@@ -122,6 +128,11 @@ export interface RegisterForm {
 export interface PostForm {
   content: string;
   imageUrl?: string;
+  feeling?: string;
+  location?: string;
+  taggedFriends?: string[];
+  privacy?: string;
+  isLive?: boolean;
 }
 
 export interface CommentForm {
@@ -181,6 +192,26 @@ export interface FeatureFlags {
 // Device types
 export type DeviceType = 'mobile' | 'tablet' | 'desktop';
 export type Orientation = 'portrait' | 'landscape';
+
+// Story types
+export interface Story {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  type: 'photo' | 'video' | 'text';
+  media?: string;
+  content: string;
+  background?: string;
+  timestamp: string;
+  createdAt: Date;
+  expiresAt: Date;
+  isViewed: boolean;
+  viewedBy?: string[];
+  reactions?: Record<string, number>;
+}
 
 // Utility types
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

@@ -76,6 +76,14 @@ const generateMockPosts = (page: number, pageSize: number): InfiniteQueryPage<Po
     const content = contents[postIndex % contents.length];
     const hasImage = Math.random() > 0.4; // 60% chance of having an image
     const image = hasImage ? MOCK_IMAGES.POSTS[postIndex % MOCK_IMAGES.POSTS.length] : undefined;
+    const reactions = Math.random() > 0.7 ? {
+      '👍': Math.floor(Math.random() * 50),
+      '❤️': Math.floor(Math.random() * 30),
+      '😆': Math.floor(Math.random() * 20),
+      '😮': Math.floor(Math.random() * 10),
+      '😢': Math.floor(Math.random() * 5),
+      '😡': Math.floor(Math.random() * 3)
+    } : undefined;
 
     posts.push({
       id: `post_${postIndex + 1}`, // Start from 1 for better UX
@@ -87,7 +95,8 @@ const generateMockPosts = (page: number, pageSize: number): InfiniteQueryPage<Po
       profiles: profile,
       likes_count: Math.floor(Math.random() * 500) + 10,
       comments_count: Math.floor(Math.random() * 100) + 2,
-      user_has_liked: Math.random() > 0.7
+      user_has_liked: Math.random() > 0.7,
+      reactions: reactions
     });
   }
 
@@ -138,7 +147,23 @@ export const useCreatePost = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ content, imageUrl }: { content: string; imageUrl?: string }) => {
+    mutationFn: async ({ 
+      content, 
+      imageUrl, 
+      feeling, 
+      location, 
+      taggedFriends, 
+      privacy, 
+      isLive 
+    }: { 
+      content: string; 
+      imageUrl?: string;
+      feeling?: string;
+      location?: string;
+      taggedFriends?: string[];
+      privacy?: string;
+      isLive?: boolean;
+    }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const newPost: Post = {
@@ -155,7 +180,12 @@ export const useCreatePost = () => {
         },
         likes_count: 0,
         comments_count: 0,
-        user_has_liked: false
+        user_has_liked: false,
+        feeling,
+        location,
+        tagged_friends: taggedFriends,
+        privacy,
+        is_live: isLive
       };
 
       return newPost;
@@ -174,10 +204,18 @@ export const useLikePost = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ postId, isLiked }: { postId: string; isLiked: boolean }) => {
+    mutationFn: async ({ 
+      postId, 
+      isLiked,
+      reaction
+    }: { 
+      postId: string; 
+      isLiked: boolean;
+      reaction?: string;
+    }) => {
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      return { postId, isLiked: !isLiked };
+      return { postId, isLiked: !isLiked, reaction };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
