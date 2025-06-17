@@ -131,13 +131,13 @@ export const handleError = (error: unknown, context?: string): void => {
 // Performance monitoring
 export const performanceMonitor = {
   mark: (name: string): void => {
-    if (performance && performance.mark) {
+    if (typeof performance !== 'undefined' && performance && performance.mark) {
       performance.mark(name);
     }
   },
   
   measure: (name: string, startMark: string, endMark?: string): number => {
-    if (performance && performance.measure && performance.getEntriesByName) {
+    if (typeof performance !== 'undefined' && performance && performance.measure && performance.getEntriesByName) {
       performance.measure(name, startMark, endMark);
       const entries = performance.getEntriesByName(name);
       return entries.length > 0 ? entries[0].duration : 0;
@@ -146,7 +146,7 @@ export const performanceMonitor = {
   },
   
   clearMarks: (): void => {
-    if (performance && performance.clearMarks) {
+    if (typeof performance !== 'undefined' && performance && performance.clearMarks) {
       performance.clearMarks();
     }
   }
@@ -154,7 +154,7 @@ export const performanceMonitor = {
 
 // Image optimization
 export const optimizeImageUrl = (url: string, width?: number, height?: number): string => {
-  if (!url || !url.includes('unsplash.com')) return url;
+  if (!url || typeof url !== 'string' || !url.includes('unsplash.com')) return url;
   
   const params = new URLSearchParams();
   if (width) params.set('w', width.toString());
