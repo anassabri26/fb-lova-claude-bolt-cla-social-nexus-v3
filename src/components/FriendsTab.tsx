@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, UserPlus, Users, MessageCircle, MoreHorizontal, Check, X, Filter, UserCheck, UserMinus, Mail, Phone, Video, Star, Shield, Flag } from 'lucide-react';
+import { Search, UserPlus, Users, MessageCircle, MoreHorizontal, Check, X, Filter, UserCheck, UserMinus, Mail, Phone, Video, Star, Shield, Flag, MapPin } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Briefcase } from '@/components/ui/Briefcase';
+import { GraduationCap } from '@/components/ui/GraduationCap';
 import { MOCK_IMAGES } from '@/lib/constants';
 import { toast } from 'sonner';
 
