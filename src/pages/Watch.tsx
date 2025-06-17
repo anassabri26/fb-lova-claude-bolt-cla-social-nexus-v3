@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import AccessibleButton from '../components/AccessibleButton';
+import AccessibleButton from '@/components/AccessibleButton';
 import { toast } from 'sonner';
 
 interface Video {
