@@ -8,6 +8,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { ROUTES } from "@/lib/constants";
+import ChatButton from '@/components/ChatButton';
 
 // Lazy-loaded pages for better performance
 const Auth = lazy(() => import("./pages/Auth"));
@@ -158,6 +159,9 @@ function App() {
                   <Route path="*" element={<Navigate to="/not-found" replace />} />
                 </Routes>
               </Suspense>
+              
+              {/* Global Chat Button */}
+              <ChatButton />
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>

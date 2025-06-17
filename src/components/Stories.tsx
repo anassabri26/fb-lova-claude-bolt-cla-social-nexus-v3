@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Play, X, Camera, Video, Type, Smile, Music } from 'lucide-react';
+import { Plus, Play, X, Camera } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { MOCK_IMAGES } from '@/lib/constants';
 import { toast } from 'sonner';
+import StoryCreator from './StoryCreator';
 
 interface Story {
   id: string;
@@ -21,6 +19,7 @@ interface Story {
   isViewed: boolean;
   type: 'photo' | 'video' | 'text';
   content?: string;
+  background?: string;
 }
 
 const Stories = () => {
@@ -57,14 +56,13 @@ const Stories = () => {
       image: MOCK_IMAGES.POSTS[2],
       timestamp: '6h',
       isViewed: false,
-      content: 'Having a great day! 🌟'
+      content: 'Having a great day! 🌟',
+      background: 'bg-gradient-to-br from-purple-500 to-pink-500'
     }
   ]);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
-  const [storyType, setStoryType] = useState<'photo' | 'video' | 'text'>('photo');
-  const [storyContent, setStoryContent] = useState('');
   const [storyProgress, setStoryProgress] = useState(0);
 
   // Handle story progress
@@ -104,24 +102,22 @@ const Stories = () => {
     ));
   };
 
-  const handleCreateStorySubmit = () => {
+  const handleCreateStorySubmit = (storyData: any) => {
     const newStory: Story = {
       id: `story_${Date.now()}`,
-      type: storyType,
+      type: storyData.type,
       user: {
         name: 'You',
         avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
       },
-      image: storyType === 'text' ? '' : MOCK_IMAGES.POSTS[Math.floor(Math.random() * MOCK_IMAGES.POSTS.length)],
+      image: storyData.media || '',
       timestamp: 'now',
       isViewed: false,
-      content: storyType === 'text' ? storyContent : undefined
+      content: storyData.content,
+      background: storyData.background
     };
 
     setStories(prev => [newStory, ...prev]);
-    setIsCreateModalOpen(false);
-    setStoryContent('');
-    toast.success('Story created successfully!');
   };
 
   return (
@@ -149,7 +145,7 @@ const Stories = () => {
             >
               <CardContent className="p-0 relative h-full">
                 {story.type === 'text' ? (
-                  <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center p-2">
+                  <div className={`w-full h-full ${story.background || 'bg-gradient-to-br from-purple-500 to-pink-500'} flex items-center justify-center p-2`}>
                     <p className="text-white text-xs font-medium text-center leading-tight">
                       {story.content}
                     </p>
@@ -197,89 +193,18 @@ const Stories = () => {
         </div>
       </div>
 
-      {/* Create Story Modal */}
-      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create Story</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex space-x-2">
-              <Button
-                variant={storyType === 'photo' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStoryType('photo')}
-                className="flex-1"
-              >
-                <Camera className="w-4 h-4 mr-2" />
-                Photo
-              </Button>
-              <Button
-                variant={storyType === 'video' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStoryType('video')}
-                className="flex-1"
-              >
-                <Video className="w-4 h-4 mr-2" />
-                Video
-              </Button>
-              <Button
-                variant={storyType === 'text' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setStoryType('text')}
-                className="flex-1"
-              >
-                <Type className="w-4 h-4 mr-2" />
-                Text
-              </Button>
-            </div>
-
-            {storyType === 'text' && (
-              <div>
-                <Textarea
-                  placeholder="What's on your mind?"
-                  value={storyContent}
-                  onChange={(e) => setStoryContent(e.target.value)}
-                  rows={4}
-                />
-              </div>
-            )}
-
-            {(storyType === 'photo' || storyType === 'video') && (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <div className="space-y-2">
-                  {storyType === 'photo' ? (
-                    <Camera className="w-12 h-12 text-gray-400 mx-auto" />
-                  ) : (
-                    <Video className="w-12 h-12 text-gray-400 mx-auto" />
-                  )}
-                  <p className="text-gray-600">
-                    {storyType === 'photo' ? 'Add a photo to your story' : 'Add a video to your story'}
-                  </p>
-                  <Button variant="outline" size="sm">
-                    Choose File
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            <div className="flex space-x-2 pt-4">
-              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)} className="flex-1">
-                Cancel
-              </Button>
-              <Button onClick={handleCreateStorySubmit} className="flex-1">
-                Share Story
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Story Creator Modal */}
+      <StoryCreator
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreateStory={handleCreateStorySubmit}
+      />
 
       {/* Story Viewer Modal */}
       {selectedStory && (
         <Dialog open={!!selectedStory} onOpenChange={() => setSelectedStory(null)}>
           <DialogContent className="max-w-md p-0 bg-black">
-            <div className="relative h-96">
+            <div className="relative h-[80vh]">
               {/* Progress Bar */}
               <div className="absolute top-0 left-0 right-0 z-10 p-2">
                 <div className="w-full h-1 bg-white/30 rounded-full">
@@ -291,7 +216,7 @@ const Stories = () => {
               </div>
               
               {selectedStory.type === 'text' ? (
-                <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center p-6">
+                <div className={`w-full h-full ${selectedStory.background || 'bg-gradient-to-br from-purple-500 to-pink-500'} flex items-center justify-center p-6`}>
                   <p className="text-white text-lg font-medium text-center">
                     {selectedStory.content}
                   </p>
@@ -329,11 +254,11 @@ const Stories = () => {
               {/* Reply Input */}
               <div className="absolute bottom-4 left-4 right-4">
                 <div className="flex space-x-2">
-                  <Input
+                  <input
                     placeholder={`Reply to ${selectedStory.user.name}...`}
-                    className="bg-white/20 backdrop-blur-sm border-0 text-white placeholder:text-white/70"
+                    className="w-full bg-white/20 backdrop-blur-sm border-0 text-white placeholder:text-white/70 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/50"
                   />
-                  <Button variant="ghost" className="text-white bg-white/20">
+                  <Button variant="ghost" className="text-white bg-white/20 rounded-full">
                     Send
                   </Button>
                 </div>
@@ -345,5 +270,25 @@ const Stories = () => {
     </>
   );
 };
+
+// Add missing Type icon component
+const Type = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <polyline points="4 7 4 4 20 4 20 7" />
+    <line x1="9" y1="20" x2="15" y2="20" />
+    <line x1="12" y1="4" x2="12" y2="20" />
+  </svg>
+);
 
 export default Stories;
