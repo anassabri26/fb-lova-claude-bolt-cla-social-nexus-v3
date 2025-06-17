@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 interface LiveStreamingProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
   const [comments, setComments] = useState<Array<{id: string, user: string, message: string}>>([]);
   const [newComment, setNewComment] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
+  const commentsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen && !isStreaming) {
@@ -30,6 +32,66 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
       stopCamera();
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (isStreaming) {
+      // Simulate viewers joining
+      const interval = setInterval(() => {
+        setViewerCount(prev => {
+          const change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+          return Math.max(1, prev + change);
+        });
+      }, 5000);
+      
+      // Simulate comments
+      const commentInterval = setInterval(() => {
+        if (Math.random() > 0.7) {
+          const randomComments = [
+            "Great stream!",
+            "Hello from California!",
+            "What's your opinion on React vs Vue?",
+            "Can you explain that again?",
+            "Love the content!",
+            "First time watching, this is awesome",
+            "How long have you been coding?",
+            "Do you have a YouTube channel?",
+            "Thanks for sharing your knowledge!"
+          ];
+          
+          const randomNames = [
+            "Sarah",
+            "Mike",
+            "Emma",
+            "David",
+            "Lisa",
+            "Alex",
+            "Jessica",
+            "Robert"
+          ];
+          
+          const comment = {
+            id: Date.now().toString(),
+            user: randomNames[Math.floor(Math.random() * randomNames.length)],
+            message: randomComments[Math.floor(Math.random() * randomComments.length)]
+          };
+          
+          setComments(prev => [...prev, comment]);
+        }
+      }, 8000);
+      
+      return () => {
+        clearInterval(interval);
+        clearInterval(commentInterval);
+      };
+    }
+  }, [isStreaming]);
+
+  // Auto-scroll comments
+  useEffect(() => {
+    if (commentsRef.current) {
+      commentsRef.current.scrollTop = commentsRef.current.scrollHeight;
+    }
+  }, [comments]);
 
   const startCamera = async () => {
     try {
@@ -42,6 +104,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
+      toast.error('Could not access camera or microphone');
     }
   };
 
@@ -54,17 +117,19 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
 
   const startStream = () => {
     if (!streamTitle.trim()) {
-      alert('Please enter a stream title');
+      toast.error('Please enter a stream title');
       return;
     }
     setIsStreaming(true);
-    setViewerCount(Math.floor(Math.random() * 50) + 1);
+    setViewerCount(Math.floor(Math.random() * 10) + 1);
+    toast.success('You are now live!');
   };
 
   const endStream = () => {
     setIsStreaming(false);
     setViewerCount(0);
     stopCamera();
+    toast.info('Stream ended');
     onClose();
   };
 
@@ -94,7 +159,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
     if (newComment.trim()) {
       const comment = {
         id: Date.now().toString(),
-        user: 'Viewer',
+        user: 'You',
         message: newComment
       };
       setComments(prev => [...prev, comment]);
@@ -104,8 +169,8 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
+        <DialogHeader className="p-4 border-b">
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Video className="w-5 h-5" />
@@ -121,6 +186,10 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center space-x-1">
                   <Users className="w-4 h-4" />
                   <span>{viewerCount} viewers</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span>Duration: </span>
+                  <span className="font-mono">00:12:34</span>
                 </div>
               </div>
             )}
@@ -140,6 +209,20 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
             {!isVideoEnabled && (
               <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
                 <VideoOff className="w-16 h-16 text-gray-400" />
+                <p className="text-gray-400 mt-4">Camera is off</p>
+              </div>
+            )}
+
+            {/* Stream Info Overlay */}
+            {isStreaming && (
+              <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                <div className="bg-black/70 text-white px-3 py-1 rounded-full text-sm flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  <span>LIVE</span>
+                </div>
+                <div className="bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                  {viewerCount} watching
+                </div>
               </div>
             )}
 
@@ -150,6 +233,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                   variant={isVideoEnabled ? "secondary" : "destructive"}
                   size="sm"
                   onClick={toggleVideo}
+                  className="bg-black/70 hover:bg-black/90"
                 >
                   {isVideoEnabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
                 </Button>
@@ -157,13 +241,14 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                   variant={isAudioEnabled ? "secondary" : "destructive"}
                   size="sm"
                   onClick={toggleAudio}
+                  className="bg-black/70 hover:bg-black/90"
                 >
                   {isAudioEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
                 </Button>
               </div>
 
               <div className="flex items-center space-x-2">
-                <Button variant="secondary" size="sm">
+                <Button variant="secondary" size="sm" className="bg-black/70 hover:bg-black/90">
                   <Settings className="w-4 h-4" />
                 </Button>
                 {isStreaming ? (
@@ -180,10 +265,10 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Stream Info & Chat */}
-          <div className="space-y-4">
+          <div className="flex flex-col h-full">
             {/* Stream Setup */}
-            {!isStreaming && (
-              <Card>
+            {!isStreaming ? (
+              <Card className="flex-1">
                 <CardHeader>
                   <CardTitle className="text-base">Stream Details</CardTitle>
                 </CardHeader>
@@ -204,65 +289,91 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                       <option>Only Me</option>
                     </select>
                   </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Live Chat */}
-            {isStreaming && (
-              <Card className="flex-1">
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center space-x-2">
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Live Chat</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="h-64 overflow-y-auto space-y-2 border rounded p-2">
-                    {comments.map((comment) => (
-                      <div key={comment.id} className="flex items-start space-x-2">
-                        <Avatar className="w-6 h-6">
-                          <AvatarFallback className="text-xs">{comment.user.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm">
-                            <span className="font-medium">{comment.user}:</span> {comment.message}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Description (Optional)</label>
+                    <textarea 
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                      rows={3}
+                      placeholder="Tell viewers what your stream is about..."
+                    ></textarea>
                   </div>
-                  <div className="flex space-x-2">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Tags (Optional)</label>
                     <Input
-                      placeholder="Say something..."
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && sendComment()}
+                      placeholder="gaming, tech, music, etc."
                     />
-                    <Button size="sm" onClick={sendComment}>
-                      Send
-                    </Button>
+                    <p className="text-xs text-gray-500 mt-1">Separate tags with commas</p>
                   </div>
                 </CardContent>
               </Card>
-            )}
+            ) : (
+              <>
+                {/* Live Chat */}
+                <Card className="flex-1 flex flex-col">
+                  <CardHeader className="py-3">
+                    <CardTitle className="text-base flex items-center space-x-2">
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Live Chat</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-3 flex-1 flex flex-col">
+                    <div 
+                      ref={commentsRef}
+                      className="flex-1 overflow-y-auto space-y-2 border rounded p-2 mb-3"
+                    >
+                      {comments.length === 0 ? (
+                        <p className="text-center text-gray-500 text-sm py-4">
+                          Comments will appear here
+                        </p>
+                      ) : (
+                        comments.map((comment) => (
+                          <div key={comment.id} className="flex items-start space-x-2">
+                            <Avatar className="w-6 h-6">
+                              <AvatarFallback className="text-xs">{comment.user.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm">
+                                <span className="font-medium">{comment.user}:</span> {comment.message}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    <div className="flex space-x-2">
+                      <Input
+                        placeholder="Say something..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && sendComment()}
+                      />
+                      <Button size="sm" onClick={sendComment}>
+                        Send
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            {/* Stream Actions */}
-            {isStreaming && (
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Heart className="w-4 h-4 mr-1" />
-                      Like
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Share className="w-4 h-4 mr-1" />
-                      Share
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                {/* Stream Actions */}
+                <Card className="mt-3">
+                  <CardContent className="p-3">
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm" className="flex-1">
+                        <Heart className="w-4 h-4 mr-1" />
+                        Like
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex-1">
+                        <Share className="w-4 h-4 mr-1" />
+                        Share
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex-1">
+                        <Settings className="w-4 h-4 mr-1" />
+                        Settings
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
             )}
           </div>
         </div>

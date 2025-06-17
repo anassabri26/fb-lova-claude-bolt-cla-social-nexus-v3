@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Plus, Clock, MapPin } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Plus, Clock, MapPin, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { MOCK_IMAGES } from '@/lib/constants';
+import CreateEvent from './CreateEvent';
 
 interface Event {
   id: string;
@@ -12,11 +15,17 @@ interface Event {
   location: string;
   type: 'personal' | 'public' | 'friend';
   color: string;
+  attendees?: number;
+  organizer?: {
+    name: string;
+    avatar: string;
+  };
 }
 
 const EventCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [events] = useState<Event[]>([
     {
       id: '1',
@@ -25,7 +34,12 @@ const EventCalendar = () => {
       time: '9:00 AM',
       location: 'Convention Center',
       type: 'public',
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
+      attendees: 1250,
+      organizer: {
+        name: 'Tech Events Inc',
+        avatar: MOCK_IMAGES.AVATARS[0]
+      }
     },
     {
       id: '2',
@@ -43,7 +57,26 @@ const EventCalendar = () => {
       time: '2:00 PM',
       location: 'Office',
       type: 'friend',
-      color: 'bg-purple-500'
+      color: 'bg-purple-500',
+      attendees: 12,
+      organizer: {
+        name: 'Work Group',
+        avatar: MOCK_IMAGES.AVATARS[1]
+      }
+    },
+    {
+      id: '4',
+      title: 'Community Garden Cleanup',
+      date: new Date(2024, 2, 18),
+      time: '10:00 AM',
+      location: 'Central Community Garden',
+      type: 'public',
+      color: 'bg-yellow-500',
+      attendees: 45,
+      organizer: {
+        name: 'Green Community',
+        avatar: MOCK_IMAGES.AVATARS[2]
+      }
     }
   ]);
 
@@ -126,6 +159,12 @@ const EventCalendar = () => {
 
   const selectedDateEvents = selectedDate ? getEventsForDate(selectedDate) : [];
 
+  // Get upcoming events (sorted by date)
+  const upcomingEvents = [...events]
+    .filter(event => event.date >= new Date())
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .slice(0, 3);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Calendar */}
@@ -188,7 +227,7 @@ const EventCalendar = () => {
                   : 'Select a date'
                 }
               </CardTitle>
-              <Button size="sm">
+              <Button size="sm" onClick={() => setIsCreateModalOpen(true)}>
                 <Plus className="w-4 h-4 mr-1" />
                 Add Event
               </Button>
@@ -198,7 +237,7 @@ const EventCalendar = () => {
             {selectedDateEvents.length > 0 ? (
               <div className="space-y-3">
                 {selectedDateEvents.map((event) => (
-                  <div key={event.id} className="border rounded-lg p-3">
+                  <div key={event.id} className="border rounded-lg p-3 hover:shadow-sm transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900">{event.title}</h4>
@@ -210,6 +249,23 @@ const EventCalendar = () => {
                           <MapPin className="w-3 h-3" />
                           <span>{event.location}</span>
                         </div>
+                        
+                        {event.attendees && (
+                          <div className="flex items-center space-x-2 mt-1 text-sm text-gray-500">
+                            <Users className="w-3 h-3" />
+                            <span>{event.attendees} attending</span>
+                          </div>
+                        )}
+                        
+                        {event.organizer && (
+                          <div className="flex items-center space-x-2 mt-2">
+                            <Avatar className="w-5 h-5">
+                              <AvatarImage src={event.organizer.avatar} />
+                              <AvatarFallback>{event.organizer.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <span className="text-xs text-gray-500">by {event.organizer.name}</span>
+                          </div>
+                        )}
                       </div>
                       <Badge 
                         variant="outline" 
@@ -218,6 +274,15 @@ const EventCalendar = () => {
                         {event.type}
                       </Badge>
                     </div>
+                    
+                    <div className="flex space-x-2 mt-3 pt-3 border-t">
+                      <Button size="sm" variant="outline" className="flex-1">
+                        Going
+                      </Button>
+                      <Button size="sm" variant="outline" className="flex-1">
+                        Interested
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -225,7 +290,12 @@ const EventCalendar = () => {
               <div className="text-center py-8 text-gray-500">
                 <Calendar className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p>No events for this date</p>
-                <Button variant="outline" size="sm" className="mt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-2"
+                  onClick={() => setIsCreateModalOpen(true)}
+                >
                   <Plus className="w-4 h-4 mr-1" />
                   Create Event
                 </Button>
@@ -240,22 +310,66 @@ const EventCalendar = () => {
             <CardTitle className="text-base">Upcoming Events</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {events.slice(0, 3).map((event) => (
-                <div key={event.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
-                  <div className={`w-3 h-3 rounded-full ${event.color}`}></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{event.title}</p>
-                    <p className="text-xs text-gray-500">
-                      {event.date.toLocaleDateString()} at {event.time}
-                    </p>
+            {upcomingEvents.length > 0 ? (
+              <div className="space-y-2">
+                {upcomingEvents.map((event) => (
+                  <div 
+                    key={event.id} 
+                    className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                    onClick={() => setSelectedDate(event.date)}
+                  >
+                    <div className={`w-3 h-3 rounded-full ${event.color}`}></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{event.title}</p>
+                      <p className="text-xs text-gray-500">
+                        {event.date.toLocaleDateString()} at {event.time}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+                <Button variant="ghost" size="sm" className="w-full mt-2 text-blue-600">
+                  View All Events
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center py-4 text-gray-500">
+                <p className="text-sm">No upcoming events</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
+        {/* Event Categories */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Categories</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline" className="bg-blue-500 text-white border-transparent">
+                Public
+              </Badge>
+              <Badge variant="outline" className="bg-green-500 text-white border-transparent">
+                Personal
+              </Badge>
+              <Badge variant="outline" className="bg-purple-500 text-white border-transparent">
+                Friend
+              </Badge>
+              <Badge variant="outline" className="bg-yellow-500 text-white border-transparent">
+                Community
+              </Badge>
+              <Badge variant="outline" className="bg-red-500 text-white border-transparent">
+                Birthday
+              </Badge>
             </div>
           </CardContent>
         </Card>
       </div>
+      
+      <CreateEvent 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+      />
     </div>
   );
 };
