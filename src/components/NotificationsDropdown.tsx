@@ -3,7 +3,6 @@ import { Bell, X, Settings, Heart, MessageCircle, Users, Video } from 'lucide-re
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import AccessibleButton from './AccessibleButton';
 import { useIsMobile } from '@/hooks/use-device';
 
 interface Notification {
@@ -33,32 +32,32 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
         name: 'Sarah Johnson',
         avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face'
       },
-      message: 'liked your post about React development',
+      message: 'liked your photo',
       timestamp: '5m',
       read: false
     },
     {
       id: '2',
-      type: 'friend_request',
+      type: 'comment',
       user: {
         name: 'Mike Chen',
         avatar: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+      },
+      message: 'commented on your post: "Great work on this project!"',
+      timestamp: '15m',
+      read: false
+    },
+    {
+      id: '3',
+      type: 'friend_request',
+      user: {
+        name: 'Emma Wilson',
+        avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face'
       },
       message: 'sent you a friend request',
       timestamp: '1h',
       read: false,
       actionable: true
-    },
-    {
-      id: '3',
-      type: 'comment',
-      user: {
-        name: 'Emma Wilson',
-        avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=400&fit=crop&crop=face'
-      },
-      message: 'commented on your photo',
-      timestamp: '2h',
-      read: true
     }
   ]);
   const isMobile = useIsMobile();
@@ -84,26 +83,21 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
   };
 
   const handleNotificationClick = (notification: Notification) => {
-    // Mark as read
     setNotifications(prev => 
       prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
     );
-    console.log('Notification clicked:', notification);
   };
 
   const handleAcceptFriend = (notificationId: string) => {
-    console.log('Friend request accepted:', notificationId);
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
   };
 
   const handleDeclineFriend = (notificationId: string) => {
-    console.log('Friend request declined:', notificationId);
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
   };
 
   const handleMarkAllRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    console.log('All notifications marked as read');
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -118,33 +112,20 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold">Notifications</h3>
               <div className="flex items-center space-x-2">
-                <AccessibleButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => console.log('Settings clicked')}
-                >
+                <Button variant="ghost" size="sm">
                   <Settings className="w-4 h-4" />
-                </AccessibleButton>
-                <AccessibleButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={onClose}
-                >
+                </Button>
+                <Button variant="ghost" size="sm" onClick={onClose}>
                   <X className="w-4 h-4" />
-                </AccessibleButton>
+                </Button>
               </div>
             </div>
             {unreadCount > 0 && (
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">{unreadCount} new notifications</span>
-                <AccessibleButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleMarkAllRead}
-                  className="text-blue-600 text-sm"
-                >
+                <Button variant="ghost" size="sm" onClick={handleMarkAllRead} className="text-blue-600 text-sm">
                   Mark all as read
-                </AccessibleButton>
+                </Button>
               </div>
             )}
           </CardHeader>

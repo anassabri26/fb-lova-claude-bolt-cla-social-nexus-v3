@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Home, Users, Bookmark, Clock, Calendar, Store, Video, MessageCircle, Flag, ChevronDown, UsersRound, Settings, TrendingUp } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate, useLocation } from 'react-router-dom';
-import AccessibleButton from './AccessibleButton';
+import { Button } from '@/components/ui/button';
 import { ROUTES, MOCK_IMAGES } from '@/lib/constants';
 
 const Sidebar = () => {
@@ -48,16 +48,14 @@ const Sidebar = () => {
 
   const handleNavigation = (path: string) => {
     navigate(path);
-    console.log(`Sidebar navigation: ${path}`);
   };
 
   const handleProfileClick = () => {
     navigate(ROUTES.PROFILE);
-    console.log('Profile clicked from sidebar');
   };
 
   const handleShortcutEdit = () => {
-    console.log('Edit shortcuts clicked');
+    // Edit shortcuts functionality
   };
 
   const visibleItems = showMore ? menuItems : menuItems.slice(0, 8);
@@ -82,7 +80,7 @@ const Sidebar = () => {
           {visibleItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
-              <AccessibleButton
+              <Button
                 key={item.label}
                 variant="ghost"
                 className={`w-full flex items-center justify-between p-3 rounded-lg text-left font-normal transition-colors ${
@@ -102,13 +100,13 @@ const Sidebar = () => {
                     {item.count}
                   </span>
                 )}
-              </AccessibleButton>
+              </Button>
             );
           })}
         </nav>
 
         {/* See More Button */}
-        <AccessibleButton
+        <Button
           variant="ghost"
           className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
           onClick={() => {
@@ -120,7 +118,7 @@ const Sidebar = () => {
             <ChevronDown className={`w-4 h-4 transition-transform ${showMore ? 'rotate-180' : ''}`} />
           </div>
           <span>{showMore ? 'See less' : 'See more'}</span>
-        </AccessibleButton>
+        </Button>
 
         {/* Divider */}
         <hr className="border-gray-200" />
@@ -129,18 +127,18 @@ const Sidebar = () => {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-gray-500 font-medium text-sm">Your shortcuts</h3>
-            <AccessibleButton
+            <Button
               variant="ghost"
               size="sm"
               className="text-blue-600 text-sm hover:bg-blue-50 transition-colors"
               onClick={handleShortcutEdit}
             >
               Edit
-            </AccessibleButton>
+            </Button>
           </div>
           
           {shortcuts.map((shortcut) => (
-            <AccessibleButton
+            <Button
               key={shortcut.name}
               variant="ghost"
               className="w-full flex items-center space-x-3 p-3 rounded-lg text-left hover:bg-gray-100 transition-colors"
@@ -155,7 +153,7 @@ const Sidebar = () => {
                 <p className="text-gray-900 font-medium truncate">{shortcut.name}</p>
                 <p className="text-xs text-gray-500">{shortcut.members} members</p>
               </div>
-            </AccessibleButton>
+            </Button>
           ))}
         </div>
 
@@ -163,30 +161,28 @@ const Sidebar = () => {
         <div className="space-y-3">
           <h3 className="text-gray-500 font-medium text-sm">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-2">
-            <AccessibleButton
+            <Button
               variant="outline"
               size="sm"
               className="flex flex-col items-center space-y-1 p-3 h-auto"
               onClick={() => {
                 navigate('/');
-                console.log('Quick action: Create post');
               }}
             >
               <MessageCircle className="w-5 h-5" />
               <span className="text-xs">Post</span>
-            </AccessibleButton>
-            <AccessibleButton
+            </Button>
+            <Button
               variant="outline"
               size="sm"
               className="flex flex-col items-center space-y-1 p-3 h-auto"
               onClick={() => {
                 navigate(ROUTES.EVENTS);
-                console.log('Quick action: Create event');
               }}
             >
               <Calendar className="w-5 h-5" />
               <span className="text-xs">Event</span>
-            </AccessibleButton>
+            </Button>
           </div>
         </div>
       </div>

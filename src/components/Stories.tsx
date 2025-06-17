@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MOCK_IMAGES } from '@/lib/constants';
-import { toast } from 'sonner';
 
 interface Story {
   id: string;
@@ -52,11 +51,11 @@ const Stories = () => {
   ]);
 
   const handleCreateStory = () => {
-    toast.success('Story creation feature coming soon!');
+    // Create story functionality
   };
 
   const handleViewStory = (story: Story) => {
-    toast.info(`Viewing ${story.user.name}'s story`);
+    // View story functionality
   };
 
   return (

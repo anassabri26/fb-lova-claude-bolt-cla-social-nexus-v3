@@ -1,7 +1,7 @@
 import React from 'react';
 import { Home, Users, MessageCircle, Video, Store } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import AccessibleButton from './AccessibleButton';
+import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-device';
 
 const MobileNavigation = () => {
@@ -26,7 +26,6 @@ const MobileNavigation = () => {
     }
     
     navigate(path);
-    console.log(`Mobile navigation: ${path}`);
   };
 
   return (
@@ -36,7 +35,7 @@ const MobileNavigation = () => {
           const isActive = location.pathname === item.path;
           
           return (
-            <AccessibleButton
+            <Button
               key={item.id}
               variant="ghost"
               size="sm"
@@ -48,7 +47,6 @@ const MobileNavigation = () => {
               onClick={() => handleNavigation(item.path)}
               aria-label={item.label}
               aria-pressed={isActive}
-              tooltip={`Navigate to ${item.label}`}
             >
               <item.icon className={`w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}`} />
               <span className={`text-xs font-medium ${isActive ? 'font-semibold' : ''}`}>
@@ -57,7 +55,7 @@ const MobileNavigation = () => {
               {isActive && (
                 <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"></div>
               )}
-            </AccessibleButton>
+            </Button>
           );
         })}
       </div>

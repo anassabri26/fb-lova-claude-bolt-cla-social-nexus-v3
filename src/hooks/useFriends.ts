@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { Friendship } from '@/types';
 import { handleError } from '@/lib/utils';
 import { MOCK_IMAGES } from '@/lib/constants';
@@ -68,8 +67,6 @@ export const useFriendRequests = () => {
   return useQuery({
     queryKey: ['friend-requests'],
     queryFn: async () => {
-      console.log('Fetching mock friend requests...');
-      
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 300));
       
@@ -82,8 +79,6 @@ export const useFriends = () => {
   return useQuery({
     queryKey: ['friends'],
     queryFn: async () => {
-      console.log('Fetching mock friends...');
-      
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 300));
       
@@ -100,16 +95,13 @@ export const useSendFriendRequest = () => {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      console.log(`Mock friend request sent to ${addresseeId}`);
       return { addresseeId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friend-requests'] });
-      toast.success('Friend request sent!');
     },
     onError: (error) => {
       handleError(error, 'sendFriendRequest');
-      toast.error('Failed to send friend request');
     }
   });
 };
@@ -122,17 +114,14 @@ export const useRespondToFriendRequest = () => {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      console.log(`Mock friend request ${requestId} ${status}`);
       return { requestId, status };
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['friend-requests'] });
       queryClient.invalidateQueries({ queryKey: ['friends'] });
-      toast.success(variables.status === 'accepted' ? 'Friend request accepted!' : 'Friend request declined');
     },
     onError: (error) => {
       handleError(error, 'respondToFriendRequest');
-      toast.error('Failed to respond to friend request');
     }
   });
 };

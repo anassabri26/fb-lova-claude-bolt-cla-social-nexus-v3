@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { Comment } from '@/types';
 import { handleError } from '@/lib/utils';
 import { MOCK_IMAGES } from '@/lib/constants';
@@ -52,8 +51,6 @@ export const useComments = (postId: string) => {
   return useQuery({
     queryKey: ['comments', postId],
     queryFn: async () => {
-      console.log('Fetching mock comments for post:', postId);
-      
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 300));
       
@@ -90,11 +87,9 @@ export const useCreateComment = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['comments', data.post_id] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Comment added!');
     },
     onError: (error) => {
       handleError(error, 'createComment');
-      toast.error('Failed to add comment. Please try again.');
     }
   });
 };
@@ -107,17 +102,14 @@ export const useDeleteComment = () => {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      console.log(`Mock delete comment ${commentId} from post ${postId}`);
       return { commentId, postId };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['comments', data.postId] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Comment deleted!');
     },
     onError: (error) => {
       handleError(error, 'deleteComment');
-      toast.error('Failed to delete comment. Please try again.');
     }
   });
 };

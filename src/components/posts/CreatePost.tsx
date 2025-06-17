@@ -7,8 +7,6 @@ import { Image, Smile, MapPin, Users, Calendar, Video, Mic } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext';
 import { useCreatePost } from '@/hooks/usePosts';
 import { usePerformance } from '@/hooks/usePerformance';
-import AccessibleButton from '@/components/AccessibleButton';
-import { toast } from 'sonner';
 
 const CreatePost: React.FC = () => {
   const [content, setContent] = useState('');
@@ -45,7 +43,7 @@ const CreatePost: React.FC = () => {
   };
 
   const handleFeatureClick = (feature: string) => {
-    toast.info(`${feature} feature coming soon!`);
+    // Feature implementation without toast
   };
 
   if (!user) return null;
@@ -78,7 +76,7 @@ const CreatePost: React.FC = () => {
                 
                 {/* Enhanced Quick Actions */}
                 <div className="flex flex-wrap gap-2 py-2 border-t border-gray-100">
-                  <AccessibleButton 
+                  <Button 
                     variant="ghost" 
                     size="sm" 
                     className="text-green-600 h-auto py-2 px-3"
@@ -86,8 +84,8 @@ const CreatePost: React.FC = () => {
                   >
                     <Image className="w-4 h-4 mr-1" />
                     <span className="text-xs">Photo/Video</span>
-                  </AccessibleButton>
-                  <AccessibleButton 
+                  </Button>
+                  <Button 
                     variant="ghost" 
                     size="sm" 
                     className="text-blue-600 h-auto py-2 px-3"
@@ -95,8 +93,8 @@ const CreatePost: React.FC = () => {
                   >
                     <Users className="w-4 h-4 mr-1" />
                     <span className="text-xs">Tag People</span>
-                  </AccessibleButton>
-                  <AccessibleButton 
+                  </Button>
+                  <Button 
                     variant="ghost" 
                     size="sm" 
                     className="text-yellow-600 h-auto py-2 px-3"
@@ -104,8 +102,8 @@ const CreatePost: React.FC = () => {
                   >
                     <Smile className="w-4 h-4 mr-1" />
                     <span className="text-xs">Feeling</span>
-                  </AccessibleButton>
-                  <AccessibleButton 
+                  </Button>
+                  <Button 
                     variant="ghost" 
                     size="sm" 
                     className="text-red-600 h-auto py-2 px-3"
@@ -113,8 +111,8 @@ const CreatePost: React.FC = () => {
                   >
                     <MapPin className="w-4 h-4 mr-1" />
                     <span className="text-xs">Check In</span>
-                  </AccessibleButton>
-                  <AccessibleButton 
+                  </Button>
+                  <Button 
                     variant="ghost" 
                     size="sm" 
                     className="text-purple-600 h-auto py-2 px-3"
@@ -122,8 +120,8 @@ const CreatePost: React.FC = () => {
                   >
                     <Video className="w-4 h-4 mr-1" />
                     <span className="text-xs">Live</span>
-                  </AccessibleButton>
-                  <AccessibleButton 
+                  </Button>
+                  <Button 
                     variant="ghost" 
                     size="sm" 
                     className="text-orange-600 h-auto py-2 px-3"
@@ -131,12 +129,12 @@ const CreatePost: React.FC = () => {
                   >
                     <Calendar className="w-4 h-4 mr-1" />
                     <span className="text-xs">Event</span>
-                  </AccessibleButton>
+                  </Button>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
                   <div className="flex items-center space-x-2">
-                    <AccessibleButton 
+                    <Button 
                       variant="ghost" 
                       size="sm" 
                       className="text-gray-600"
@@ -144,7 +142,7 @@ const CreatePost: React.FC = () => {
                     >
                       <Mic className="w-4 h-4 mr-1" />
                       <span className="text-xs">Voice Note</span>
-                    </AccessibleButton>
+                    </Button>
                   </div>
                   <div className="flex space-x-2 self-end sm:self-auto">
                     <Button 
@@ -174,7 +172,7 @@ const CreatePost: React.FC = () => {
         {!isExpanded && (
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
             <div className="flex space-x-1 sm:space-x-2">
-              <AccessibleButton 
+              <Button 
                 variant="ghost" 
                 size="sm" 
                 className="text-red-600 flex-1 sm:flex-none"
@@ -182,8 +180,8 @@ const CreatePost: React.FC = () => {
               >
                 <Video className="w-4 h-4 mr-1" />
                 <span className="text-xs">Live video</span>
-              </AccessibleButton>
-              <AccessibleButton 
+              </Button>
+              <Button 
                 variant="ghost" 
                 size="sm" 
                 className="text-green-600 flex-1 sm:flex-none"
@@ -191,8 +189,8 @@ const CreatePost: React.FC = () => {
               >
                 <Image className="w-4 h-4 mr-1" />
                 <span className="text-xs">Photo/video</span>
-              </AccessibleButton>
-              <AccessibleButton 
+              </Button>
+              <Button 
                 variant="ghost" 
                 size="sm" 
                 className="text-yellow-600 flex-1 sm:flex-none"
@@ -200,7 +198,7 @@ const CreatePost: React.FC = () => {
               >
                 <Smile className="w-4 h-4 mr-1" />
                 <span className="text-xs">Feeling/activity</span>
-              </AccessibleButton>
+              </Button>
             </div>
           </div>
         )}

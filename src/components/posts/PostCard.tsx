@@ -4,13 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import AccessibleButton from '@/components/AccessibleButton';
 import LazyImage from '@/components/ui/LazyImage';
 import { Post, useLikePost } from '@/hooks/usePosts';
 import { useComments, useCreateComment } from '@/hooks/useComments';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo } from '@/lib/utils';
-import { toast } from 'sonner';
 
 interface PostCardProps {
   post: Post;
@@ -42,7 +40,6 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
 
   const handleSave = () => {
     setIsSaved(!isSaved);
-    toast.success(isSaved ? 'Removed from saved' : 'Post saved!');
   };
 
   const handleShare = () => {
@@ -54,7 +51,6 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success('Link copied to clipboard!');
     }
   };
 
@@ -67,7 +63,7 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
         });
         setNewComment('');
       } catch (error) {
-        toast.error('Failed to post comment');
+        // Handle error silently
       }
     }
   };
@@ -100,9 +96,9 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
               </p>
             </div>
           </div>
-          <AccessibleButton variant="ghost" size="sm" className="hover:bg-gray-100 touch-target">
+          <Button variant="ghost" size="sm" className="hover:bg-gray-100 touch-target">
             <MoreHorizontal className="w-5 h-5 text-gray-500" />
-          </AccessibleButton>
+          </Button>
         </div>
 
         {/* Post Content */}
@@ -151,7 +147,7 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
         {/* Action Buttons */}
         <div className="px-4 py-2 flex items-center justify-between">
           <div className="flex items-center space-x-1">
-            <AccessibleButton
+            <Button
               variant="ghost"
               className={`flex items-center space-x-2 button-responsive rounded-lg transition-colors ${
                 isLiked 
@@ -163,35 +159,35 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
             >
               <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
               <span className="font-medium text-responsive-sm">Like</span>
-            </AccessibleButton>
+            </Button>
 
-            <AccessibleButton
+            <Button
               variant="ghost"
               className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
               onClick={() => setShowComments(!showComments)}
             >
               <MessageCircle className="w-5 h-5" />
               <span className="font-medium text-responsive-sm">Comment</span>
-            </AccessibleButton>
+            </Button>
 
-            <AccessibleButton
+            <Button
               variant="ghost"
               className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
               onClick={handleShare}
             >
               <Share className="w-5 h-5" />
               <span className="font-medium text-responsive-sm">Share</span>
-            </AccessibleButton>
+            </Button>
           </div>
 
-          <AccessibleButton
+          <Button
             variant="ghost"
             size="sm"
             onClick={handleSave}
             className={`${isSaved ? 'text-yellow-600' : 'text-gray-600'} hover:bg-gray-100`}
           >
             <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
-          </AccessibleButton>
+          </Button>
         </div>
 
         {/* Comments Section */}

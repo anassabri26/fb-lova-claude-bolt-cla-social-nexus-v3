@@ -27,12 +27,10 @@ const Header = () => {
   const handleNavigation = (path: string) => {
     navigate(path);
     setIsMenuOpen(false);
-    console.log(`Header navigation: ${path}`);
   };
 
   const handleProfileClick = () => {
     navigate(ROUTES.PROFILE);
-    console.log('Profile clicked');
   };
 
   const handleNotificationsClick = () => {
@@ -40,19 +38,18 @@ const Header = () => {
     if (!isNotificationsOpen) {
       navigate(ROUTES.NOTIFICATIONS);
     }
-    console.log('Notifications toggled');
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      console.log(`Search query: ${searchQuery}`);
+      // Implement search functionality
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
   const handleCreatePost = () => {
     navigate(ROUTES.HOME);
-    console.log('Create post clicked');
   };
 
   return (

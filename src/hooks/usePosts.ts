@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { Post, InfiniteQueryPage } from '@/types';
 import { APP_CONFIG, MOCK_IMAGES } from '@/lib/constants';
 import { handleError } from '@/lib/utils';
@@ -104,8 +103,6 @@ export const usePosts = () => {
   return useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
-      console.log('Fetching mock posts...');
-      
       await new Promise(resolve => setTimeout(resolve, 300));
       
       const mockData = generateMockPosts(0, 20);
@@ -120,13 +117,10 @@ export const useInfinitePosts = (pageSize: number = 10) => {
   return useInfiniteQuery({
     queryKey: ['posts', 'infinite', pageSize],
     queryFn: async ({ pageParam = 0 }) => {
-      console.log(`Fetching posts page ${pageParam} with ${pageSize} items...`);
-      
       // Fast loading for better UX
       await new Promise(resolve => setTimeout(resolve, Math.random() * 150 + 50));
       
       const result = generateMockPosts(pageParam, pageSize);
-      console.log(`Generated ${result.posts.length} posts for page ${pageParam}`);
       return result;
     },
     getNextPageParam: (lastPage, allPages) => {
@@ -169,11 +163,9 @@ export const useCreatePost = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts', 'infinite'] });
-      toast.success('Post created successfully!');
     },
     onError: (error) => {
       handleError(error, 'createPost');
-      toast.error('Failed to create post. Please try again.');
     }
   });
 };
@@ -185,7 +177,6 @@ export const useLikePost = () => {
     mutationFn: async ({ postId, isLiked }: { postId: string; isLiked: boolean }) => {
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      console.log(`Mock ${isLiked ? 'unlike' : 'like'} for post ${postId}`);
       return { postId, isLiked: !isLiked };
     },
     onSuccess: () => {
@@ -194,7 +185,6 @@ export const useLikePost = () => {
     },
     onError: (error) => {
       handleError(error, 'likePost');
-      toast.error('Failed to update like. Please try again.');
     }
   });
 };
@@ -206,17 +196,14 @@ export const useDeletePost = () => {
     mutationFn: async (postId: string) => {
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      console.log(`Mock delete for post ${postId}`);
       return postId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts', 'infinite'] });
-      toast.success('Post deleted successfully!');
     },
     onError: (error) => {
       handleError(error, 'deletePost');
-      toast.error('Failed to delete post. Please try again.');
     }
   });
 };
