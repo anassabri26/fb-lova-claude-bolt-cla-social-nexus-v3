@@ -17,10 +17,12 @@ export const usePerformance = (componentName: string) => {
       
       const mountDuration = Date.now() - mountTime.current;
       
-      console.log(`Performance [${componentName}]:`, {
-        mountDuration,
-        renderCount: renderCount.current,
-      });
+      if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+        console.log(`Performance [${componentName}]:`, {
+          mountDuration,
+          renderCount: renderCount.current,
+        });
+      }
     };
   }, [componentName]);
 
@@ -29,7 +31,9 @@ export const usePerformance = (componentName: string) => {
     
     return () => {
       const duration = Date.now() - startTime;
-      console.log(`Interaction [${componentName}/${interactionName}]:`, duration);
+      if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+        console.log(`Interaction [${componentName}/${interactionName}]:`, duration);
+      }
     };
   };
 

@@ -4,6 +4,7 @@ interface UseIntersectionObserverOptions {
   threshold?: number;
   rootMargin?: string;
   triggerOnce?: boolean;
+  root?: Element | null;
 }
 
 export const useIntersectionObserver = (
@@ -16,12 +17,17 @@ export const useIntersectionObserver = (
   const {
     threshold = 0.1,
     rootMargin = '0px',
-    triggerOnce = false
+    triggerOnce = false,
+    root = null
   } = options;
 
   useEffect(() => {
     const element = elementRef.current;
-    if (!element) return;
+    if (!element || typeof IntersectionObserver === 'undefined') {
+      // Fallback for environments without IntersectionObserver
+      setIsIntersecting(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -40,6 +46,7 @@ export const useIntersectionObserver = (
       {
         threshold,
         rootMargin,
+        root
       }
     );
 
@@ -48,7 +55,7 @@ export const useIntersectionObserver = (
     return () => {
       observer.unobserve(element);
     };
-  }, [threshold, rootMargin, triggerOnce, hasTriggered]);
+  }, [threshold, rootMargin, triggerOnce, hasTriggered, root]);
 
   return { elementRef, isIntersecting };
 };

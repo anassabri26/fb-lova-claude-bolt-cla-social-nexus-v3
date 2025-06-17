@@ -1,5 +1,4 @@
 import React, { lazy, Suspense } from 'react';
-import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -9,6 +8,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { ROUTES } from "@/lib/constants";
 import ChatButton from '@/components/ChatButton';
+import { Toaster } from "@/components/ui/sonner";
 
 // Lazy-loaded pages for better performance
 const Auth = lazy(() => import("./pages/Auth"));
@@ -34,10 +34,10 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading fallback component
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
     <div className="text-center">
       <LoadingSpinner size="lg" />
-      <p className="mt-4 text-gray-600">Loading...</p>
+      <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
     </div>
   </div>
 );

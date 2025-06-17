@@ -8,6 +8,7 @@ import RightSidebar from '@/components/RightSidebar';
 import MobileNavigation from '@/components/MobileNavigation';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import { ROUTES } from '@/lib/constants';
+import { Toaster } from '@/components/ui/sonner';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -30,14 +31,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     const isHomePage = location.pathname === ROUTES.HOME;
     const shouldShowRightSidebar = isHomePage && !isMobile; // Show on tablet AND desktop
     setShowRightSidebar(shouldShowRightSidebar);
-    
-    console.log('Layout update:', {
-      pathname: location.pathname,
-      isHomePage,
-      isMobile,
-      isTablet,
-      shouldShowRightSidebar
-    });
   }, [location.pathname, isMobile, isTablet]);
 
   if (!user) {
@@ -50,7 +43,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-100 flex flex-col">
+      <div className="min-h-screen bg-gray-100 flex flex-col dark:bg-gray-900">
         <Header />
         
         <div className={`main-layout flex-grow ${showRightSidebar ? 'with-right-sidebar' : 'without-right-sidebar'}`}>
@@ -76,6 +69,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         
         {/* Mobile Navigation */}
         {isMobile && <MobileNavigation />}
+        
+        {/* Global Toaster */}
+        <Toaster position="top-right" closeButton richColors />
       </div>
     </ErrorBoundary>
   );
