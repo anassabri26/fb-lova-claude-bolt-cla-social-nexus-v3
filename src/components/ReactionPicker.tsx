@@ -30,7 +30,7 @@ const ReactionPicker: React.FC<ReactionPickerProps> = ({
             key={reaction.name}
             variant="ghost"
             size="sm"
-            className="h-10 w-10 p-0 hover:bg-gray-100 rounded-full transition-transform hover:scale-125"
+            className="h-10 w-10 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-transform hover:scale-125"
             onClick={() => onSelect(reaction.emoji)}
             title={reaction.name}
           >

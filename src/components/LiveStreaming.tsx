@@ -350,7 +350,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                       onChange={(e) => setStreamTitle(e.target.value)}
                       maxLength={100}
                     />
-                    <p className="text-xs text-gray-500 mt-1">{streamTitle.length}/100</p>
+                    <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">{streamTitle.length}/100</p>
                   </div>
                   
                   <div>
@@ -362,7 +362,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                       rows={3}
                       maxLength={500}
                     />
-                    <p className="text-xs text-gray-500 mt-1">{streamDescription.length}/500</p>
+                    <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">{streamDescription.length}/500</p>
                   </div>
                   
                   <div>
@@ -434,9 +434,9 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                   
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <h4 className="font-medium text-sm mb-1">Live Streaming Tips</h4>
-                    <ul className="text-xs text-gray-600 space-y-1">
+                  <div className="bg-blue-50 p-3 rounded-lg dark:bg-blue-900/20">
+                    <h4 className="font-medium text-sm mb-1 dark:text-blue-100">Live Streaming Tips</h4>
+                    <ul className="text-xs text-gray-600 space-y-1 dark:text-blue-200">
                       <li>• Ensure good lighting and stable internet</li>
                       <li>• Interact with your viewers regularly</li>
                       <li>• Keep your content engaging and authentic</li>
@@ -470,10 +470,10 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                   <CardContent className="p-3 flex-1 flex flex-col">
                     <div 
                       ref={commentsRef}
-                      className="flex-1 overflow-y-auto space-y-2 border rounded p-2 mb-3 max-h-64"
+                      className="flex-1 overflow-y-auto space-y-2 border rounded p-2 mb-3 max-h-64 dark:border-gray-700"
                     >
                       {comments.length === 0 ? (
-                        <p className="text-center text-gray-500 text-sm py-4">
+                        <p className="text-center text-gray-500 text-sm py-4 dark:text-gray-400">
                           Comments will appear here when viewers start chatting
                         </p>
                       ) : (
@@ -486,7 +486,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center space-x-2">
                                 <span className="font-medium text-xs">{comment.user}</span>
-                                <span className="text-xs text-gray-500">{comment.timestamp}</span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400">{comment.timestamp}</span>
                               </div>
                               <p className="text-sm break-words">{comment.message}</p>
                             </div>
@@ -517,7 +517,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                         variant="outline" 
                         size="sm" 
                         onClick={() => handleReaction('heart')}
-                        className="flex flex-col items-center space-y-1 h-auto py-2"
+                        className="flex flex-col items-center space-y-1 h-auto py-2 dark:border-gray-700"
                       >
                         <Heart className="w-4 h-4 text-red-500" />
                         <span className="text-xs">React</span>
@@ -526,7 +526,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                         variant="outline" 
                         size="sm" 
                         onClick={() => handleReaction('like')}
-                        className="flex flex-col items-center space-y-1 h-auto py-2"
+                        className="flex flex-col items-center space-y-1 h-auto py-2 dark:border-gray-700"
                       >
                         <span className="text-lg">👍</span>
                         <span className="text-xs">Like</span>
@@ -535,7 +535,7 @@ const LiveStreaming: React.FC<LiveStreamingProps> = ({ isOpen, onClose }) => {
                         variant="outline" 
                         size="sm" 
                         onClick={() => handleReaction('share')}
-                        className="flex flex-col items-center space-y-1 h-auto py-2"
+                        className="flex flex-col items-center space-y-1 h-auto py-2 dark:border-gray-700"
                       >
                         <Share className="w-4 h-4" />
                         <span className="text-xs">Share</span>

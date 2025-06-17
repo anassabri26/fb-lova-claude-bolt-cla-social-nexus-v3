@@ -14,9 +14,10 @@ interface Story {
   };
   content: string;
   media: string;
-  type: 'image' | 'video' | 'text';
+  type: 'photo' | 'video' | 'text';
   timestamp: string;
   background?: string;
+  isViewed?: boolean;
 }
 
 interface StoryViewerProps {
