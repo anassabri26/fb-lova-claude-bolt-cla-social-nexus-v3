@@ -14,7 +14,6 @@ import {
   X, 
   Users, 
   Bell, 
-  BellOff, 
   Settings, 
   ArrowLeft, 
   ThumbsUp, 
@@ -487,7 +486,7 @@ const MessagesTab = () => {
                             <p className="font-medium text-gray-900 truncate">{conversation.name}</p>
                             <div className="flex items-center">
                               {conversation.isMuted && (
-                                <BellOff className="h-3 w-3 text-gray-400 mr-1" />
+                                <Bell className="h-3 w-3 text-gray-400 mr-1 line-through" />
                               )}
                               <p className="text-xs text-gray-500">{conversation.lastMessage?.timestamp}</p>
                             </div>
@@ -795,7 +794,7 @@ const MessagesTab = () => {
                     </>
                   ) : (
                     <>
-                      <BellOff className="h-6 w-6 mb-1" />
+                      <Bell className="h-6 w-6 mb-1 line-through" />
                       <span className="text-xs">Mute</span>
                     </>
                   )}

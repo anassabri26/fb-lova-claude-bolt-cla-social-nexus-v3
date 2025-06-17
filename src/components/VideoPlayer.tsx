@@ -22,12 +22,16 @@ interface VideoPlayerProps {
   };
   autoPlay?: boolean;
   showControls?: boolean;
+  onTimeUpdate?: (currentTime: number) => void;
+  onEnded?: () => void;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ 
   video, 
   autoPlay = false, 
-  showControls = true 
+  showControls = true,
+  onTimeUpdate,
+  onEnded
 }) => {
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isMuted, setIsMuted] = useState(true);
@@ -37,21 +41,62 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [showControlsOverlay, setShowControlsOverlay] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Mock video sources for demonstration
+  const mockVideoSources = [
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
+    'https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4'
+  ];
+
+  // Get a consistent video source based on video ID
+  const getVideoSource = () => {
+    const videoId = parseInt(video.id.replace(/\D/g, '')) || 0;
+    return mockVideoSources[videoId % mockVideoSources.length];
+  };
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const updateTime = () => setCurrentTime(video.currentTime);
+    const updateTime = () => {
+      setCurrentTime(video.currentTime);
+      onTimeUpdate?.(video.currentTime);
+    };
+    
     const updateDuration = () => setDuration(video.duration);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      onEnded?.();
+    };
 
     video.addEventListener('timeupdate', updateTime);
     video.addEventListener('loadedmetadata', updateDuration);
+    video.addEventListener('ended', handleEnded);
+
+    // Auto play if specified
+    if (autoPlay) {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error('Auto-play was prevented:', error);
+          setIsPlaying(false);
+        });
+      }
+    }
 
     return () => {
       video.removeEventListener('timeupdate', updateTime);
       video.removeEventListener('loadedmetadata', updateDuration);
+      video.removeEventListener('ended', handleEnded);
     };
-  }, []);
+  }, [autoPlay, onTimeUpdate, onEnded]);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -60,7 +105,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (isPlaying) {
       video.pause();
     } else {
-      video.play();
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error('Play was prevented:', error);
+        });
+      }
     }
     setIsPlaying(!isPlaying);
   };
@@ -98,8 +148,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           poster={video.thumbnail}
           muted={isMuted}
           onClick={togglePlay}
+          playsInline
         >
-          <source src="#" type="video/mp4" />
+          <source src={getVideoSource()} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 
@@ -125,7 +176,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             showControlsOverlay ? 'opacity-100' : 'opacity-0'
           }`}>
             {/* Progress Bar */}
-            <div className="w-full h-1 bg-white/30 rounded-full mb-3">
+            <div className="w-full h-1 bg-white/30 rounded-full mb-3 cursor-pointer"
+                 onClick={(e) => {
+                   if (videoRef.current) {
+                     const rect = e.currentTarget.getBoundingClientRect();
+                     const pos = (e.clientX - rect.left) / rect.width;
+                     videoRef.current.currentTime = pos * duration;
+                   }
+                 }}>
               <div 
                 className="h-full bg-white rounded-full transition-all"
                 style={{ width: `${progressPercentage}%` }}
