@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useIsMobile, useIsTablet } from '@/hooks/use-device';
 import { MOCK_IMAGES } from '@/lib/constants';
+import { formatNumber, formatTimeAgo } from '@/lib/utils';
 
 interface Video {
   id: string;
