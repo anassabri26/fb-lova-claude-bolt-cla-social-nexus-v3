@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,6 +36,12 @@ const Auth = () => {
     setLoading(false);
   };
 
+  const handleDemoLogin = async () => {
+    setLoading(true);
+    await signIn('demo@facebook.com', 'demo123');
+    setLoading(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -53,6 +58,28 @@ const Auth = () => {
             <CardTitle className="text-center">Welcome</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="mb-4">
+              <Button 
+                onClick={handleDemoLogin} 
+                className="w-full bg-green-600 hover:bg-green-700"
+                disabled={loading}
+              >
+                {loading ? 'Signing in...' : 'Try Demo Account'}
+              </Button>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Click to instantly access the demo with sample data
+              </p>
+            </div>
+
+            <div className="relative mb-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>

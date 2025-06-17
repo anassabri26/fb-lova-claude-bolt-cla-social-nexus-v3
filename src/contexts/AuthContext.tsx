@@ -53,6 +53,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.error('Error parsing saved session:', error);
         localStorage.removeItem('mock_session');
       }
+    } else {
+      // Auto-login with a default user for demo purposes
+      const defaultUser: MockUser = {
+        id: 'demo_user_123',
+        email: 'demo@facebook.com',
+        user_metadata: {
+          full_name: 'John Doe',
+          avatar_url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face'
+        }
+      };
+
+      const defaultSession: MockSession = {
+        user: defaultUser,
+        access_token: 'demo_token_123'
+      };
+
+      localStorage.setItem('mock_session', JSON.stringify(defaultSession));
+      setUser(defaultUser);
+      setSession(defaultSession);
     }
     setLoading(false);
   }, []);
@@ -83,7 +102,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(mockUser);
       setSession(mockSession);
       
-      toast.success('Account created successfully! (Mock mode)');
+      toast.success('Account created successfully!');
       return { error: null };
     } catch (error) {
       console.error('Mock sign-up error:', error);
@@ -118,7 +137,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(mockUser);
       setSession(mockSession);
       
-      toast.success('Welcome back! (Mock mode)');
+      toast.success('Welcome back!');
       return { error: null };
     } catch (error) {
       console.error('Mock sign-in error:', error);
@@ -135,7 +154,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(null);
       setSession(null);
       
-      toast.success('Signed out successfully (Mock mode)');
+      toast.success('Signed out successfully');
     } catch (error) {
       console.error('Mock sign-out error:', error);
       toast.error('Failed to sign out. Please try again.');
