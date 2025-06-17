@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Clock, Eye, MoreHorizontal, Bookmark, Share, Flag, History, ThumbsUp, Zap } from 'lucide-react';
+import { Play, Clock, Eye, MoreHorizontal, Bookmark, Share, Flag, History, ThumbsUp, Zap, Plus, ThumbsDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
