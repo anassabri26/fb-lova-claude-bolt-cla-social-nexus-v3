@@ -48,7 +48,6 @@ function App() {
       <QueryProvider>
         <AuthProvider>
           <TooltipProvider>
-            <Toaster position="top-right" closeButton richColors />
             <BrowserRouter>
               <Suspense fallback={<PageLoader />}>
                 <Routes>

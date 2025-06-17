@@ -423,16 +423,16 @@ const MessagesTab = () => {
   const showConversation = !isMobile || (isMobile && selectedConversation);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container-responsive mx-auto py-4">
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden dark:bg-gray-800">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 h-[calc(100vh-8rem)]">
             {/* Conversation List */}
             {showConversationList && (
-              <div className={`${isMobile ? 'col-span-1' : 'col-span-1 md:border-r border-gray-200'}`}>
-                <div className="p-4 border-b border-gray-200">
+              <div className={`${isMobile ? 'col-span-1' : 'col-span-1 md:border-r border-gray-200 dark:border-gray-700'}`}>
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between mb-4">
-                    <h1 className="text-xl font-bold">Chats</h1>
+                    <h1 className="text-xl font-bold dark:text-white">Chats</h1>
                     <div className="flex items-center space-x-2">
                       <Button 
                         variant="ghost" 
@@ -440,7 +440,7 @@ const MessagesTab = () => {
                         className="rounded-full h-8 w-8 p-0"
                         onClick={handleCreateNewMessage}
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-4 w-4 dark:text-gray-300" />
                       </Button>
                       <Button 
                         variant="ghost" 
@@ -448,7 +448,7 @@ const MessagesTab = () => {
                         className="rounded-full h-8 w-8 p-0"
                         onClick={() => toast.info('Settings coming soon')}
                       >
-                        <Settings className="h-4 w-4" />
+                        <Settings className="h-4 w-4 dark:text-gray-300" />
                       </Button>
                     </div>
                   </div>
@@ -458,7 +458,7 @@ const MessagesTab = () => {
                       placeholder="Search messages"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </div>
                 </div>
@@ -467,9 +467,9 @@ const MessagesTab = () => {
                     filteredConversations.map((conversation) => (
                       <div
                         key={conversation.id}
-                        className={`flex items-center p-3 hover:bg-gray-50 cursor-pointer transition-colors ${
-                          selectedConversation?.id === conversation.id ? 'bg-blue-50' : ''
-                        } ${conversation.unreadCount ? 'bg-blue-50' : ''}`}
+                        className={`flex items-center p-3 hover:bg-gray-50 cursor-pointer transition-colors dark:hover:bg-gray-700 ${
+                          selectedConversation?.id === conversation.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                        } ${conversation.unreadCount ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
                         onClick={() => handleSelectConversation(conversation)}
                       >
                         <div className="relative">
@@ -478,25 +478,25 @@ const MessagesTab = () => {
                             <AvatarFallback>{conversation.name.charAt(0)}</AvatarFallback>
                           </Avatar>
                           {conversation.isOnline && (
-                            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
+                            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-gray-800"></span>
                           )}
                         </div>
                         <div className="ml-3 flex-1 min-w-0">
                           <div className="flex items-center justify-between">
-                            <p className="font-medium text-gray-900 truncate">{conversation.name}</p>
+                            <p className="font-medium text-gray-900 truncate dark:text-white">{conversation.name}</p>
                             <div className="flex items-center">
                               {conversation.isMuted && (
                                 <Bell className="h-3 w-3 text-gray-400 mr-1 line-through" />
                               )}
-                              <p className="text-xs text-gray-500">{conversation.lastMessage?.timestamp}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{conversation.lastMessage?.timestamp}</p>
                             </div>
                           </div>
                           <div className="flex items-center justify-between">
                             <p className={`text-sm truncate ${
-                              conversation.unreadCount ? 'text-gray-900 font-medium' : 'text-gray-500'
+                              conversation.unreadCount ? 'text-gray-900 font-medium dark:text-white' : 'text-gray-500 dark:text-gray-400'
                             }`}>
                               {conversation.isTyping ? (
-                                <span className="text-blue-600">Typing...</span>
+                                <span className="text-blue-600 dark:text-blue-400">Typing...</span>
                               ) : (
                                 conversation.lastMessage?.content
                               )}
@@ -509,7 +509,7 @@ const MessagesTab = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="p-4 text-center text-gray-500">
+                    <div className="p-4 text-center text-gray-500 dark:text-gray-400">
                       <p>No conversations found</p>
                     </div>
                   )}
@@ -521,7 +521,7 @@ const MessagesTab = () => {
             {showConversation && selectedConversation && (
               <div className={`${isMobile ? 'col-span-1' : 'col-span-2 md:col-span-2 lg:col-span-3'} flex flex-col h-full`}>
                 {/* Conversation Header */}
-                <div className="p-3 border-b border-gray-200 flex items-center justify-between">
+                <div className="p-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                   <div className="flex items-center">
                     {isMobile && (
                       <Button 
@@ -530,7 +530,7 @@ const MessagesTab = () => {
                         onClick={handleBackToList}
                         className="mr-2 p-0 h-8 w-8"
                       >
-                        <ArrowLeft className="h-5 w-5" />
+                        <ArrowLeft className="h-5 w-5 dark:text-gray-300" />
                       </Button>
                     )}
                     <div className="flex items-center cursor-pointer" onClick={() => setIsInfoOpen(true)}>
@@ -539,8 +539,8 @@ const MessagesTab = () => {
                         <AvatarFallback>{selectedConversation.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="ml-3">
-                        <p className="font-medium text-gray-900">{selectedConversation.name}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="font-medium text-gray-900 dark:text-white">{selectedConversation.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {selectedConversation.isOnline ? (
                             <span className="text-green-500">Active now</span>
                           ) : (
@@ -557,7 +557,7 @@ const MessagesTab = () => {
                       className="rounded-full h-9 w-9 p-0"
                       onClick={() => handleStartCall('audio')}
                     >
-                      <Phone className="h-5 w-5 text-blue-600" />
+                      <Phone className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -565,7 +565,7 @@ const MessagesTab = () => {
                       className="rounded-full h-9 w-9 p-0"
                       onClick={() => handleStartCall('video')}
                     >
-                      <Video className="h-5 w-5 text-blue-600" />
+                      <Video className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -573,13 +573,13 @@ const MessagesTab = () => {
                       className="rounded-full h-9 w-9 p-0"
                       onClick={() => setIsInfoOpen(true)}
                     >
-                      <Info className="h-5 w-5 text-blue-600" />
+                      <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </Button>
                   </div>
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+                <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900">
                   {messages[selectedConversation.id]?.map((message, index) => (
                     <div
                       key={message.id}
@@ -607,13 +607,13 @@ const MessagesTab = () => {
                                 />
                               </div>
                             ) : attachment.type === 'file' ? (
-                              <div className="bg-gray-100 p-3 rounded-lg flex items-center">
-                                <div className="bg-blue-100 p-2 rounded mr-2">
-                                  <File className="h-5 w-5 text-blue-600" />
+                              <div className="bg-gray-100 p-3 rounded-lg flex items-center dark:bg-gray-700">
+                                <div className="bg-blue-100 p-2 rounded mr-2 dark:bg-blue-900">
+                                  <File className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                 </div>
                                 <div>
-                                  <p className="text-sm font-medium">{attachment.name}</p>
-                                  <p className="text-xs text-gray-500">Click to download</p>
+                                  <p className="text-sm font-medium dark:text-white">{attachment.name}</p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">Click to download</p>
                                 </div>
                               </div>
                             ) : null}
@@ -625,7 +625,7 @@ const MessagesTab = () => {
                           className={`p-3 rounded-lg ${
                             message.sender === 'me'
                               ? 'bg-blue-600 text-white rounded-br-none'
-                              : 'bg-white text-gray-900 rounded-bl-none shadow-sm'
+                              : 'bg-white text-gray-900 rounded-bl-none shadow-sm dark:bg-gray-800 dark:text-white'
                           }`}
                         >
                           <p className="text-sm">{message.content}</p>
@@ -633,7 +633,7 @@ const MessagesTab = () => {
 
                         {/* Timestamp and status */}
                         <div className={`flex items-center mt-1 ${message.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
-                          <p className="text-xs text-gray-500">{message.timestamp}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{message.timestamp}</p>
                           {message.sender === 'me' && (
                             <div className="ml-1">
                               {message.status === 'sent' && <div className="h-2 w-2 bg-gray-400 rounded-full"></div>}
@@ -646,7 +646,7 @@ const MessagesTab = () => {
                         {/* Reactions */}
                         {message.reactions && message.reactions.length > 0 && (
                           <div className={`flex ${message.sender === 'me' ? 'justify-end' : 'justify-start'} mt-1`}>
-                            <div className="bg-white rounded-full shadow-sm px-2 py-1 flex items-center">
+                            <div className="bg-white rounded-full shadow-sm px-2 py-1 flex items-center dark:bg-gray-700">
                               {message.reactions.map((reaction, i) => (
                                 <span key={i} className="text-sm">{reaction.type}</span>
                               ))}
@@ -660,7 +660,7 @@ const MessagesTab = () => {
                 </div>
 
                 {/* Message Input */}
-                <div className="p-3 border-t border-gray-200 bg-white">
+                <div className="p-3 border-t border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700">
                   <div className="flex items-center">
                     <div className="flex items-center space-x-2 mr-3">
                       <Button 
@@ -669,7 +669,7 @@ const MessagesTab = () => {
                         className="rounded-full h-9 w-9 p-0"
                         onClick={() => toast.info('Image upload coming soon')}
                       >
-                        <Image className="h-5 w-5 text-blue-600" />
+                        <Image className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       </Button>
                       <Button 
                         variant="ghost" 
@@ -677,7 +677,7 @@ const MessagesTab = () => {
                         className="rounded-full h-9 w-9 p-0"
                         onClick={() => toast.info('File upload coming soon')}
                       >
-                        <Paperclip className="h-5 w-5 text-blue-600" />
+                        <Paperclip className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       </Button>
                       <Button 
                         variant="ghost" 
@@ -685,7 +685,7 @@ const MessagesTab = () => {
                         className="rounded-full h-9 w-9 p-0"
                         onClick={() => toast.info('Voice message coming soon')}
                       >
-                        <Mic className="h-5 w-5 text-blue-600" />
+                        <Mic className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       </Button>
                     </div>
                     <Input
@@ -693,7 +693,7 @@ const MessagesTab = () => {
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      className="flex-1"
+                      className="flex-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                     <Button 
                       variant="ghost" 
@@ -701,7 +701,7 @@ const MessagesTab = () => {
                       className="ml-2 rounded-full h-9 w-9 p-0"
                       onClick={() => toast.info('Emoji picker coming soon')}
                     >
-                      <Smile className="h-5 w-5 text-blue-600" />
+                      <Smile className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </Button>
                     <Button 
                       variant={newMessage.trim() ? 'default' : 'ghost'}
@@ -710,7 +710,7 @@ const MessagesTab = () => {
                       onClick={handleSendMessage}
                       disabled={!newMessage.trim()}
                     >
-                      <Send className={`h-5 w-5 ${newMessage.trim() ? 'text-white' : 'text-blue-600'}`} />
+                      <Send className={`h-5 w-5 ${newMessage.trim() ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`} />
                     </Button>
                   </div>
                 </div>
@@ -719,13 +719,13 @@ const MessagesTab = () => {
 
             {/* Empty state when no conversation is selected */}
             {!isMobile && !selectedConversation && (
-              <div className="col-span-2 md:col-span-2 lg:col-span-3 flex items-center justify-center bg-gray-50">
+              <div className="col-span-2 md:col-span-2 lg:col-span-3 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
                 <div className="text-center p-6">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <MessageCircle className="h-8 w-8 text-blue-600" />
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 dark:bg-blue-900">
+                    <MessageCircle className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-2">Your Messages</h2>
-                  <p className="text-gray-600 mb-4">Select a conversation to start chatting</p>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-2 dark:text-white">Your Messages</h2>
+                  <p className="text-gray-600 mb-4 dark:text-gray-400">Select a conversation to start chatting</p>
                   <Button onClick={handleCreateNewMessage}>
                     <Edit className="h-4 w-4 mr-2" />
                     New Message
@@ -739,7 +739,7 @@ const MessagesTab = () => {
 
       {/* Contact/Group Info Dialog */}
       <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md dark:bg-gray-800">
           <DialogHeader>
             <DialogTitle>
               {selectedConversation?.type === 'group' ? 'Group Info' : 'Contact Info'}
@@ -753,7 +753,7 @@ const MessagesTab = () => {
                   <AvatarImage src={selectedConversation.avatar} />
                   <AvatarFallback>{selectedConversation.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <h3 className="text-xl font-semibold mt-2">{selectedConversation.name}</h3>
+                <h3 className="text-xl font-semibold mt-2 dark:text-white">{selectedConversation.name}</h3>
                 {selectedConversation.type === 'individual' && selectedConversation.isOnline && (
                   <p className="text-sm text-green-600">Active now</p>
                 )}
@@ -762,7 +762,7 @@ const MessagesTab = () => {
               <div className="flex justify-around py-4">
                 <Button 
                   variant="ghost" 
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center dark:text-gray-200"
                   onClick={() => {
                     setIsInfoOpen(false);
                     handleStartCall('audio');
@@ -773,7 +773,7 @@ const MessagesTab = () => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center dark:text-gray-200"
                   onClick={() => {
                     setIsInfoOpen(false);
                     handleStartCall('video');
@@ -784,7 +784,7 @@ const MessagesTab = () => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center dark:text-gray-200"
                   onClick={() => handleMuteConversation(selectedConversation.id)}
                 >
                   {selectedConversation.isMuted ? (
@@ -803,25 +803,25 @@ const MessagesTab = () => {
 
               {selectedConversation.type === 'group' && (
                 <div>
-                  <h4 className="font-medium mb-2 flex items-center">
+                  <h4 className="font-medium mb-2 flex items-center dark:text-white">
                     <Users className="h-4 w-4 mr-2" />
                     Members ({selectedConversation.members?.length || 0})
                   </h4>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {selectedConversation.members?.map((member) => (
-                      <div key={member.id} className="flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                      <div key={member.id} className="flex items-center p-2 hover:bg-gray-50 rounded-lg dark:hover:bg-gray-700">
                         <div className="relative">
                           <Avatar className="h-8 w-8">
                             <AvatarImage src={member.avatar} />
                             <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                           </Avatar>
                           {member.isOnline && (
-                            <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 border-2 border-white"></span>
+                            <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 border-2 border-white dark:border-gray-800"></span>
                           )}
                         </div>
                         <div className="ml-3">
-                          <p className="text-sm font-medium">{member.name}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-sm font-medium dark:text-white">{member.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
                             {member.isOnline ? 'Active now' : member.lastActive}
                           </p>
                         </div>
@@ -830,7 +830,7 @@ const MessagesTab = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="w-full mt-2"
+                      className="w-full mt-2 dark:border-gray-600 dark:text-gray-200"
                       onClick={() => toast.info('Add members feature coming soon')}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -840,7 +840,7 @@ const MessagesTab = () => {
                 </div>
               )}
 
-              <div className="pt-4 border-t">
+              <div className="pt-4 border-t dark:border-gray-700">
                 <Button 
                   variant="destructive" 
                   className="w-full"
@@ -884,7 +884,7 @@ const MessagesTab = () => {
 
       {/* Call Dialog */}
       <Dialog open={isCallDialogOpen} onOpenChange={setIsCallDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md dark:bg-gray-800">
           <DialogHeader>
             <DialogTitle className="sr-only">
               {callType === 'audio' ? 'Audio Call' : 'Video Call'} with {selectedConversation?.name}
@@ -895,8 +895,8 @@ const MessagesTab = () => {
               <AvatarImage src={selectedConversation?.avatar} />
               <AvatarFallback>{selectedConversation?.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            <h3 className="text-xl font-semibold mb-1">{selectedConversation?.name}</h3>
-            <p className="text-gray-500 mb-8">
+            <h3 className="text-xl font-semibold mb-1 dark:text-white">{selectedConversation?.name}</h3>
+            <p className="text-gray-500 mb-8 dark:text-gray-400">
               {callType === 'audio' ? 'Audio call' : 'Video call'}
               <span className="animate-pulse"> • Connecting...</span>
             </p>
@@ -905,19 +905,19 @@ const MessagesTab = () => {
               <Button 
                 variant="ghost" 
                 size="lg" 
-                className="rounded-full h-12 w-12 bg-gray-200 hover:bg-gray-300 p-0"
+                className="rounded-full h-12 w-12 bg-gray-200 hover:bg-gray-300 p-0 dark:bg-gray-700 dark:hover:bg-gray-600"
                 onClick={() => toast.info('Microphone muted')}
               >
-                <Mic className="h-6 w-6" />
+                <Mic className="h-6 w-6 dark:text-gray-200" />
               </Button>
               {callType === 'video' && (
                 <Button 
                   variant="ghost" 
                   size="lg" 
-                  className="rounded-full h-12 w-12 bg-gray-200 hover:bg-gray-300 p-0"
+                  className="rounded-full h-12 w-12 bg-gray-200 hover:bg-gray-300 p-0 dark:bg-gray-700 dark:hover:bg-gray-600"
                   onClick={() => toast.info('Camera turned off')}
                 >
-                  <Video className="h-6 w-6" />
+                  <Video className="h-6 w-6 dark:text-gray-200" />
                 </Button>
               )}
               <Button 

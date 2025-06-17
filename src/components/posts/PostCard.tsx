@@ -1,12 +1,11 @@
 import React, { useState, memo } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, ThumbsUp, Bookmark, Eye, Download } from 'lucide-react';
+import { Heart, MessageCircle, Share, MoreHorizontal, ThumbsUp, Bookmark, Download } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import LazyImage from '@/components/ui/LazyImage';
 import PhotoViewer from '@/components/PhotoViewer';
-import VideoPlayer from '@/components/VideoPlayer';
 import { Post, useLikePost } from '@/hooks/usePosts';
 import { useComments, useCreateComment } from '@/hooks/useComments';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,7 +23,6 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes_count || 0);
   const [showPhotoViewer, setShowPhotoViewer] = useState(false);
-  const [isVideoPost, setIsVideoPost] = useState(false);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [reaction, setReaction] = useState<string | null>(null);
   
@@ -192,33 +190,12 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
           {/* Post Media */}
           {post.image_url && (
             <div className="w-full">
-              {isVideoPost ? (
-                <VideoPlayer
-                  video={{
-                    id: post.id,
-                    title: post.content.substring(0, 50) + '...',
-                    creator: {
-                      name: post.profiles?.full_name || 'Anonymous User',
-                      avatar: post.profiles?.avatar_url || '',
-                      verified: false
-                    },
-                    thumbnail: post.image_url,
-                    duration: '2:30',
-                    views: Math.floor(Math.random() * 1000),
-                    likes: likesCount,
-                    timestamp: formatTimeAgo(post.created_at),
-                    description: post.content
-                  }}
-                  showControls={true}
-                />
-              ) : (
-                <LazyImage
-                  src={post.image_url}
-                  alt="Post content"
-                  className="w-full h-auto max-h-96 cursor-pointer hover:opacity-95 transition-opacity"
-                  onClick={handleImageClick}
-                />
-              )}
+              <LazyImage
+                src={post.image_url}
+                alt="Post content"
+                className="w-full h-auto max-h-96 cursor-pointer hover:opacity-95 transition-opacity"
+                onClick={handleImageClick}
+              />
             </div>
           )}
 
