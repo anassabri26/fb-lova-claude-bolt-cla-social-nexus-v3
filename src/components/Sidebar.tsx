@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Users, Bookmark, Clock, Calendar, Store, Video, MessageCircle, Flag, ChevronDown, UsersRound, Settings, TrendingUp } from 'lucide-react';
+import { Home, Users, Bookmark, Clock, Calendar, Store, Video, MessageCircle, Flag, ChevronDown, UsersRound, Settings, TrendingUp, Gamepad2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ const Sidebar = () => {
     { icon: Video, label: 'Watch', path: ROUTES.WATCH },
     { icon: Store, label: 'Marketplace', path: ROUTES.MARKETPLACE },
     { icon: UsersRound, label: 'Groups', path: ROUTES.GROUPS },
+    { icon: Gamepad2, label: 'Gaming', path: '/gaming' },
     { icon: Bookmark, label: 'Saved', path: ROUTES.SAVED },
     { icon: Calendar, label: 'Events', path: ROUTES.EVENTS },
     { icon: Clock, label: 'Memories', path: ROUTES.MEMORIES },

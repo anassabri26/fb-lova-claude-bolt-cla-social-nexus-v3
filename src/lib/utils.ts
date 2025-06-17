@@ -99,7 +99,7 @@ export const storage = {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.warn('Failed to save to localStorage:', error);
+      // Silent error handling
     }
   },
   
@@ -107,7 +107,7 @@ export const storage = {
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.warn('Failed to remove from localStorage:', error);
+      // Silent error handling
     }
   },
   
@@ -115,7 +115,7 @@ export const storage = {
     try {
       localStorage.clear();
     } catch (error) {
-      console.warn('Failed to clear localStorage:', error);
+      // Silent error handling
     }
   }
 };
@@ -150,21 +150,6 @@ export const performanceMonitor = {
       performance.clearMarks();
     }
   }
-};
-
-// Accessibility utilities
-export const announceToScreenReader = (message: string): void => {
-  const announcement = document.createElement('div');
-  announcement.setAttribute('aria-live', 'polite');
-  announcement.setAttribute('aria-atomic', 'true');
-  announcement.className = 'sr-only';
-  announcement.textContent = message;
-  
-  document.body.appendChild(announcement);
-  
-  setTimeout(() => {
-    document.body.removeChild(announcement);
-  }, 1000);
 };
 
 // Image optimization

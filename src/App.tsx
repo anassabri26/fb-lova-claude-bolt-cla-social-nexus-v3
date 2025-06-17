@@ -22,10 +22,11 @@ const Marketplace = lazy(() => import("./pages/Marketplace"));
 const Events = lazy(() => import("./pages/Events"));
 const Saved = lazy(() => import("./pages/Saved"));
 const Memories = lazy(() => import("./pages/Memories"));
-const TrendingPage = lazy(() => import("./components/TrendingPage"));
 const Recent = lazy(() => import("./pages/Recent"));
 const Pages = lazy(() => import("./pages/Pages"));
 const Settings = lazy(() => import("./pages/Settings"));
+const Search = lazy(() => import("./pages/Search"));
+const Gaming = lazy(() => import("./pages/Gaming"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading fallback component
@@ -87,11 +88,6 @@ function App() {
                       <Watch />
                     </AppLayout>
                   } />
-                  <Route path="/trending" element={
-                    <AppLayout>
-                      <TrendingPage />
-                    </AppLayout>
-                  } />
                   <Route path={ROUTES.MARKETPLACE} element={
                     <AppLayout>
                       <Marketplace />
@@ -112,6 +108,23 @@ function App() {
                       <Memories />
                     </AppLayout>
                   } />
+                  <Route path={ROUTES.SETTINGS} element={
+                    <AppLayout>
+                      <Settings />
+                    </AppLayout>
+                  } />
+                  
+                  {/* New routes */}
+                  <Route path="/search" element={
+                    <AppLayout>
+                      <Search />
+                    </AppLayout>
+                  } />
+                  <Route path="/gaming" element={
+                    <AppLayout>
+                      <Gaming />
+                    </AppLayout>
+                  } />
                   <Route path="/recent" element={
                     <AppLayout>
                       <Recent />
@@ -120,11 +133,6 @@ function App() {
                   <Route path="/pages" element={
                     <AppLayout>
                       <Pages />
-                    </AppLayout>
-                  } />
-                  <Route path={ROUTES.SETTINGS} element={
-                    <AppLayout>
-                      <Settings />
                     </AppLayout>
                   } />
                   
