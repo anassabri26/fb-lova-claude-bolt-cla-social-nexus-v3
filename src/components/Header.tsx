@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, MessageCircle, Bell, Menu, Search, Plus, Video, Store, Calendar } from 'lucide-react';
+import { Home, MessageCircle, Bell, Menu, Search, Plus, Video, Store, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -59,40 +59,40 @@ const Header = () => {
     <>
       <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200 safe-area-top">
         <div className="container-responsive mx-auto">
-          <div className="flex items-center justify-between h-8 px-2">
+          <div className="flex items-center justify-between h-14 px-4">
             {/* Left section - Logo */}
-            <div className="flex items-center space-x-1 min-w-0 flex-shrink-0">
+            <div className="flex items-center space-x-2 min-w-0 flex-shrink-0">
               <div 
-                className="flex items-center space-x-1 cursor-pointer hover:opacity-80 transition-opacity"
+                className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => handleNavigation(ROUTES.HOME)}
               >
-                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-xs sm:text-sm">f</span>
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">f</span>
                 </div>
-                <span className="hide-mobile text-xs sm:text-sm font-bold text-blue-600">facebook</span>
+                <span className="hide-mobile text-lg font-bold text-blue-600">facebook</span>
               </div>
             </div>
 
             {/* Center section - Search */}
-            <div className="flex-1 max-w-xs sm:max-w-lg mx-2">
+            <div className="flex-1 max-w-xs sm:max-w-lg mx-4">
               <form onSubmit={handleSearch} className="w-full">
                 <div className="relative w-full">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
                     type="text"
                     placeholder={isMobile ? "Search" : "Search Facebook"}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-7 bg-gray-100 border-none rounded-full text-xs h-6 py-0"
+                    className="pl-10 bg-gray-100 border-none rounded-full h-10"
                   />
                 </div>
               </form>
             </div>
 
             {/* Right section - Navigation + User actions */}
-            <div className="flex items-center space-x-0.5 flex-shrink-0">
+            <div className="flex items-center space-x-1 flex-shrink-0">
               {/* Navigation Icons - Show on all screen sizes */}
-              <div className="flex items-center space-x-0.5">
+              <div className="flex items-center space-x-1">
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
@@ -100,15 +100,15 @@ const Header = () => {
                       key={item.id}
                       variant="ghost" 
                       size="sm" 
-                      className={`relative p-1 rounded-md transition-colors h-6 w-6 ${
+                      className={`relative p-2 rounded-md transition-colors h-10 w-10 ${
                         isActive ? 'text-blue-600' : 'text-gray-600'
                       }`}
                       onClick={() => handleNavigation(item.path)}
                       aria-label={item.label}
                     >
-                      <item.icon className="w-3.5 h-3.5" />
+                      <item.icon className="w-5 h-5" />
                       {isActive && (
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-blue-600 rounded-t-full"></div>
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-blue-600 rounded-t-full"></div>
                       )}
                     </Button>
                   );
@@ -119,82 +119,71 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="p-1 rounded-full hover:bg-gray-100 transition-colors h-6 w-6"
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10"
                 onClick={handleCreatePost}
                 aria-label="Create post"
               >
-                <Plus className="w-3.5 h-3.5 text-gray-600" />
+                <Plus className="w-5 h-5 text-gray-600" />
               </Button>
               
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="relative p-1 rounded-full hover:bg-gray-100 transition-colors h-6 w-6"
+                className="relative p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10"
                 onClick={handleNotificationsClick}
                 aria-label="Notifications"
               >
-                <Bell className="w-3.5 h-3.5 text-gray-600" />
-                <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 text-white text-xs rounded-full flex items-center justify-center leading-none">3</span>
+                <Bell className="w-5 h-5 text-gray-600" />
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center leading-none">3</span>
               </Button>
               
               {isMobile && (
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="p-1 rounded-full hover:bg-gray-100 transition-colors h-6 w-6"
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   aria-label="Menu"
                 >
-                  <Menu className="w-3.5 h-3.5 text-gray-600" />
+                  <Menu className="w-5 h-5 text-gray-600" />
                 </Button>
               )}
               
               <Avatar 
-                className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer hover:opacity-80 transition-opacity ml-0.5" 
+                className="w-8 h-8 cursor-pointer hover:opacity-80 transition-opacity ml-2" 
                 onClick={handleProfileClick}
               >
                 <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
-                <AvatarFallback className="text-xs">JD</AvatarFallback>
+                <AvatarFallback className="text-sm">JD</AvatarFallback>
               </Avatar>
             </div>
           </div>
 
           {/* Mobile menu - Additional options */}
           {isMenuOpen && isMobile && (
-            <div className="bg-white border-t border-gray-200 py-1">
-              <div className="grid grid-cols-2 gap-1 px-2">
+            <div className="bg-white border-t border-gray-200 py-2">
+              <div className="grid grid-cols-2 gap-2 px-4">
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-2 p-1.5 rounded-lg text-left justify-start h-7"
+                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12"
                   onClick={() => {
                     handleNavigation(ROUTES.FRIENDS);
                     setIsMenuOpen(false);
                   }}
                 >
-                  <Users className="w-3.5 h-3.5" />
-                  <span className="text-xs">Friends</span>
+                  <Users className="w-5 h-5" />
+                  <span>Friends</span>
                 </Button>
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-2 p-1.5 rounded-lg text-left justify-start h-7"
+                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12"
                   onClick={() => {
                     handleNavigation(ROUTES.GROUPS);
                     setIsMenuOpen(false);
                   }}
                 >
-                  <Users className="w-3.5 h-3.5" />
-                  <span className="text-xs">Groups</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="flex items-center space-x-2 p-1.5 rounded-lg text-left justify-start h-7"
-                  onClick={() => {
-                    handleNavigation(ROUTES.EVENTS);
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span className="text-xs">Events</span>
+                  <Users className="w-5 h-5" />
+                  <span>Groups</span>
                 </Button>
               </div>
             </div>

@@ -12,6 +12,7 @@ import LiveVideoIndicator from '@/components/LiveVideoIndicator';
 import VideoUpload from '@/components/VideoUpload';
 import PlaylistManager from '@/components/PlaylistManager';
 import SubscriptionManager from '@/components/SubscriptionManager';
+import AccessibleButton from '@/components/AccessibleButton';
 import { toast } from 'sonner';
 import { MOCK_IMAGES } from '@/lib/constants';
 

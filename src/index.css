@@ -208,7 +208,7 @@
   display: flex;
   max-width: 100%;
   position: relative;
-  min-height: calc(100vh - 3rem); /* Account for compact header height (48px) */
+  min-height: calc(100vh - 3.5rem); /* Account for header height (56px) */
 }
 
 .main-content {
@@ -234,35 +234,35 @@
 /* Tablet: Left sidebar visible, no right sidebar */
 @media (min-width: 48.0625rem) and (max-width: 64rem) { /* 769px - 1024px */
   .main-content {
-    margin-left: 14rem; /* 224px - left sidebar with full text */
-    width: calc(100% - 14rem);
+    margin-left: 16rem; /* 256px - left sidebar with full text */
+    width: calc(100% - 16rem);
   }
 }
 
 /* Desktop: Both sidebars with optimized widths */
 @media (min-width: 64.0625rem) and (max-width: 80rem) { /* 1025px - 1280px */
   .main-content {
-    margin-left: 16rem; /* 256px */
-    margin-right: 16rem; /* 256px */
-    width: calc(100% - 32rem);
+    margin-left: 18rem; /* 288px */
+    margin-right: 18rem; /* 288px */
+    width: calc(100% - 36rem);
   }
 }
 
 /* Large Desktop: Wider content area with minimal sidebar spacing */
 @media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
   .main-content {
-    margin-left: 17rem; /* 272px - slightly wider sidebars */
-    margin-right: 17rem; /* 272px */
-    width: calc(100% - 34rem); /* More space for content */
+    margin-left: 20rem; /* 320px - slightly wider sidebars */
+    margin-right: 20rem; /* 320px */
+    width: calc(100% - 40rem); /* More space for content */
   }
 }
 
 /* Extra Large Desktop: Maximum content width */
 @media (min-width: 100.0625rem) { /* 1601px+ */
   .main-content {
-    margin-left: 18rem; /* 288px */
-    margin-right: 18rem; /* 288px */
-    width: calc(100% - 36rem); /* Maximum content area */
+    margin-left: 22rem; /* 352px */
+    margin-right: 22rem; /* 352px */
+    width: calc(100% - 44rem); /* Maximum content area */
   }
 }
 
@@ -270,21 +270,21 @@
 .sidebar-responsive {
   position: fixed;
   left: 0;
-  top: 3rem; /* Increased to 48px to provide proper clearance for user profile */
-  height: calc(100vh - 3rem);
+  top: 3.5rem; /* 56px to provide proper clearance for header */
+  height: calc(100vh - 3.5rem);
   background: white;
   border-right: 1px solid rgb(229 231 235);
   overflow-y: auto;
   z-index: 10;
   display: none; /* Hidden on mobile by default */
-  width: 14rem; /* 224px default */
+  width: 16rem; /* 256px default */
 }
 
 /* Tablet: Full sidebar with text visible */
 @media (min-width: 48.0625rem) and (max-width: 64rem) { /* 769px - 1024px */
   .sidebar-responsive {
     display: block;
-    width: 14rem; /* 224px - full sidebar with text */
+    width: 16rem; /* 256px - full sidebar with text */
   }
 }
 
@@ -292,7 +292,7 @@
 @media (min-width: 64.0625rem) and (max-width: 80rem) { /* 1025px - 1280px */
   .sidebar-responsive {
     display: block;
-    width: 16rem; /* 256px - optimized for desktop */
+    width: 18rem; /* 288px - optimized for desktop */
   }
 }
 
@@ -300,7 +300,7 @@
 @media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
   .sidebar-responsive {
     display: block;
-    width: 17rem; /* 272px - slightly wider for better content balance */
+    width: 20rem; /* 320px - slightly wider for better content balance */
   }
 }
 
@@ -308,7 +308,7 @@
 @media (min-width: 100.0625rem) { /* 1601px+ */
   .sidebar-responsive {
     display: block;
-    width: 18rem; /* 288px */
+    width: 22rem; /* 352px */
   }
 }
 
@@ -316,20 +316,20 @@
 .right-sidebar-responsive {
   position: fixed;
   right: 0;
-  top: 3rem; /* Increased to 48px to match left sidebar */
-  height: calc(100vh - 3rem);
+  top: 3.5rem; /* 56px to match left sidebar */
+  height: calc(100vh - 3.5rem);
   background: rgb(249 250 251);
   overflow-y: auto;
   z-index: 10;
   display: none; /* Hidden on mobile */
-  width: 14rem; /* 224px default */
+  width: 16rem; /* 256px default */
 }
 
 /* Desktop: Show right sidebar - content-optimized */
 @media (min-width: 64.0625rem) and (max-width: 80rem) { /* 1025px - 1280px */
   .right-sidebar-responsive {
     display: block;
-    width: 16rem; /* 256px - optimized for desktop */
+    width: 18rem; /* 288px - optimized for desktop */
   }
 }
 
@@ -337,7 +337,7 @@
 @media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
   .right-sidebar-responsive {
     display: block;
-    width: 17rem; /* 272px - slightly wider for better balance */
+    width: 20rem; /* 320px - slightly wider for better balance */
   }
 }
 
@@ -345,7 +345,7 @@
 @media (min-width: 100.0625rem) { /* 1601px+ */
   .right-sidebar-responsive {
     display: block;
-    width: 18rem; /* 288px */
+    width: 22rem; /* 352px */
   }
 }
 

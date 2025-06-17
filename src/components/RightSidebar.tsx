@@ -33,7 +33,7 @@ const RightSidebar = () => {
 
   return (
     <div className="w-full h-full overflow-y-auto scrollbar-thin">
-      <div className="p-2 space-y-4">
+      <div className="p-4 space-y-4">
         {/* Friend Requests */}
         <div className="mb-4">
           <FriendRequestsPanel />

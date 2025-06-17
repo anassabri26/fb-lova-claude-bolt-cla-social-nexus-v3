@@ -64,17 +64,17 @@ const Sidebar = () => {
 
   return (
     <div className="w-full h-full overflow-y-auto scrollbar-thin">
-      <div className="p-2 space-y-4">
+      <div className="p-4 space-y-4">
         {/* User Profile */}
         <div 
-          className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
+          className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
           onClick={handleProfileClick}
         >
-          <Avatar className="w-8 h-8">
+          <Avatar className="w-10 h-10">
             <AvatarImage src={MOCK_IMAGES.AVATARS[0]} />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
-          <span className="font-medium text-gray-900 text-sm">John Doe</span>
+          <span className="font-medium text-gray-900">John Doe</span>
         </div>
 
         {/* Main Menu */}
@@ -85,7 +85,7 @@ const Sidebar = () => {
               <AccessibleButton
                 key={item.label}
                 variant="ghost"
-                className={`w-full flex items-center justify-between p-2 rounded-lg text-left font-normal transition-colors text-sm ${
+                className={`w-full flex items-center justify-between p-3 rounded-lg text-left font-normal transition-colors ${
                   isActive 
                     ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' 
                     : 'text-gray-700 hover:bg-gray-100'
@@ -93,12 +93,12 @@ const Sidebar = () => {
                 onClick={() => handleNavigation(item.path)}
                 aria-label={item.label}
               >
-                <div className="flex items-center space-x-2 min-w-0">
-                  <item.icon className="w-5 h-5 flex-shrink-0" />
+                <div className="flex items-center space-x-3 min-w-0">
+                  <item.icon className="w-6 h-6 flex-shrink-0" />
                   <span className="truncate">{item.label}</span>
                 </div>
                 {item.count && (
-                  <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full flex-shrink-0">
+                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full flex-shrink-0">
                     {item.count}
                   </span>
                 )}
@@ -110,14 +110,14 @@ const Sidebar = () => {
         {/* See More Button */}
         <AccessibleButton
           variant="ghost"
-          className="w-full flex items-center space-x-2 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors text-sm"
+          className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
           onClick={() => {
             setShowMore(!showMore);
           }}
           aria-expanded={showMore}
         >
-          <div className="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-            <ChevronDown className={`w-3 h-3 transition-transform ${showMore ? 'rotate-180' : ''}`} />
+          <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+            <ChevronDown className={`w-4 h-4 transition-transform ${showMore ? 'rotate-180' : ''}`} />
           </div>
           <span>{showMore ? 'See less' : 'See more'}</span>
         </AccessibleButton>
@@ -126,13 +126,13 @@ const Sidebar = () => {
         <hr className="border-gray-200" />
 
         {/* Shortcuts */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-gray-500 font-medium text-xs">Your shortcuts</h3>
+            <h3 className="text-gray-500 font-medium text-sm">Your shortcuts</h3>
             <AccessibleButton
               variant="ghost"
               size="sm"
-              className="text-blue-600 text-xs hover:bg-blue-50 transition-colors"
+              className="text-blue-600 text-sm hover:bg-blue-50 transition-colors"
               onClick={handleShortcutEdit}
             >
               Edit
@@ -143,16 +143,16 @@ const Sidebar = () => {
             <AccessibleButton
               key={shortcut.name}
               variant="ghost"
-              className="w-full flex items-center space-x-2 p-2 rounded-lg text-left hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center space-x-3 p-3 rounded-lg text-left hover:bg-gray-100 transition-colors"
               onClick={() => handleNavigation(shortcut.path)}
             >
               <img
                 src={shortcut.image}
                 alt={shortcut.name}
-                className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+                className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
               />
               <div className="flex-1 min-w-0">
-                <p className="text-gray-900 font-medium truncate text-sm">{shortcut.name}</p>
+                <p className="text-gray-900 font-medium truncate">{shortcut.name}</p>
                 <p className="text-xs text-gray-500">{shortcut.members} members</p>
               </div>
             </AccessibleButton>
@@ -160,31 +160,31 @@ const Sidebar = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="space-y-2">
-          <h3 className="text-gray-500 font-medium text-xs">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-1">
+        <div className="space-y-3">
+          <h3 className="text-gray-500 font-medium text-sm">Quick Actions</h3>
+          <div className="grid grid-cols-2 gap-2">
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-2 h-auto"
+              className="flex flex-col items-center space-y-1 p-3 h-auto"
               onClick={() => {
                 navigate('/');
                 console.log('Quick action: Create post');
               }}
             >
-              <MessageCircle className="w-4 h-4" />
+              <MessageCircle className="w-5 h-5" />
               <span className="text-xs">Post</span>
             </AccessibleButton>
             <AccessibleButton
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-2 h-auto"
+              className="flex flex-col items-center space-y-1 p-3 h-auto"
               onClick={() => {
                 navigate(ROUTES.EVENTS);
                 console.log('Quick action: Create event');
               }}
             >
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-5 h-5" />
               <span className="text-xs">Event</span>
             </AccessibleButton>
           </div>
