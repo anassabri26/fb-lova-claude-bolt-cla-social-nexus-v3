@@ -27,6 +27,9 @@ export const APP_CONFIG = {
     LIVE_CHAT: true,
     ACTIVITY_FEED: true,
     TRENDING_TOPICS: true,
+    LIVE_STREAMING: true,
+    ADVANCED_SEARCH: true,
+    EVENT_CALENDAR: true
   }
 } as const;
 
@@ -44,6 +47,10 @@ export const ROUTES = {
   SAVED: '/saved',
   MEMORIES: '/memories',
   SETTINGS: '/settings',
+  GAMING: '/gaming',
+  SEARCH: '/search',
+  PAGES: '/pages',
+  RECENT: '/recent'
 } as const;
 
 export const API_ENDPOINTS = {

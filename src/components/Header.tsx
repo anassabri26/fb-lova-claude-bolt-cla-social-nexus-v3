@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Home, MessageCircle, Bell, Menu, Search, Plus, Video, Store, Users } from 'lucide-react';
+import { Home, MessageCircle, Bell, Menu, Search, Plus, Video, Store, Users, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import NotificationsDropdown from './NotificationsDropdown';
+import LiveStreaming from './LiveStreaming';
 import { useIsMobile, useIsTablet } from '@/hooks/use-device';
 import { ROUTES } from '@/lib/constants';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isLiveStreamOpen, setIsLiveStreamOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
@@ -50,6 +52,10 @@ const Header = () => {
 
   const handleCreatePost = () => {
     navigate(ROUTES.HOME);
+  };
+
+  const handleGoLive = () => {
+    setIsLiveStreamOpen(true);
   };
 
   return (
@@ -126,6 +132,16 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10"
+                onClick={handleGoLive}
+                aria-label="Go Live"
+              >
+                <Video className="w-5 h-5 text-gray-600" />
+              </Button>
+              
+              <Button 
+                variant="ghost" 
+                size="sm" 
                 className="relative p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10"
                 onClick={handleNotificationsClick}
                 aria-label="Notifications"
@@ -182,6 +198,28 @@ const Header = () => {
                   <Users className="w-5 h-5" />
                   <span>Groups</span>
                 </Button>
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12"
+                  onClick={() => {
+                    handleNavigation('/gaming');
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <Users className="w-5 h-5" />
+                  <span>Gaming</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12"
+                  onClick={() => {
+                    handleNavigation(ROUTES.SETTINGS);
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <Settings className="w-5 h-5" />
+                  <span>Settings</span>
+                </Button>
               </div>
             </div>
           )}
@@ -192,6 +230,12 @@ const Header = () => {
       <NotificationsDropdown 
         isOpen={isNotificationsOpen} 
         onClose={() => setIsNotificationsOpen(false)} 
+      />
+
+      {/* Live Streaming Modal */}
+      <LiveStreaming
+        isOpen={isLiveStreamOpen}
+        onClose={() => setIsLiveStreamOpen(false)}
       />
     </>
   );
