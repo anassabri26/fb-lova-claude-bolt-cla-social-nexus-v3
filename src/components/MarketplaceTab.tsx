@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Search, Plus, MapPin, Filter, Heart, MessageCircle, Share2 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Search, Plus, MapPin, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import CreateMarketplaceItem from './CreateMarketplaceItem';
 import { MOCK_IMAGES } from '@/lib/constants';
+import MarketplaceItem from './MarketplaceItem';
+import { toast } from 'sonner';
 
-interface MarketplaceItem {
+interface MarketplaceItemType {
   id: string;
   title: string;
   price: string;
@@ -26,7 +26,7 @@ interface MarketplaceItem {
 }
 
 const MarketplaceTab = () => {
-  const [items, setItems] = useState<MarketplaceItem[]>([
+  const [items, setItems] = useState<MarketplaceItemType[]>([
     {
       id: '1',
       title: 'MacBook Pro 13" M2 Chip',
@@ -124,36 +124,31 @@ const MarketplaceTab = () => {
         ? { ...item, isSaved: !item.isSaved }
         : item
     ));
-    console.log('Item saved/unsaved:', itemId);
+    const item = items.find(i => i.id === itemId);
+    if (item) {
+      toast.success(item.isSaved ? 'Removed from saved items' : 'Added to saved items');
+    }
   };
 
   const handleMessageSeller = (sellerName: string) => {
-    console.log('Messaging seller:', sellerName);
+    toast.success(`Messaging ${sellerName}`);
   };
 
   const handleShare = (itemTitle: string) => {
-    if (navigator.share) {
-      navigator.share({
-        title: itemTitle,
-        text: `Check out this item: ${itemTitle}`,
-        url: window.location.href
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-    }
-    console.log('Shared item:', itemTitle);
+    navigator.clipboard.writeText(`Check out this item: ${itemTitle}`);
+    toast.success('Item link copied to clipboard');
   };
 
   const handleCreateListing = () => {
     setIsCreateModalOpen(true);
   };
 
-  const handleItemClick = (item: MarketplaceItem) => {
-    console.log('Item clicked:', item);
+  const handleItemClick = (item: MarketplaceItemType) => {
+    toast.info(`Viewing details for: ${item.title}`);
   };
 
   const handleApplyFilters = () => {
-    console.log('Filters applied:', { selectedCategory, priceFilter, locationFilter });
+    toast.success('Filters applied');
   };
 
   const handleClearFilters = () => {
@@ -161,6 +156,7 @@ const MarketplaceTab = () => {
     setPriceFilter('All');
     setLocationFilter('');
     setSearchTerm('');
+    toast.info('Filters cleared');
   };
 
   const filteredItems = items.filter(item => {
@@ -303,90 +299,14 @@ const MarketplaceTab = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.map((item) => (
-                <Card 
-                  key={item.id} 
-                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full flex flex-col"
-                  onClick={() => handleItemClick(item)}
-                >
-                  <div className="relative">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSaveItem(item.id);
-                      }}
-                      className={`absolute top-2 right-2 rounded-full ${
-                        item.isSaved ? 'text-red-600 bg-white/90' : 'text-gray-600 bg-white/90'
-                      }`}
-                    >
-                      <Heart className={`w-4 h-4 ${item.isSaved ? 'fill-current' : ''}`} />
-                    </Button>
-                  </div>
-
-                  <CardContent className="p-4 flex-1 flex flex-col">
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-semibold text-lg line-clamp-1">{item.title}</h3>
-                        <span className="font-bold text-blue-600">{item.price}</span>
-                      </div>
-
-                      <div className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
-                        <MapPin className="w-4 h-4" />
-                        <span>{item.location}</span>
-                      </div>
-
-                      <div className="flex items-center space-x-2 mb-3">
-                        <Badge variant="secondary">{item.category}</Badge>
-                        <Badge variant="outline">{item.condition}</Badge>
-                      </div>
-
-                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">{item.description}</p>
-                    </div>
-
-                    <div className="mt-auto">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-2">
-                          <Avatar className="w-6 h-6">
-                            <AvatarImage src={item.seller.avatar} />
-                            <AvatarFallback>{item.seller.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm text-gray-600">{item.seller.name}</span>
-                        </div>
-                        <span className="text-xs text-gray-500">{item.postedDate}</span>
-                      </div>
-
-                      <div className="flex space-x-2">
-                        <Button
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMessageSeller(item.seller.name);
-                          }}
-                          className="flex-1"
-                        >
-                          <MessageCircle className="w-4 h-4 mr-1" />
-                          Message
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShare(item.title);
-                          }}
-                        >
-                          <Share2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <MarketplaceItem 
+                  key={item.id}
+                  item={item}
+                  onItemClick={handleItemClick}
+                  onSaveItem={handleSaveItem}
+                  onMessageSeller={handleMessageSeller}
+                  onShare={handleShare}
+                />
               ))}
             </div>
 
