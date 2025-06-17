@@ -62,13 +62,15 @@ const Stories = () => {
     <div className="mb-6">
       <div className="flex space-x-3 overflow-x-auto scrollbar-thin pb-2">
         {/* Create Story */}
-        <Card className="flex-shrink-0 w-28 h-44 cursor-pointer hover:shadow-md transition-shadow" onClick={handleCreateStory}>
-          <CardContent className="p-0 relative h-full">
-            <div className="h-32 bg-gradient-to-b from-blue-400 to-blue-600 rounded-t-lg flex items-center justify-center">
+        <Card className="flex-shrink-0 w-32 h-44 cursor-pointer hover:shadow-md transition-shadow" onClick={handleCreateStory}>
+          <CardContent className="p-0 relative h-full flex flex-col">
+            <div className="flex-1 bg-gradient-to-b from-blue-400 to-blue-600 rounded-t-lg flex items-center justify-center">
               <Plus className="w-8 h-8 text-white" />
             </div>
-            <div className="p-2 text-center flex items-center justify-center h-12">
-              <p className="text-xs font-medium text-gray-900 leading-tight">Create Story</p>
+            <div className="p-2 flex items-center justify-center h-12 bg-white rounded-b-lg">
+              <p className="text-xs font-medium text-gray-900 text-center leading-tight">
+                Create<br />Story
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -77,7 +79,7 @@ const Stories = () => {
         {stories.map((story) => (
           <Card 
             key={story.id} 
-            className="flex-shrink-0 w-28 h-44 cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden"
+            className="flex-shrink-0 w-32 h-44 cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden"
             onClick={() => handleViewStory(story)}
           >
             <CardContent className="p-0 relative h-full">
