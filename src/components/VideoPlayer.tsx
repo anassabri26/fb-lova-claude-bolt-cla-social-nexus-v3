@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, MoreHorizontal, Heart, MessageCircle, Share, ChevronLeft, ChevronRight, Settings, Rewind, FastForward } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Settings, X, Heart, MessageCircle, Share, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import Maximize from '@/components/ui/Maximize';
+import Rewind from '@/components/ui/Rewind';
+import FastForward from '@/components/ui/FastForward';
 
 interface VideoPlayerProps {
   video: {
@@ -251,7 +254,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <Card className="overflow-hidden bg-black">
+    <Card className="overflow-hidden bg-black dark:bg-black">
       <div 
         ref={playerRef}
         className="relative group"
@@ -454,37 +457,37 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       </div>
 
       {/* Video Info */}
-      <CardContent className="p-4 bg-white">
+      <CardContent className="p-4 bg-white dark:bg-gray-800">
         <div className="flex items-start space-x-3">
           <Avatar className="w-10 h-10">
             <AvatarImage src={video.creator.avatar} />
             <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 line-clamp-2">{video.title}</h3>
+            <h3 className="font-semibold text-gray-900 line-clamp-2 dark:text-gray-100">{video.title}</h3>
             <div className="flex items-center space-x-1 mt-1">
-              <p className="text-sm text-gray-600">{video.creator.name}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">{video.creator.name}</p>
               {video.creator.verified && (
                 <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white text-xs">✓</span>
                 </div>
               )}
             </div>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
               {video.views.toLocaleString()} views • {video.timestamp}
             </p>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between mt-4 pt-4 border-t">
+        <div className="flex items-center justify-between mt-4 pt-4 border-t dark:border-gray-700">
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleLike}
               className={`flex items-center space-x-1 ${
-                isLiked ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
+                isLiked ? 'text-red-600 dark:text-red-400' : 'text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400'
               }`}
             >
               <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
@@ -493,7 +496,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
+              className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
               onClick={() => {
                 const commentsSection = document.getElementById('video-comments');
                 if (commentsSection) {
@@ -507,7 +510,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center space-x-1 text-gray-600 hover:text-green-600"
+              className="flex items-center space-x-1 text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400"
               onClick={handleShare}
             >
               <Share className="w-4 h-4" />
@@ -516,17 +519,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
           
           <div className="flex items-center space-x-2">
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs dark:border-gray-600">
               {video.duration}
             </Badge>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-gray-600"
-              onClick={() => toast.info('More options')}
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
           </div>
         </div>
       </CardContent>
@@ -535,3 +530,5 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 };
 
 export default VideoPlayer;
+
+export default VideoPlayer
