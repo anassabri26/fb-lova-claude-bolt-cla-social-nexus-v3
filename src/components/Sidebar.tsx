@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Home, Users, Bookmark, Clock, Calendar, Store, Video, MessageCircle, Flag, ChevronDown, UsersRound, Settings, TrendingUp, Gamepad2 } from 'lucide-react';
+import { Home, Users, Bookmark, Clock, Calendar, Store, Video, MessageCircle, Flag, ChevronDown, UsersRound, Settings, TrendingUp, Gamepad2, Moon, Sun } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ROUTES, MOCK_IMAGES } from '@/lib/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 const Sidebar = () => {
   const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
 
   const menuItems = [
     { icon: Home, label: 'Home', path: ROUTES.HOME },
@@ -59,6 +61,10 @@ const Sidebar = () => {
     // Edit shortcuts functionality
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   const visibleItems = showMore ? menuItems : menuItems.slice(0, 8);
 
   return (
@@ -66,14 +72,14 @@ const Sidebar = () => {
       <div className="p-4 space-y-4">
         {/* User Profile */}
         <div 
-          className="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
+          className="flex items-center space-x-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-colors"
           onClick={handleProfileClick}
         >
           <Avatar className="w-10 h-10">
             <AvatarImage src={MOCK_IMAGES.AVATARS[0]} />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
-          <span className="font-medium text-gray-900">John Doe</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">John Doe</span>
         </div>
 
         {/* Main Menu */}
@@ -86,8 +92,8 @@ const Sidebar = () => {
                 variant="ghost"
                 className={`w-full flex items-center justify-between p-3 rounded-lg text-left font-normal transition-colors ${
                   isActive 
-                    ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' 
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30' 
+                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
                 }`}
                 onClick={() => handleNavigation(item.path)}
                 aria-label={item.label}
@@ -109,29 +115,45 @@ const Sidebar = () => {
         {/* See More Button */}
         <Button
           variant="ghost"
-          className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+          className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors dark:text-gray-200 dark:hover:bg-gray-800"
           onClick={() => {
             setShowMore(!showMore);
           }}
           aria-expanded={showMore}
         >
-          <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-6 h-6 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
             <ChevronDown className={`w-4 h-4 transition-transform ${showMore ? 'rotate-180' : ''}`} />
           </div>
           <span>{showMore ? 'See less' : 'See more'}</span>
         </Button>
 
+        {/* Theme Toggle */}
+        <Button
+          variant="ghost"
+          className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors dark:text-gray-200 dark:hover:bg-gray-800"
+          onClick={toggleTheme}
+        >
+          <div className="w-6 h-6 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
+            {theme === 'dark' ? (
+              <Sun className="w-4 h-4" />
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
+          </div>
+          <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+        </Button>
+
         {/* Divider */}
-        <hr className="border-gray-200" />
+        <hr className="border-gray-200 dark:border-gray-700" />
 
         {/* Shortcuts */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-gray-500 font-medium text-sm">Your shortcuts</h3>
+            <h3 className="text-gray-500 dark:text-gray-400 font-medium text-sm">Your shortcuts</h3>
             <Button
               variant="ghost"
               size="sm"
-              className="text-blue-600 text-sm hover:bg-blue-50 transition-colors"
+              className="text-blue-600 text-sm hover:bg-blue-50 transition-colors dark:text-blue-400 dark:hover:bg-blue-900/20"
               onClick={handleShortcutEdit}
             >
               Edit
@@ -142,7 +164,7 @@ const Sidebar = () => {
             <Button
               key={shortcut.name}
               variant="ghost"
-              className="w-full flex items-center space-x-3 p-3 rounded-lg text-left hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center space-x-3 p-3 rounded-lg text-left hover:bg-gray-100 transition-colors dark:hover:bg-gray-800"
               onClick={() => handleNavigation(shortcut.path)}
             >
               <img
@@ -151,8 +173,8 @@ const Sidebar = () => {
                 className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
               />
               <div className="flex-1 min-w-0">
-                <p className="text-gray-900 font-medium truncate">{shortcut.name}</p>
-                <p className="text-xs text-gray-500">{shortcut.members} members</p>
+                <p className="text-gray-900 dark:text-gray-100 font-medium truncate">{shortcut.name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{shortcut.members} members</p>
               </div>
             </Button>
           ))}
@@ -160,12 +182,12 @@ const Sidebar = () => {
 
         {/* Quick Actions */}
         <div className="space-y-3">
-          <h3 className="text-gray-500 font-medium text-sm">Quick Actions</h3>
+          <h3 className="text-gray-500 dark:text-gray-400 font-medium text-sm">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-3 h-auto"
+              className="flex flex-col items-center space-y-1 p-3 h-auto dark:border-gray-700 dark:text-gray-200"
               onClick={() => {
                 navigate('/');
               }}
@@ -176,7 +198,7 @@ const Sidebar = () => {
             <Button
               variant="outline"
               size="sm"
-              className="flex flex-col items-center space-y-1 p-3 h-auto"
+              className="flex flex-col items-center space-y-1 p-3 h-auto dark:border-gray-700 dark:text-gray-200"
               onClick={() => {
                 navigate(ROUTES.EVENTS);
               }}

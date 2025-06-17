@@ -8,6 +8,7 @@ import NotificationsDropdown from './NotificationsDropdown';
 import LiveStreaming from './LiveStreaming';
 import { useIsMobile, useIsTablet } from '@/hooks/use-device';
 import { ROUTES } from '@/lib/constants';
+import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -60,7 +61,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200 safe-area-top">
+      <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200 safe-area-top dark:bg-gray-900 dark:border-gray-800">
         <div className="container-responsive mx-auto">
           <div className="flex items-center justify-between h-14 px-4">
             {/* Left section - Logo */}
@@ -72,7 +73,7 @@ const Header = () => {
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-lg">f</span>
                 </div>
-                <span className="hide-mobile text-lg font-bold text-blue-600">facebook</span>
+                <span className="hide-mobile text-lg font-bold text-blue-600 dark:text-blue-400">facebook</span>
               </div>
             </div>
 
@@ -86,7 +87,7 @@ const Header = () => {
                     placeholder={isMobile ? "Search" : "Search Facebook"}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-gray-100 border-none rounded-full h-10"
+                    className="pl-10 bg-gray-100 border-none rounded-full h-10 dark:bg-gray-800 dark:text-gray-200"
                   />
                 </div>
               </form>
@@ -104,49 +105,52 @@ const Header = () => {
                       variant="ghost" 
                       size="sm" 
                       className={`relative p-2 rounded-md transition-colors h-10 w-10 ${
-                        isActive ? 'text-blue-600' : 'text-gray-600'
+                        isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'
                       }`}
                       onClick={() => handleNavigation(item.path)}
                       aria-label={item.label}
                     >
                       <item.icon className="w-5 h-5" />
                       {isActive && (
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-blue-600 rounded-t-full"></div>
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-blue-600 dark:bg-blue-400 rounded-t-full"></div>
                       )}
                     </Button>
                   );
                 })}
               </div>
 
+              {/* Theme toggle */}
+              <ThemeToggle />
+
               {/* Action Buttons */}
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10"
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10 dark:hover:bg-gray-800"
                 onClick={handleCreatePost}
                 aria-label="Create post"
               >
-                <Plus className="w-5 h-5 text-gray-600" />
+                <Plus className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </Button>
               
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10"
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10 dark:hover:bg-gray-800"
                 onClick={handleGoLive}
                 aria-label="Go Live"
               >
-                <Video className="w-5 h-5 text-gray-600" />
+                <Video className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </Button>
               
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="relative p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10"
+                className="relative p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10 dark:hover:bg-gray-800"
                 onClick={handleNotificationsClick}
                 aria-label="Notifications"
               >
-                <Bell className="w-5 h-5 text-gray-600" />
+                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center leading-none">3</span>
               </Button>
               
@@ -154,11 +158,11 @@ const Header = () => {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10"
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors h-10 w-10 dark:hover:bg-gray-800"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   aria-label="Menu"
                 >
-                  <Menu className="w-5 h-5 text-gray-600" />
+                  <Menu className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                 </Button>
               )}
               
@@ -174,11 +178,11 @@ const Header = () => {
 
           {/* Mobile menu - Additional options */}
           {isMenuOpen && isMobile && (
-            <div className="bg-white border-t border-gray-200 py-2">
+            <div className="bg-white border-t border-gray-200 py-2 dark:bg-gray-900 dark:border-gray-800">
               <div className="grid grid-cols-2 gap-2 px-4">
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12"
+                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12 dark:text-gray-200"
                   onClick={() => {
                     handleNavigation(ROUTES.FRIENDS);
                     setIsMenuOpen(false);
@@ -189,7 +193,7 @@ const Header = () => {
                 </Button>
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12"
+                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12 dark:text-gray-200"
                   onClick={() => {
                     handleNavigation(ROUTES.GROUPS);
                     setIsMenuOpen(false);
@@ -200,7 +204,7 @@ const Header = () => {
                 </Button>
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12"
+                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12 dark:text-gray-200"
                   onClick={() => {
                     handleNavigation('/gaming');
                     setIsMenuOpen(false);
@@ -211,7 +215,7 @@ const Header = () => {
                 </Button>
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12"
+                  className="flex items-center space-x-2 p-3 rounded-lg text-left justify-start h-12 dark:text-gray-200"
                   onClick={() => {
                     handleNavigation(ROUTES.SETTINGS);
                     setIsMenuOpen(false);
