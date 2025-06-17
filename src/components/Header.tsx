@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Users, MessageCircle, Bell, Menu, Search, Plus, Video, Store } from 'lucide-react';
+import { Home, Users, MessageCircle, Bell, Menu, Search, Plus, Video, Store, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -74,10 +74,9 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Center section - Search and Navigation */}
-            <div className="flex items-center space-x-0.5 flex-1 mx-1 sm:mx-2">
-              {/* Search Bar */}
-              <form onSubmit={handleSearch} className="flex-1 max-w-[100px] sm:max-w-lg">
+            {/* Center section - Search */}
+            <div className="flex-1 max-w-xs sm:max-w-lg mx-2">
+              <form onSubmit={handleSearch} className="w-full">
                 <div className="relative w-full">
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
                   <Input
@@ -89,7 +88,10 @@ const Header = () => {
                   />
                 </div>
               </form>
-              
+            </div>
+
+            {/* Right section - Navigation + User actions */}
+            <div className="flex items-center space-x-0.5 flex-shrink-0">
               {/* Navigation Icons - Show on all screen sizes */}
               <div className="flex items-center space-x-0.5">
                 {navItems.map((item) => {
@@ -113,10 +115,8 @@ const Header = () => {
                   );
                 })}
               </div>
-            </div>
 
-            {/* Right section - User actions */}
-            <div className="flex items-center space-x-0.5 flex-shrink-0">
+              {/* Action Buttons */}
               <Button 
                 variant="ghost" 
                 size="sm" 
