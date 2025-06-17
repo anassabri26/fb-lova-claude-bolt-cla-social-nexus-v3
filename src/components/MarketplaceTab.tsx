@@ -107,7 +107,7 @@ const MarketplaceTab = () => {
       description: 'Complete gaming setup including monitor, keyboard, mouse, and RGB lighting.',
       isSaved: false
     }
-  ];
+  ]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
