@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Users, MessageCircle, Bell, Menu, Search, Plus, Video, Store, Calendar } from 'lucide-react';
+import { Home, MessageCircle, Bell, Menu, Search, Plus, Video, Store, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -19,7 +19,6 @@ const Header = () => {
 
   const navItems = [
     { id: 'home', icon: Home, path: ROUTES.HOME, label: 'Home' },
-    { id: 'friends', icon: Users, path: ROUTES.FRIENDS, label: 'Friends' },
     { id: 'watch', icon: Video, path: ROUTES.WATCH, label: 'Watch' },
     { id: 'marketplace', icon: Store, path: ROUTES.MARKETPLACE, label: 'Marketplace' },
     { id: 'messages', icon: MessageCircle, path: ROUTES.MESSAGES, label: 'Messages' },
@@ -164,6 +163,17 @@ const Header = () => {
           {isMenuOpen && isMobile && (
             <div className="bg-white border-t border-gray-200 py-1">
               <div className="grid grid-cols-2 gap-1 px-2">
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 p-1.5 rounded-lg text-left justify-start h-7"
+                  onClick={() => {
+                    handleNavigation(ROUTES.FRIENDS);
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span className="text-xs">Friends</span>
+                </Button>
                 <Button
                   variant="ghost"
                   className="flex items-center space-x-2 p-1.5 rounded-lg text-left justify-start h-7"
