@@ -68,7 +68,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Get a consistent video source based on video ID
   const getVideoSource = () => {
-    const videoId = parseInt(video.id.replace(/\D/g, '')) || 0;
+    const videoId = parseInt(video.id.replace(/\D/g, '') || '0');
     return mockVideoSources[videoId % mockVideoSources.length];
   };
 

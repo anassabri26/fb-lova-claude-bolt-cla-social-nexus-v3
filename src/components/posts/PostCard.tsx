@@ -11,6 +11,7 @@ import { Post, useLikePost } from '@/hooks/usePosts';
 import { useComments, useCreateComment } from '@/hooks/useComments';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatTimeAgo } from '@/lib/utils';
+import ReactionPicker from '@/components/ReactionPicker';
 
 interface PostCardProps {
   post: Post;
@@ -24,6 +25,9 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
   const [likesCount, setLikesCount] = useState(post.likes_count || 0);
   const [showPhotoViewer, setShowPhotoViewer] = useState(false);
   const [isVideoPost, setIsVideoPost] = useState(false);
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
+  const [reaction, setReaction] = useState<string | null>(null);
+  
   const { user } = useAuth();
   const likeMutation = useLikePost();
   const { data: comments, isLoading: commentsLoading } = useComments(post.id);
@@ -33,10 +37,42 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
     const newIsLiked = !isLiked;
     setIsLiked(newIsLiked);
     setLikesCount(prev => newIsLiked ? prev + 1 : prev - 1);
+    setReaction(newIsLiked ? '👍' : null);
     
     try {
       await likeMutation.mutateAsync({ postId: post.id, isLiked });
     } catch (error) {
+      setIsLiked(isLiked);
+      setLikesCount(post.likes_count || 0);
+      setReaction(isLiked ? '👍' : null);
+    }
+  };
+
+  const handleReaction = async (emoji: string) => {
+    setShowReactionPicker(false);
+    
+    if (reaction === emoji) {
+      // Remove reaction
+      setReaction(null);
+      setIsLiked(false);
+      setLikesCount(prev => prev - 1);
+    } else {
+      // Set new reaction
+      const wasLiked = !!reaction;
+      setReaction(emoji);
+      setIsLiked(true);
+      setLikesCount(prev => wasLiked ? prev : prev + 1);
+    }
+    
+    try {
+      await likeMutation.mutateAsync({ 
+        postId: post.id, 
+        isLiked: !isLiked || reaction !== emoji,
+        reaction: emoji
+      });
+    } catch (error) {
+      // Revert on error
+      setReaction(reaction);
       setIsLiked(isLiked);
       setLikesCount(post.likes_count || 0);
     }
@@ -110,7 +146,7 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
 
   return (
     <>
-      <Card className="card-responsive shadow-sm hover:shadow-md transition-shadow bg-white border border-gray-200">
+      <Card className="card-responsive shadow-sm hover:shadow-md transition-shadow bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <CardContent className="p-0">
           {/* Post Header */}
           <div className="spacing-responsive flex items-center justify-between">
@@ -122,10 +158,10 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-semibold text-gray-900 hover:underline cursor-pointer text-responsive-sm">
+                <h3 className="font-semibold text-gray-900 hover:underline cursor-pointer text-responsive-sm dark:text-gray-100">
                   {post.profiles?.full_name || 'Anonymous User'}
                 </h3>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   {formatTimeAgo(post.created_at)}
                 </p>
               </div>
@@ -135,20 +171,20 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
                 variant="ghost"
                 size="sm"
                 onClick={handleDownload}
-                className="hover:bg-gray-100 touch-target"
+                className="hover:bg-gray-100 touch-target dark:hover:bg-gray-700"
                 disabled={!post.image_url}
               >
-                <Download className="w-4 h-4 text-gray-500" />
+                <Download className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </Button>
-              <Button variant="ghost" size="sm" className="hover:bg-gray-100 touch-target">
-                <MoreHorizontal className="w-5 h-5 text-gray-500" />
+              <Button variant="ghost" size="sm" className="hover:bg-gray-100 touch-target dark:hover:bg-gray-700">
+                <MoreHorizontal className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </Button>
             </div>
           </div>
 
           {/* Post Content */}
           <div className="px-4 pb-3">
-            <p className="text-gray-900 whitespace-pre-wrap leading-relaxed text-responsive-base">
+            <p className="text-gray-900 whitespace-pre-wrap leading-relaxed text-responsive-base dark:text-gray-100">
               {post.content}
             </p>
           </div>
@@ -187,13 +223,17 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
           )}
 
           {/* Reaction Summary */}
-          <div className="px-4 py-3 flex items-center justify-between text-sm text-gray-500 border-b border-gray-100">
+          <div className="px-4 py-3 flex items-center justify-between text-sm text-gray-500 border-b border-gray-100 dark:border-gray-700 dark:text-gray-400">
             <div className="flex items-center space-x-1">
               {likesCount > 0 && (
                 <>
                   <div className="flex -space-x-1">
                     <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-                      <ThumbsUp className="w-3 h-3 text-white" />
+                      {reaction ? (
+                        <span className="text-xs">{reaction}</span>
+                      ) : (
+                        <ThumbsUp className="w-3 h-3 text-white" />
+                      )}
                     </div>
                   </div>
                   <span className="hover:underline cursor-pointer text-responsive-sm">
@@ -213,23 +253,41 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
           {/* Action Buttons */}
           <div className="px-4 py-2 flex items-center justify-between">
             <div className="flex items-center space-x-1">
-              <Button
-                variant="ghost"
-                className={`flex items-center space-x-2 button-responsive rounded-lg transition-colors ${
-                  isLiked 
-                    ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-                onClick={handleLike}
-                disabled={likeMutation.isPending}
-              >
-                <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-                <span className="font-medium text-responsive-sm">Like</span>
-              </Button>
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  className={`flex items-center space-x-2 button-responsive rounded-lg transition-colors ${
+                    isLiked 
+                      ? 'text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30' 
+                      : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+                  }`}
+                  onMouseEnter={() => setShowReactionPicker(true)}
+                  onMouseLeave={() => setShowReactionPicker(false)}
+                  onClick={handleLike}
+                  disabled={likeMutation.isPending}
+                >
+                  {reaction ? (
+                    <span className="text-xl mr-2">{reaction}</span>
+                  ) : (
+                    <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                  )}
+                  <span className="font-medium text-responsive-sm">
+                    {reaction ? 'React' : 'Like'}
+                  </span>
+                </Button>
+                
+                {showReactionPicker && (
+                  <ReactionPicker 
+                    onSelect={handleReaction} 
+                    position="top"
+                    className="z-10"
+                  />
+                )}
+              </div>
 
               <Button
                 variant="ghost"
-                className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
                 onClick={() => setShowComments(!showComments)}
               >
                 <MessageCircle className="w-5 h-5" />
@@ -238,7 +296,7 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
 
               <Button
                 variant="ghost"
-                className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                className="flex items-center space-x-2 button-responsive rounded-lg text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-300 dark:hover:bg-gray-800"
                 onClick={handleShare}
               >
                 <Share className="w-5 h-5" />
@@ -250,7 +308,7 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
               variant="ghost"
               size="sm"
               onClick={handleSave}
-              className={`${isSaved ? 'text-yellow-600' : 'text-gray-600'} hover:bg-gray-100`}
+              className={`${isSaved ? 'text-yellow-600' : 'text-gray-600 dark:text-gray-300'} hover:bg-gray-100 dark:hover:bg-gray-800`}
             >
               <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
             </Button>
@@ -258,9 +316,9 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
 
           {/* Comments Section */}
           {showComments && (
-            <div className="border-t border-gray-200 bg-gray-50">
+            <div className="border-t border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
               {commentsLoading ? (
-                <div className="px-4 py-4 text-center text-gray-500">
+                <div className="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
                   Loading comments...
                 </div>
               ) : comments && comments.length > 0 ? (
@@ -269,20 +327,20 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
                     <div key={comment.id} className="flex space-x-3">
                       <Avatar className="w-8 h-8 flex-shrink-0">
                         <AvatarImage src={comment.profiles?.avatar_url} />
-                        <AvatarFallback className="bg-gray-400 text-white text-xs">
+                        <AvatarFallback className="bg-gray-400 text-white text-xs dark:bg-gray-600">
                           {comment.profiles?.full_name?.charAt(0) || 'U'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <div className="bg-white rounded-lg px-3 py-2 shadow-sm">
-                          <p className="font-semibold text-sm text-gray-900">
+                        <div className="bg-white rounded-lg px-3 py-2 shadow-sm dark:bg-gray-800">
+                          <p className="font-semibold text-sm text-gray-900 dark:text-gray-100">
                             {comment.profiles?.full_name || 'Anonymous User'}
                           </p>
-                          <p className="text-gray-800 break-words text-responsive-sm">
+                          <p className="text-gray-800 break-words text-responsive-sm dark:text-gray-200">
                             {comment.content}
                           </p>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1 px-3">
+                        <p className="text-xs text-gray-500 mt-1 px-3 dark:text-gray-400">
                           {formatTimeAgo(comment.created_at)}
                         </p>
                       </div>
@@ -290,13 +348,13 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
                   ))}
                 </div>
               ) : (
-                <div className="px-4 py-3 text-center text-gray-500 text-responsive-sm">
+                <div className="px-4 py-3 text-center text-gray-500 text-responsive-sm dark:text-gray-400">
                   No comments yet. Be the first to comment!
                 </div>
               )}
               
               {/* Add Comment */}
-              <div className="px-4 py-4 border-t border-gray-200 bg-white">
+              <div className="px-4 py-4 border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
                 <div className="flex space-x-3">
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     <AvatarImage src={user?.user_metadata?.avatar_url} />
@@ -310,7 +368,7 @@ const PostCard: React.FC<PostCardProps> = memo(({ post }) => {
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      className="rounded-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-responsive-sm"
+                      className="rounded-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-responsive-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                       disabled={createCommentMutation.isPending}
                     />
                     <Button 

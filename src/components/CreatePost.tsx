@@ -10,6 +10,7 @@ import { usePerformance } from '@/hooks/usePerformance';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import GIF from '@/components/ui/GIF';
 
 const CreatePost: React.FC = () => {
   const [content, setContent] = useState('');
@@ -141,7 +142,7 @@ const CreatePost: React.FC = () => {
   const selectedPrivacy = privacyOptions.find(option => option.value === privacy);
 
   return (
-    <Card className="card-responsive bg-white shadow-sm border-0 shadow-gray-100 mb-4">
+    <Card className="card-responsive bg-white shadow-sm border-0 shadow-gray-100 mb-4 dark:bg-gray-800 dark:shadow-gray-900">
       <CardContent className="spacing-responsive">
         <div className="flex space-x-3">
           <Avatar className="avatar-responsive">
@@ -152,7 +153,7 @@ const CreatePost: React.FC = () => {
             {!isExpanded ? (
               <button
                 onClick={handleExpand}
-                className="w-full text-left p-2 sm:p-3 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors text-responsive-sm touch-target"
+                className="w-full text-left p-2 sm:p-3 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 transition-colors text-responsive-sm touch-target dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
               >
                 What's on your mind, {user.user_metadata?.full_name?.split(' ')[0] || 'there'}?
               </button>
@@ -161,7 +162,7 @@ const CreatePost: React.FC = () => {
                 {/* Privacy Selector */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium">Share to:</span>
+                    <span className="text-sm font-medium dark:text-gray-200">Share to:</span>
                     <Select value={privacy} onValueChange={setPrivacy}>
                       <SelectTrigger className="w-auto">
                         <SelectValue />
@@ -173,7 +174,7 @@ const CreatePost: React.FC = () => {
                               <option.icon className="w-4 h-4" />
                               <div>
                                 <div className="font-medium">{option.label}</div>
-                                <div className="text-xs text-gray-500">{option.description}</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">{option.description}</div>
                               </div>
                             </div>
                           </SelectItem>
@@ -194,28 +195,28 @@ const CreatePost: React.FC = () => {
                   placeholder={`What's on your mind, ${user.user_metadata?.full_name?.split(' ')[0] || 'there'}?`}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="border-0 resize-none focus:ring-0 text-responsive-base p-0 min-h-[80px] sm:min-h-[100px]"
+                  className="border-0 resize-none focus:ring-0 text-responsive-base p-0 min-h-[80px] sm:min-h-[100px] dark:bg-gray-800 dark:text-gray-100"
                   autoFocus
                 />
 
                 {/* Active Tags Display */}
                 {(feeling || location || taggedFriends.length > 0) && (
-                  <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-lg">
+                  <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-lg dark:bg-gray-700">
                     {feeling && (
-                      <Badge variant="secondary" className="flex items-center space-x-1">
+                      <Badge variant="secondary" className="flex items-center space-x-1 dark:bg-gray-600">
                         <span>feeling {feeling}</span>
                         <X className="w-3 h-3 cursor-pointer" onClick={() => setFeeling('')} />
                       </Badge>
                     )}
                     {location && (
-                      <Badge variant="secondary" className="flex items-center space-x-1">
+                      <Badge variant="secondary" className="flex items-center space-x-1 dark:bg-gray-600">
                         <MapPin className="w-3 h-3" />
                         <span>at {location}</span>
                         <X className="w-3 h-3 cursor-pointer" onClick={() => setLocation('')} />
                       </Badge>
                     )}
                     {taggedFriends.map((friend, index) => (
-                      <Badge key={index} variant="secondary" className="flex items-center space-x-1">
+                      <Badge key={index} variant="secondary" className="flex items-center space-x-1 dark:bg-gray-600">
                         <Users className="w-3 h-3" />
                         <span>with {friend}</span>
                         <X 
@@ -251,11 +252,11 @@ const CreatePost: React.FC = () => {
                 )}
 
                 {/* Enhanced Quick Actions */}
-                <div className="flex flex-wrap gap-2 py-2 border-t border-gray-100">
+                <div className="flex flex-wrap gap-2 py-2 border-t border-gray-100 dark:border-gray-700">
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-green-600 h-auto py-2 px-3"
+                    className="text-green-600 h-auto py-2 px-3 dark:text-green-400"
                     onClick={handleImageUpload}
                   >
                     <Image className="w-4 h-4 mr-1" />
@@ -265,7 +266,7 @@ const CreatePost: React.FC = () => {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-blue-600 h-auto py-2 px-3"
+                    className="text-blue-600 h-auto py-2 px-3 dark:text-blue-400"
                     onClick={handleTagFriends}
                   >
                     <Users className="w-4 h-4 mr-1" />
@@ -278,7 +279,7 @@ const CreatePost: React.FC = () => {
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="text-yellow-600 h-auto py-2 px-3"
+                          className="text-yellow-600 h-auto py-2 px-3 dark:text-yellow-400"
                         >
                           <Smile className="w-4 h-4 mr-1" />
                           <span className="text-xs">Feeling</span>
@@ -297,7 +298,7 @@ const CreatePost: React.FC = () => {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-red-600 h-auto py-2 px-3"
+                    className="text-red-600 h-auto py-2 px-3 dark:text-red-400"
                     onClick={handleLocation}
                   >
                     <MapPin className="w-4 h-4 mr-1" />
@@ -307,7 +308,7 @@ const CreatePost: React.FC = () => {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className={`h-auto py-2 px-3 ${isLive ? 'text-red-600 bg-red-50' : 'text-purple-600'}`}
+                    className={`h-auto py-2 px-3 ${isLive ? 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20' : 'text-purple-600 dark:text-purple-400'}`}
                     onClick={handleGoLive}
                   >
                     <Video className="w-4 h-4 mr-1" />
@@ -317,7 +318,7 @@ const CreatePost: React.FC = () => {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-orange-600 h-auto py-2 px-3"
+                    className="text-orange-600 h-auto py-2 px-3 dark:text-orange-400"
                     onClick={() => toast.info('Event creation coming soon!')}
                   >
                     <Calendar className="w-4 h-4 mr-1" />
@@ -330,7 +331,7 @@ const CreatePost: React.FC = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-gray-600"
+                      className="text-gray-600 dark:text-gray-300"
                       onClick={() => toast.info('Voice note feature coming soon!')}
                     >
                       <Mic className="w-4 h-4 mr-1" />
@@ -338,7 +339,7 @@ const CreatePost: React.FC = () => {
                     </Button>
                     
                     {selectedPrivacy && (
-                      <div className="flex items-center space-x-1 text-xs text-gray-500">
+                      <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
                         <selectedPrivacy.icon className="w-3 h-3" />
                         <span>{selectedPrivacy.label}</span>
                       </div>
@@ -349,7 +350,7 @@ const CreatePost: React.FC = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      className="h-8"
+                      className="h-8 dark:border-gray-600 dark:text-gray-200"
                       onClick={handleCancel}
                     >
                       Cancel
@@ -371,12 +372,12 @@ const CreatePost: React.FC = () => {
 
         {/* Quick Actions for collapsed state */}
         {!isExpanded && (
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
             <div className="flex space-x-1 sm:space-x-2">
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-red-600 flex-1 sm:flex-none"
+                className="text-red-600 flex-1 sm:flex-none dark:text-red-400"
                 onClick={handleGoLive}
               >
                 <Video className="w-4 h-4 mr-1" />
@@ -385,7 +386,7 @@ const CreatePost: React.FC = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-green-600 flex-1 sm:flex-none"
+                className="text-green-600 flex-1 sm:flex-none dark:text-green-400"
                 onClick={handleImageUpload}
               >
                 <Image className="w-4 h-4 mr-1" />
@@ -394,7 +395,7 @@ const CreatePost: React.FC = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-yellow-600 flex-1 sm:flex-none"
+                className="text-yellow-600 flex-1 sm:flex-none dark:text-yellow-400"
                 onClick={() => setIsExpanded(true)}
               >
                 <Smile className="w-4 h-4 mr-1" />

@@ -4,8 +4,6 @@ type Theme = 'light' | 'dark' | 'system';
 
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'light';
-    
     // Check for saved theme preference
     const savedTheme = localStorage.getItem('theme') as Theme;
     if (savedTheme) return savedTheme;
@@ -19,8 +17,6 @@ export const useTheme = () => {
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
     // Update localStorage when theme changes
     localStorage.setItem('theme', theme);
     
@@ -41,8 +37,6 @@ export const useTheme = () => {
 
   // Listen for system theme changes
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     const handleChange = () => {

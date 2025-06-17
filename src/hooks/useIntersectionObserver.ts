@@ -7,12 +7,12 @@ interface UseIntersectionObserverOptions {
   root?: Element | null;
 }
 
-export const useIntersectionObserver = (
+export const useIntersectionObserver = <T extends HTMLElement = HTMLDivElement>(
   options: UseIntersectionObserverOptions = {}
 ) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
-  const elementRef = useRef<HTMLElement>(null);
+  const elementRef = useRef<T>(null);
 
   const {
     threshold = 0.1,
@@ -23,20 +23,15 @@ export const useIntersectionObserver = (
 
   useEffect(() => {
     const element = elementRef.current;
-    if (!element || typeof IntersectionObserver === 'undefined') {
-      // Fallback for environments without IntersectionObserver
-      setIsIntersecting(true);
-      return;
-    }
+    if (!element) return;
+
+    // Skip if already triggered once and triggerOnce is true
+    if (triggerOnce && hasTriggered) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isElementIntersecting = entry.isIntersecting;
         
-        if (triggerOnce && hasTriggered) {
-          return;
-        }
-
         setIsIntersecting(isElementIntersecting);
         
         if (isElementIntersecting && triggerOnce) {
@@ -57,5 +52,5 @@ export const useIntersectionObserver = (
     };
   }, [threshold, rootMargin, triggerOnce, hasTriggered, root]);
 
-  return { elementRef, isIntersecting };
+  return { elementRef, isIntersecting, hasTriggered };
 };

@@ -8,7 +8,7 @@ import NotificationsDropdown from './NotificationsDropdown';
 import LiveStreaming from './LiveStreaming';
 import { useIsMobile, useIsTablet } from '@/hooks/use-device';
 import { ROUTES } from '@/lib/constants';
-import ThemeToggle from './ThemeToggle';
+import DarkModeToggle from './DarkModeToggle';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -120,7 +120,7 @@ const Header = () => {
               </div>
 
               {/* Theme toggle */}
-              <ThemeToggle />
+              <DarkModeToggle />
 
               {/* Action Buttons */}
               <Button 
