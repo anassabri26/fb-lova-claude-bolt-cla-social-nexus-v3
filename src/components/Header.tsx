@@ -76,27 +76,13 @@ const Header = () => {
 
             {/* Center section - Search and Navigation */}
             <div className="flex items-center space-x-0.5 flex-1 mx-1 sm:mx-2">
-              {/* Desktop Search */}
-              <form onSubmit={handleSearch} className="hide-mobile flex-1 max-w-lg">
+              {/* Search Bar */}
+              <form onSubmit={handleSearch} className="flex-1 max-w-[120px] sm:max-w-lg">
                 <div className="relative w-full">
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
                   <Input
                     type="text"
-                    placeholder="Search Facebook"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-7 bg-gray-100 border-none rounded-full text-xs h-6 py-0"
-                  />
-                </div>
-              </form>
-
-              {/* Mobile Search - Reduced width */}
-              <form onSubmit={handleSearch} className="show-mobile flex-1 max-w-[120px]">
-                <div className="relative w-full">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Search"
+                    placeholder={isMobile ? "Search" : "Search Facebook"}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-7 bg-gray-100 border-none rounded-full text-xs h-6 py-0"
@@ -104,8 +90,9 @@ const Header = () => {
                 </div>
               </form>
               
-              {!isMobile && !isTablet && (
-                <div className="flex items-center">
+              {/* Navigation Icons - Show on tablet and desktop */}
+              {!isMobile && (
+                <div className="flex items-center space-x-0.5">
                   {navItems.map((item) => {
                     const isActive = location.pathname === item.path;
                     return (
@@ -131,7 +118,7 @@ const Header = () => {
             </div>
 
             {/* Right section - User actions */}
-            <div className="flex items-center flex-shrink-0">
+            <div className="flex items-center space-x-0.5 flex-shrink-0">
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -145,7 +132,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="relative p-1 rounded-full hover:bg-gray-100 transition-colors h-6 w-6 ml-0.5"
+                className="relative p-1 rounded-full hover:bg-gray-100 transition-colors h-6 w-6"
                 onClick={handleNotificationsClick}
                 aria-label="Notifications"
               >
@@ -153,18 +140,20 @@ const Header = () => {
                 <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 text-white text-xs rounded-full flex items-center justify-center leading-none">3</span>
               </Button>
               
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="show-mobile p-1 rounded-full hover:bg-gray-100 transition-colors h-6 w-6 ml-0.5"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="Menu"
-              >
-                <Menu className="w-3.5 h-3.5 text-gray-600" />
-              </Button>
+              {isMobile && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-1 rounded-full hover:bg-gray-100 transition-colors h-6 w-6"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  aria-label="Menu"
+                >
+                  <Menu className="w-3.5 h-3.5 text-gray-600" />
+                </Button>
+              )}
               
               <Avatar 
-                className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer hover:opacity-80 transition-opacity ml-1" 
+                className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer hover:opacity-80 transition-opacity ml-0.5" 
                 onClick={handleProfileClick}
               >
                 <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face" />
@@ -174,8 +163,8 @@ const Header = () => {
           </div>
 
           {/* Mobile menu */}
-          {isMenuOpen && (
-            <div className="show-mobile bg-white border-t border-gray-200 py-1">
+          {isMenuOpen && isMobile && (
+            <div className="bg-white border-t border-gray-200 py-1">
               <div className="grid grid-cols-2 gap-1 px-2">
                 {navItems.map((item) => (
                   <Button
