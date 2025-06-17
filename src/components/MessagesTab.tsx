@@ -861,6 +861,9 @@ const MessagesTab = () => {
       {/* Image Viewer Dialog */}
       <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
         <DialogContent className="max-w-3xl p-0 bg-black">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Image Viewer</DialogTitle>
+          </DialogHeader>
           <div className="relative">
             <Button 
               variant="ghost" 
@@ -882,6 +885,11 @@ const MessagesTab = () => {
       {/* Call Dialog */}
       <Dialog open={isCallDialogOpen} onOpenChange={setIsCallDialogOpen}>
         <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="sr-only">
+              {callType === 'audio' ? 'Audio Call' : 'Video Call'} with {selectedConversation?.name}
+            </DialogTitle>
+          </DialogHeader>
           <div className="text-center py-8">
             <Avatar className="h-24 w-24 mx-auto mb-4">
               <AvatarImage src={selectedConversation?.avatar} />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Heart, MessageCircle, Share, Bookmark } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
@@ -116,6 +116,11 @@ const StoryViewer: React.FC<StoryViewerProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl p-0 bg-black h-[90vh] max-h-[90vh] overflow-hidden">
+        <DialogHeader>
+          <DialogTitle className="sr-only">
+            Story by {currentStory.user.name} - {currentStory.content}
+          </DialogTitle>
+        </DialogHeader>
         <div className="relative h-full flex flex-col">
           {/* Progress Bar */}
           <div className="absolute top-0 left-0 right-0 z-10 p-2 flex space-x-1">

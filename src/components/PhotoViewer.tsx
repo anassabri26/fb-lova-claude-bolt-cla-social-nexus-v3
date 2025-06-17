@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Heart, MessageCircle, Share, Download, MoreHorizontal } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -89,6 +89,11 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[90vh] p-0 bg-black">
+        <DialogHeader>
+          <DialogTitle className="sr-only">
+            Photo by {currentPhoto.author.name} - {currentPhoto.caption || 'Photo'}
+          </DialogTitle>
+        </DialogHeader>
         <div className="flex h-full">
           {/* Photo Display */}
           <div className="flex-1 relative flex items-center justify-center bg-black">
