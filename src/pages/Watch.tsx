@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import AccessibleButton from '@/components/AccessibleButton';
 import { toast } from 'sonner';
 
 interface Video {
@@ -283,7 +282,7 @@ const Watch = () => {
         {/* Action buttons */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-1">
-            <AccessibleButton
+            <Button
               variant="ghost"
               size="sm"
               onClick={() => handleLike(video.id)}
@@ -293,9 +292,9 @@ const Watch = () => {
             >
               <Heart className={`w-4 h-4 ${likedVideos.has(video.id) ? 'fill-current' : ''}`} />
               <span className="text-sm">{video.likes}</span>
-            </AccessibleButton>
+            </Button>
             
-            <AccessibleButton
+            <Button
               variant="ghost"
               size="sm"
               onClick={() => console.log(`Comment on ${video.id}`)}
@@ -303,9 +302,9 @@ const Watch = () => {
             >
               <MessageCircle className="w-4 h-4" />
               <span className="text-sm">Comment</span>
-            </AccessibleButton>
+            </Button>
 
-            <AccessibleButton
+            <Button
               variant="ghost"
               size="sm"
               onClick={() => handleSave(video.id)}
@@ -314,27 +313,27 @@ const Watch = () => {
               }`}
             >
               <Bookmark className={`w-4 h-4 ${savedVideos.has(video.id) ? 'fill-current' : ''}`} />
-            </AccessibleButton>
+            </Button>
           </div>
 
           <div className="flex items-center space-x-1">
-            <AccessibleButton
+            <Button
               variant="ghost"
               size="sm"
               onClick={() => handleShare(video.id)}
               className="text-gray-600 hover:text-green-600"
             >
               <Share className="w-4 h-4" />
-            </AccessibleButton>
+            </Button>
 
-            <AccessibleButton
+            <Button
               variant="ghost"
               size="sm"
               onClick={() => console.log(`Report ${video.id}`)}
               className="text-gray-600 hover:text-red-600"
             >
               <Flag className="w-4 h-4" />
-            </AccessibleButton>
+            </Button>
           </div>
         </div>
       </CardContent>
@@ -415,13 +414,13 @@ const Watch = () => {
                       <SelectItem value="newest">Newest</SelectItem>
                     </SelectContent>
                   </Select>
-                  <AccessibleButton
+                  <Button
                     variant="outline"
                     size="sm"
                     aria-label="Filter options"
                   >
                     <Filter className="w-4 h-4" />
-                  </AccessibleButton>
+                  </Button>
                 </div>
               </div>
             </div>
