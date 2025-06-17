@@ -7,6 +7,8 @@ import PeopleYouMayKnow from './PeopleYouMayKnow';
 import ActivityFeed from './ActivityFeed';
 import TrendingTopics from './TrendingTopics';
 import QuickActions from './QuickActions';
+import EventsWidget from './EventsWidget';
+import BirthdayWidget from './BirthdayWidget';
 import LiveChat from './LiveChat';
 import { useFriends } from '@/hooks/useFriends';
 import { MOCK_IMAGES } from '@/lib/constants';
@@ -43,6 +45,11 @@ const RightSidebar = () => {
   return (
     <div className="w-full h-full overflow-y-auto scrollbar-thin">
       <div className="p-4 space-y-4">
+        {/* Birthday Widget */}
+        <div className="mb-4">
+          <BirthdayWidget />
+        </div>
+
         {/* Friend Requests */}
         <div className="mb-4">
           <FriendRequestsPanel />
@@ -51,6 +58,11 @@ const RightSidebar = () => {
         {/* People You May Know */}
         <div className="mb-4">
           <PeopleYouMayKnow />
+        </div>
+
+        {/* Events Widget */}
+        <div className="mb-4">
+          <EventsWidget />
         </div>
 
         {/* Quick Actions */}

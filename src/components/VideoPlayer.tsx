@@ -1,73 +1,57 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, SkipBack, SkipForward, Settings, MoreHorizontal, Share, Flag, Download, Scissors } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Maximize, MoreHorizontal, Heart, MessageCircle, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 
 interface VideoPlayerProps {
   video: {
     id: string;
     title: string;
+    creator: {
+      name: string;
+      avatar: string;
+      verified: boolean;
+    };
     thumbnail: string;
     duration: string;
-    isLive?: boolean;
+    views: number;
+    likes: number;
+    timestamp: string;
+    description: string;
   };
   autoPlay?: boolean;
-  onTimeUpdate?: (currentTime: number) => void;
-  onEnded?: () => void;
+  showControls?: boolean;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ 
   video, 
   autoPlay = false, 
-  onTimeUpdate,
-  onEnded 
+  showControls = true 
 }) => {
   const [isPlaying, setIsPlaying] = useState(autoPlay);
-  const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(100);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showControls, setShowControls] = useState(true);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const [quality, setQuality] = useState('1080p');
-  const [showSettings, setShowSettings] = useState(false);
-  
+  const [showControlsOverlay, setShowControlsOverlay] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const handleTimeUpdate = () => {
-      setCurrentTime(video.currentTime);
-      onTimeUpdate?.(video.currentTime);
-    };
+    const updateTime = () => setCurrentTime(video.currentTime);
+    const updateDuration = () => setDuration(video.duration);
 
-    const handleDurationChange = () => {
-      setDuration(video.duration);
-    };
-
-    const handleEnded = () => {
-      setIsPlaying(false);
-      onEnded?.();
-    };
-
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('durationchange', handleDurationChange);
-    video.addEventListener('ended', handleEnded);
+    video.addEventListener('timeupdate', updateTime);
+    video.addEventListener('loadedmetadata', updateDuration);
 
     return () => {
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('durationchange', handleDurationChange);
-      video.removeEventListener('ended', handleEnded);
+      video.removeEventListener('timeupdate', updateTime);
+      video.removeEventListener('loadedmetadata', updateDuration);
     };
-  }, [onTimeUpdate, onEnded]);
+  }, []);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -89,54 +73,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     setIsMuted(!isMuted);
   };
 
-  const handleVolumeChange = (value: number[]) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const newVolume = value[0];
-    video.volume = newVolume / 100;
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
-  };
-
-  const handleSeek = (value: number[]) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const newTime = (value[0] / 100) * duration;
-    video.currentTime = newTime;
-    setCurrentTime(newTime);
-  };
-
-  const skip = (seconds: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.currentTime = Math.max(0, Math.min(duration, video.currentTime + seconds));
-  };
-
-  const toggleFullscreen = () => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    if (!isFullscreen) {
-      container.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
-    setIsFullscreen(!isFullscreen);
-  };
-
-  const handleMouseMove = () => {
-    setShowControls(true);
-    if (controlsTimeoutRef.current) {
-      clearTimeout(controlsTimeoutRef.current);
-    }
-    controlsTimeoutRef.current = setTimeout(() => {
-      if (isPlaying) {
-        setShowControls(false);
-      }
-    }, 3000);
+  const handleLike = () => {
+    setIsLiked(!isLiked);
   };
 
   const formatTime = (time: number) => {
@@ -145,209 +83,156 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handlePlaybackRateChange = (rate: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.playbackRate = rate;
-    setPlaybackRate(rate);
-    setShowSettings(false);
-  };
-
-  const handleQualityChange = (newQuality: string) => {
-    setQuality(newQuality);
-    setShowSettings(false);
-  };
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div 
-      ref={containerRef}
-      className={cn(
-        "relative bg-black rounded-lg overflow-hidden group",
-        isFullscreen ? "fixed inset-0 z-50" : "aspect-video"
-      )}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => isPlaying && setShowControls(false)}
-    >
-      {/* Video Element */}
-      <video
-        ref={videoRef}
-        className="w-full h-full object-cover"
-        poster={video.thumbnail}
-        onClick={togglePlay}
-        onDoubleClick={toggleFullscreen}
-      >
-        <source src={`/api/videos/${video.id}`} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
-      {/* Live Badge */}
-      {video.isLive && (
-        <div className="absolute top-4 left-4">
-          <Badge className="bg-red-500 text-white animate-pulse">
-            <div className="w-2 h-2 bg-white rounded-full mr-1"></div>
-            LIVE
-          </Badge>
-        </div>
-      )}
-
-      {/* Controls Overlay */}
+    <Card className="overflow-hidden bg-black">
       <div 
-        className={cn(
-          "absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent transition-opacity duration-300",
-          showControls ? "opacity-100" : "opacity-0"
-        )}
+        className="relative group"
+        onMouseEnter={() => setShowControlsOverlay(true)}
+        onMouseLeave={() => setShowControlsOverlay(false)}
       >
-        {/* Center Play Button */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={togglePlay}
-            className="w-20 h-20 rounded-full bg-black/50 hover:bg-black/70 text-white"
-          >
+        <video
+          ref={videoRef}
+          className="w-full h-auto max-h-96 object-cover"
+          poster={video.thumbnail}
+          muted={isMuted}
+          onClick={togglePlay}
+        >
+          <source src="#" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        {/* Play/Pause Overlay */}
+        <div 
+          className={`absolute inset-0 flex items-center justify-center transition-opacity ${
+            showControlsOverlay || !isPlaying ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={togglePlay}
+        >
+          <div className="w-16 h-16 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
             {isPlaying ? (
-              <Pause className="w-10 h-10" />
+              <Pause className="w-8 h-8 text-white" />
             ) : (
-              <Play className="w-10 h-10 ml-1" />
+              <Play className="w-8 h-8 text-white ml-1" />
             )}
-          </Button>
+          </div>
         </div>
 
-        {/* Bottom Controls */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
-          {/* Progress Bar */}
-          <div className="w-full">
-            <Slider
-              value={[duration ? (currentTime / duration) * 100 : 0]}
-              onValueChange={handleSeek}
-              max={100}
-              step={0.1}
-              className="w-full"
-            />
-          </div>
+        {/* Controls Overlay */}
+        {showControls && (
+          <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-opacity ${
+            showControlsOverlay ? 'opacity-100' : 'opacity-0'
+          }`}>
+            {/* Progress Bar */}
+            <div className="w-full h-1 bg-white/30 rounded-full mb-3">
+              <div 
+                className="h-full bg-white rounded-full transition-all"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
 
-          {/* Control Buttons */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={togglePlay}
-                className="text-white hover:bg-white/20"
-              >
-                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => skip(-10)}
-                className="text-white hover:bg-white/20"
-              >
-                <SkipBack className="w-5 h-5" />
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => skip(10)}
-                className="text-white hover:bg-white/20"
-              >
-                <SkipForward className="w-5 h-5" />
-              </Button>
-
+            {/* Controls */}
+            <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={togglePlay}
+                  className="text-white hover:bg-white/20"
+                >
+                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={toggleMute}
                   className="text-white hover:bg-white/20"
                 >
-                  {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                 </Button>
-                <div className="w-20">
-                  <Slider
-                    value={[isMuted ? 0 : volume]}
-                    onValueChange={handleVolumeChange}
-                    max={100}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
+                <span className="text-white text-sm">
+                  {formatTime(currentTime)} / {formatTime(duration)}
+                </span>
               </div>
-
-              <span className="text-white text-sm">
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </span>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <div className="relative">
+              <div className="flex items-center space-x-2">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setShowSettings(!showSettings)}
                   className="text-white hover:bg-white/20"
                 >
-                  <Settings className="w-5 h-5" />
+                  <Maximize className="w-4 h-4" />
                 </Button>
-
-                {showSettings && (
-                  <Card className="absolute bottom-full right-0 mb-2 w-48">
-                    <CardContent className="p-2">
-                      <div className="space-y-2">
-                        <div>
-                          <p className="text-sm font-medium mb-1">Playback Speed</p>
-                          <div className="space-y-1">
-                            {[0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => (
-                              <Button
-                                key={rate}
-                                variant={playbackRate === rate ? "default" : "ghost"}
-                                size="sm"
-                                onClick={() => handlePlaybackRateChange(rate)}
-                                className="w-full justify-start"
-                              >
-                                {rate}x
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium mb-1">Quality</p>
-                          <div className="space-y-1">
-                            {['2160p', '1440p', '1080p', '720p', '480p', '360p', 'Auto'].map((q) => (
-                              <Button
-                                key={q}
-                                variant={quality === q ? "default" : "ghost"}
-                                size="sm"
-                                onClick={() => handleQualityChange(q)}
-                                className="w-full justify-start"
-                              >
-                                {q}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:bg-white/20"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
               </div>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleFullscreen}
-                className="text-white hover:bg-white/20"
-              >
-                {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
-              </Button>
             </div>
           </div>
-        </div>
+        )}
       </div>
-    </div>
+
+      {/* Video Info */}
+      <CardContent className="p-4 bg-white">
+        <div className="flex items-start space-x-3">
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={video.creator.avatar} />
+            <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <h3 className="font-semibold text-gray-900 line-clamp-2">{video.title}</h3>
+            <div className="flex items-center space-x-1 mt-1">
+              <p className="text-sm text-gray-600">{video.creator.name}</p>
+              {video.creator.verified && (
+                <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs">✓</span>
+                </div>
+              )}
+            </div>
+            <p className="text-sm text-gray-500 mt-1">
+              {video.views.toLocaleString()} views • {video.timestamp}
+            </p>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between mt-4 pt-4 border-t">
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLike}
+              className={`flex items-center space-x-1 ${
+                isLiked ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
+              }`}
+            >
+              <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+              <span>{video.likes + (isLiked ? 1 : 0)}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>Comment</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center space-x-1 text-gray-600 hover:text-green-600"
+            >
+              <Share className="w-4 h-4" />
+              <span>Share</span>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
