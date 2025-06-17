@@ -10,7 +10,6 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    // Commented out componentTagger plugin as it was causing pre-transform errors
   ],
   resolve: {
     alias: {
