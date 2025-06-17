@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, MoreHorizontal, Heart, MessageCircle, Share, Eye, Filter, Search, Settings, Clock, Bookmark, Flag, Upload, List, Users, Plus, TrendingUp, Zap, Grid, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, MoreHorizontal, Heart, MessageCircle, Share, Eye, Filter, Search, Settings, Clock, Bookmark, Flag, Upload, List, Users, Plus, TrendingUp, Zap, Grid, Calendar, ChevronLeft, ChevronRight, Video, Radio } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -192,8 +192,177 @@ const Watch = () => {
       timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
       category: 'Lifestyle',
       description: 'Transform your home office on a budget with these creative ideas.'
+    },
+    {
+      id: '9',
+      title: 'Live: Music Festival 2024 - Main Stage Performances',
+      creator: {
+        name: 'Music Events',
+        avatar: MOCK_IMAGES.AVATARS[0],
+        verified: true,
+        isFollowing: false,
+        subscribers: '3.2M'
+      },
+      thumbnail: MOCK_IMAGES.POSTS[2],
+      duration: 'LIVE',
+      views: 78500,
+      likes: 12300,
+      timestamp: 'Started 2h ago',
+      isLive: true,
+      category: 'Music',
+      description: 'Watch the main stage performances from Music Festival 2024 live!'
+    },
+    {
+      id: '10',
+      title: 'Live: Breaking News - Global Summit Coverage',
+      creator: {
+        name: 'World News',
+        avatar: MOCK_IMAGES.AVATARS[3],
+        verified: true,
+        isFollowing: true,
+        subscribers: '5.7M'
+      },
+      thumbnail: MOCK_IMAGES.POSTS[4],
+      duration: 'LIVE',
+      views: 125000,
+      likes: 8400,
+      timestamp: 'Started 45m ago',
+      isLive: true,
+      category: 'News',
+      description: 'Live coverage of the Global Summit with world leaders.'
+    },
+    {
+      id: '11',
+      title: 'Live: Gaming Tournament Finals - Championship Match',
+      creator: {
+        name: 'Gaming Network',
+        avatar: MOCK_IMAGES.AVATARS[5],
+        verified: true,
+        isFollowing: false,
+        subscribers: '4.1M'
+      },
+      thumbnail: MOCK_IMAGES.POSTS[3],
+      duration: 'LIVE',
+      views: 320000,
+      likes: 45600,
+      timestamp: 'Started 1h ago',
+      isLive: true,
+      category: 'Gaming',
+      description: 'Watch the championship match of the Gaming Tournament Finals live!'
     }
   ]);
+
+  // Reels data
+  const [reels, setReels] = useState([
+    {
+      id: 'reel1',
+      title: 'Amazing sunset at the beach',
+      creator: {
+        name: 'Nature Explorer',
+        avatar: MOCK_IMAGES.AVATARS[0],
+        verified: true
+      },
+      thumbnail: MOCK_IMAGES.POSTS[0],
+      views: 1200000,
+      likes: 85000,
+      isLiked: false
+    },
+    {
+      id: 'reel2',
+      title: 'Quick coding tip for React developers',
+      creator: {
+        name: 'Code Master',
+        avatar: MOCK_IMAGES.AVATARS[5],
+        verified: true
+      },
+      thumbnail: MOCK_IMAGES.POSTS[1],
+      views: 450000,
+      likes: 32000,
+      isLiked: false
+    },
+    {
+      id: 'reel3',
+      title: '30-second workout routine',
+      creator: {
+        name: 'Fitness Pro',
+        avatar: MOCK_IMAGES.AVATARS[2],
+        verified: false
+      },
+      thumbnail: MOCK_IMAGES.POSTS[2],
+      views: 780000,
+      likes: 45000,
+      isLiked: false
+    },
+    {
+      id: 'reel4',
+      title: 'Amazing drone shot of mountains',
+      creator: {
+        name: 'Adventure Seeker',
+        avatar: MOCK_IMAGES.AVATARS[3],
+        verified: true
+      },
+      thumbnail: MOCK_IMAGES.POSTS[3],
+      views: 920000,
+      likes: 67000,
+      isLiked: false
+    },
+    {
+      id: 'reel5',
+      title: 'Quick recipe: 1-minute chocolate mug cake',
+      creator: {
+        name: 'Chef Maria',
+        avatar: MOCK_IMAGES.AVATARS[2],
+        verified: false
+      },
+      thumbnail: MOCK_IMAGES.POSTS[4],
+      views: 1500000,
+      likes: 120000,
+      isLiked: false
+    },
+    {
+      id: 'reel6',
+      title: 'Incredible magic trick revealed',
+      creator: {
+        name: 'Magic Master',
+        avatar: MOCK_IMAGES.AVATARS[6],
+        verified: true
+      },
+      thumbnail: MOCK_IMAGES.POSTS[5],
+      views: 2100000,
+      likes: 180000,
+      isLiked: false
+    },
+    {
+      id: 'reel7',
+      title: 'Life hack: How to fold a shirt in 2 seconds',
+      creator: {
+        name: 'Life Hacker',
+        avatar: MOCK_IMAGES.AVATARS[7],
+        verified: false
+      },
+      thumbnail: MOCK_IMAGES.POSTS[0],
+      views: 3400000,
+      likes: 290000,
+      isLiked: false
+    },
+    {
+      id: 'reel8',
+      title: 'Cutest puppy reaction to new toy',
+      creator: {
+        name: 'Pet Lover',
+        avatar: MOCK_IMAGES.AVATARS[4],
+        verified: true
+      },
+      thumbnail: MOCK_IMAGES.POSTS[1],
+      views: 4200000,
+      likes: 350000,
+      isLiked: false
+    }
+  ]);
+
+  // Current reel being viewed
+  const [currentReelIndex, setCurrentReelIndex] = useState(0);
+  const [isReelPlaying, setIsReelPlaying] = useState(false);
 
   const [activeTab, setActiveTab] = useState('home');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -345,7 +514,7 @@ const Watch = () => {
         return b.likes - a.likes;
       case 'newest':
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-      default:
+      default: // relevance
         return 0;
     }
   });
@@ -361,6 +530,30 @@ const Watch = () => {
   const trendingVideos = videos.filter(v => v.isTrending);
   const shortsVideos = videos.filter(v => v.isShort);
   const watchHistoryVideos = videos.filter(v => v.watchProgress);
+
+  // Handle reel like
+  const handleReelLike = (reelId: string) => {
+    setReels(prevReels => 
+      prevReels.map(reel => 
+        reel.id === reelId 
+          ? { 
+              ...reel, 
+              isLiked: !reel.isLiked,
+              likes: reel.isLiked ? reel.likes - 1 : reel.likes + 1
+            }
+          : reel
+      )
+    );
+  };
+
+  // Navigate between reels
+  const handleNextReel = () => {
+    setCurrentReelIndex(prev => (prev + 1) % reels.length);
+  };
+
+  const handlePrevReel = () => {
+    setCurrentReelIndex(prev => (prev - 1 + reels.length) % reels.length);
+  };
 
   const renderVideoCard = (video: Video) => (
     <Card 
@@ -659,7 +852,7 @@ const Watch = () => {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           {/* Tab list */}
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-2">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-7 gap-2">
             <TabsTrigger value="home" className="flex items-center space-x-2">
               <Play className="w-4 h-4" />
               <span>Home</span>
@@ -671,6 +864,14 @@ const Watch = () => {
             <TabsTrigger value="shorts" className="flex items-center space-x-2">
               <Zap className="w-4 h-4" />
               <span>Shorts</span>
+            </TabsTrigger>
+            <TabsTrigger value="reels" className="flex items-center space-x-2">
+              <Video className="w-4 h-4" />
+              <span>Reels</span>
+            </TabsTrigger>
+            <TabsTrigger value="live" className="flex items-center space-x-2">
+              <Radio className="w-4 h-4" />
+              <span>Live</span>
             </TabsTrigger>
             <TabsTrigger value="subscriptions" className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
@@ -929,6 +1130,329 @@ const Watch = () => {
                     <p className="text-gray-500">Check back later for short-form content</p>
                   </div>
                 )}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Reels tab */}
+          <TabsContent value="reels" className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <Video className="w-5 h-5 mr-2 text-blue-500" />
+                Reels
+              </h2>
+              
+              {/* Reels Viewer */}
+              <div className="flex flex-col md:flex-row gap-6">
+                {/* Current Reel */}
+                <div className="md:w-1/2 lg:w-2/3">
+                  <div className="relative aspect-[9/16] max-h-[70vh] mx-auto bg-black rounded-xl overflow-hidden">
+                    <img 
+                      src={reels[currentReelIndex].thumbnail} 
+                      alt={reels[currentReelIndex].title}
+                      className="w-full h-full object-cover"
+                    />
+                    
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/70"></div>
+                    
+                    {/* Navigation controls */}
+                    <div className="absolute inset-0 flex items-center justify-between px-4">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-10 w-10 rounded-full bg-black/30 text-white"
+                        onClick={handlePrevReel}
+                      >
+                        <ChevronLeft className="h-6 w-6" />
+                      </Button>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-10 w-10 rounded-full bg-black/30 text-white"
+                        onClick={handleNextReel}
+                      >
+                        <ChevronRight className="h-6 w-6" />
+                      </Button>
+                    </div>
+                    
+                    {/* Play/Pause button */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-16 w-16 rounded-full bg-black/40 text-white"
+                        onClick={() => setIsReelPlaying(!isReelPlaying)}
+                      >
+                        {isReelPlaying ? (
+                          <Pause className="h-8 w-8" />
+                        ) : (
+                          <Play className="h-8 w-8 ml-1" />
+                        )}
+                      </Button>
+                    </div>
+                    
+                    {/* Reel info */}
+                    <div className="absolute bottom-4 left-4 right-12">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Avatar className="h-8 w-8 border-2 border-white">
+                          <AvatarImage src={reels[currentReelIndex].creator.avatar} />
+                          <AvatarFallback>{reels[currentReelIndex].creator.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex items-center">
+                          <p className="text-white text-sm font-medium">{reels[currentReelIndex].creator.name}</p>
+                          {reels[currentReelIndex].creator.verified && (
+                            <div className="ml-1 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs">✓</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-white text-sm mb-2">{reels[currentReelIndex].title}</p>
+                      <div className="flex items-center space-x-3 text-white/80 text-xs">
+                        <div className="flex items-center space-x-1">
+                          <Eye className="h-3 w-3" />
+                          <span>{formatNumber(reels[currentReelIndex].views)}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Heart className="h-3 w-3" />
+                          <span>{formatNumber(reels[currentReelIndex].likes)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Action buttons */}
+                    <div className="absolute right-4 bottom-4 flex flex-col space-y-4">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-10 w-10 rounded-full bg-black/30 text-white"
+                        onClick={() => handleReelLike(reels[currentReelIndex].id)}
+                      >
+                        <Heart className={`h-5 w-5 ${reels[currentReelIndex].isLiked ? 'fill-current text-red-500' : ''}`} />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-10 w-10 rounded-full bg-black/30 text-white"
+                        onClick={() => toast.info('Comment feature coming soon')}
+                      >
+                        <MessageCircle className="h-5 w-5" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-10 w-10 rounded-full bg-black/30 text-white"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${window.location.origin}/reels/${reels[currentReelIndex].id}`);
+                          toast.success('Reel link copied to clipboard');
+                        }}
+                      >
+                        <Share className="h-5 w-5" />
+                      </Button>
+                    </div>
+                    
+                    {/* Progress indicator */}
+                    <div className="absolute top-4 left-4 right-4 flex space-x-1">
+                      {reels.map((_, index) => (
+                        <div 
+                          key={index} 
+                          className={`h-1 rounded-full flex-1 ${
+                            index === currentReelIndex ? 'bg-white' : 'bg-white/30'
+                          }`}
+                        ></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Reels List */}
+                <div className="md:w-1/2 lg:w-1/3 space-y-4">
+                  <h3 className="font-medium text-gray-900">More Reels</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4">
+                    {reels.map((reel, index) => (
+                      <div 
+                        key={reel.id}
+                        className={`cursor-pointer group ${currentReelIndex === index ? 'ring-2 ring-blue-500 rounded-xl' : ''}`}
+                        onClick={() => setCurrentReelIndex(index)}
+                      >
+                        <div className="relative aspect-[9/16] rounded-xl overflow-hidden">
+                          <img 
+                            src={reel.thumbnail} 
+                            alt={reel.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors"></div>
+                          
+                          {currentReelIndex !== index && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Play className="h-8 w-8 text-white" />
+                            </div>
+                          )}
+                          
+                          <div className="absolute bottom-2 left-2 right-2">
+                            <p className="text-white text-xs font-medium line-clamp-1">{reel.title}</p>
+                            <p className="text-white/80 text-xs">{formatNumber(reel.views)} views</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Live tab */}
+          <TabsContent value="live" className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <Radio className="w-5 h-5 mr-2 text-red-500" />
+                Live Now
+              </h2>
+              
+              {/* Featured Live Stream */}
+              {liveVideos.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium mb-4">Featured Live Stream</h3>
+                  <div className="relative rounded-lg overflow-hidden">
+                    <img 
+                      src={liveVideos[0].thumbnail} 
+                      alt={liveVideos[0].title}
+                      className="w-full h-[50vh] object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30"></div>
+                    
+                    <div className="absolute top-4 left-4">
+                      <Badge className="bg-red-500 text-white animate-pulse">
+                        <div className="w-2 h-2 bg-white rounded-full mr-1"></div>
+                        LIVE
+                      </Badge>
+                    </div>
+                    
+                    <div className="absolute top-4 right-4">
+                      <Badge variant="secondary" className="bg-black/50 text-white">
+                        <Eye className="w-3 h-3 mr-1" />
+                        {liveVideos[0].views.toLocaleString()} watching
+                      </Badge>
+                    </div>
+                    
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <Avatar className="h-10 w-10 border-2 border-white">
+                          <AvatarImage src={liveVideos[0].creator.avatar} />
+                          <AvatarFallback>{liveVideos[0].creator.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h4 className="text-white font-semibold">{liveVideos[0].title}</h4>
+                          <p className="text-white/80 text-sm">{liveVideos[0].creator.name}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex space-x-2">
+                        <Button 
+                          className="flex-1"
+                          onClick={() => handleVideoClick(liveVideos[0].id)}
+                        >
+                          <Play className="w-4 h-4 mr-2" />
+                          Watch Now
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleFollow(liveVideos[0].creator.name, liveVideos[0].id, e);
+                          }}
+                        >
+                          {liveVideos[0].creator.isFollowing ? 'Subscribed' : 'Subscribe'}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Live Streams Grid */}
+              <h3 className="text-lg font-medium mb-4">All Live Streams</h3>
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                {liveVideos.length > 0 ? (
+                  liveVideos.map(renderVideoCard)
+                ) : (
+                  <div className="col-span-full text-center py-12">
+                    <Radio className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No live streams</h3>
+                    <p className="text-gray-500">Check back later for live content from your favorite creators</p>
+                  </div>
+                )}
+              </div>
+              
+              {/* Live Categories */}
+              {liveVideos.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="text-lg font-medium mb-4">Browse by Category</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {['Gaming', 'Music', 'News', 'Sports', 'Technology', 'Education', 'Entertainment', 'Talk Shows'].map(category => (
+                      <Button 
+                        key={category} 
+                        variant="outline" 
+                        className="h-auto py-6 flex flex-col items-center space-y-2"
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          setActiveTab('home');
+                        }}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                          <Radio className="w-5 h-5 text-red-500" />
+                        </div>
+                        <span>{category}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Upcoming Streams */}
+              <div className="mt-8">
+                <h3 className="text-lg font-medium mb-4">Upcoming Live Streams</h3>
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                  {[1, 2, 3].map(i => (
+                    <Card key={`upcoming-${i}`} className="overflow-hidden">
+                      <div className="relative">
+                        <img 
+                          src={MOCK_IMAGES.POSTS[i % MOCK_IMAGES.POSTS.length]}
+                          alt={`Upcoming stream ${i}`}
+                          className="w-full h-40 object-cover"
+                        />
+                        <Badge className="absolute top-2 left-2 bg-blue-500">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          Scheduled
+                        </Badge>
+                      </div>
+                      <CardContent className="p-4">
+                        <h4 className="font-medium mb-2">Upcoming Live Event {i}</h4>
+                        <p className="text-sm text-gray-600 mb-3">Starts in {i * 2} hours</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <Avatar className="h-6 w-6">
+                              <AvatarImage src={MOCK_IMAGES.AVATARS[i % MOCK_IMAGES.AVATARS.length]} />
+                              <AvatarFallback>C</AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm">Creator {i}</span>
+                          </div>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => toast.success('Reminder set')}
+                          >
+                            Set Reminder
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
             </div>
           </TabsContent>
