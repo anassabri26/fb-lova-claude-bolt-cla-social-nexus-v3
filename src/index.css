@@ -208,7 +208,7 @@
   display: flex;
   max-width: 100%;
   position: relative;
-  min-height: calc(100vh - 2rem); /* Subtract header height - reduced to 2rem (32px) */
+  min-height: calc(100vh - 2.5rem); /* Adjusted to match actual header height */
 }
 
 .main-content {
@@ -270,8 +270,8 @@
 .sidebar-responsive {
   position: fixed;
   left: 0;
-  top: 2rem; /* 32px - reduced from 2.75rem to match new header height */
-  height: calc(100vh - 2rem);
+  top: 2.5rem; /* Adjusted to match actual header height (40px) */
+  height: calc(100vh - 2.5rem);
   background: white;
   border-right: 1px solid rgb(229 231 235);
   overflow-y: auto;
@@ -316,8 +316,8 @@
 .right-sidebar-responsive {
   position: fixed;
   right: 0;
-  top: 2rem; /* 32px - reduced from 2.75rem to match new header height */
-  height: calc(100vh - 2rem);
+  top: 2.5rem; /* Adjusted to match actual header height (40px) */
+  height: calc(100vh - 2.5rem);
   background: rgb(249 250 251);
   overflow-y: auto;
   z-index: 10;
