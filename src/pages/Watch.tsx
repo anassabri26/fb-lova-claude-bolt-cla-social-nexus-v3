@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, MoreHorizontal, Heart, MessageCircle, Share, Eye, Filter, Search, Maximize, Settings, SkipBack, SkipForward, Clock, Bookmark, Download, Flag, Upload, List, Users, Plus, TrendingUp, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Pause, Volume2, VolumeX, MoreHorizontal, Heart, MessageCircle, Share, Eye, Filter, Search, Settings, Clock, Bookmark, Flag, Upload, List, Users, Plus, TrendingUp, Zap } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import MobileNavigation from '../components/MobileNavigation';
 import AccessibleButton from '../components/AccessibleButton';
-import LiveVideoIndicator from '../components/LiveVideoIndicator';
-import VideoUpload from '../components/VideoUpload';
-import PlaylistManager from '../components/PlaylistManager';
-import SubscriptionManager from '../components/SubscriptionManager';
 import { toast } from 'sonner';
 
 interface Video {
@@ -28,20 +22,18 @@ interface Video {
   };
   thumbnail: string;
   duration: string;
-  durationSeconds: number;
   views: number;
   likes: number;
   timestamp: string;
   isLive?: boolean;
   category: string;
   description: string;
-  videoUrl?: string;
   isTrending?: boolean;
   isShort?: boolean;
 }
 
 const Watch = () => {
-  const [videos, setVideos] = useState<Video[]>([
+  const [videos] = useState<Video[]>([
     {
       id: '1',
       title: 'Amazing Sunset Timelapse from Mount Wilson',
@@ -54,7 +46,6 @@ const Watch = () => {
       },
       thumbnail: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
       duration: '3:45',
-      durationSeconds: 225,
       views: 12500,
       likes: 890,
       timestamp: '2 hours ago',
@@ -74,7 +65,6 @@ const Watch = () => {
       },
       thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop',
       duration: 'LIVE',
-      durationSeconds: 0,
       views: 5400,
       likes: 234,
       timestamp: 'Started 30 min ago',
@@ -94,53 +84,12 @@ const Watch = () => {
       },
       thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop',
       duration: '0:45',
-      durationSeconds: 45,
       views: 8900,
       likes: 567,
       timestamp: '1 day ago',
       category: 'Food',
       description: 'Quick 45-second pasta recipe!',
       isShort: true
-    },
-    {
-      id: '4',
-      title: 'Live: Gaming Tournament Finals',
-      creator: {
-        name: 'GameStream Pro',
-        avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=face',
-        verified: true,
-        isFollowing: true,
-        subscribers: '3.2M'
-      },
-      thumbnail: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop',
-      duration: 'LIVE',
-      durationSeconds: 0,
-      views: 15200,
-      likes: 1890,
-      timestamp: 'Started 1 hour ago',
-      isLive: true,
-      category: 'Gaming',
-      description: 'Watch the most exciting gaming tournament finals live!',
-      isTrending: true
-    },
-    {
-      id: '5',
-      title: 'Morning Yoga Routine for Beginners',
-      creator: {
-        name: 'Wellness Coach',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face',
-        verified: false,
-        isFollowing: false,
-        subscribers: '245K'
-      },
-      thumbnail: 'https://images.unsplash.com/photo-1588286840104-8957b019727f?w=800&h=600&fit=crop',
-      duration: '12:30',
-      durationSeconds: 750,
-      views: 3400,
-      likes: 289,
-      timestamp: '3 days ago',
-      category: 'Health',
-      description: 'Start your day with this gentle yoga routine perfect for beginners.'
     }
   ]);
 
@@ -151,44 +100,12 @@ const Watch = () => {
   const [savedVideos, setSavedVideos] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [volume, setVolume] = useState(50);
-  const [isMuted, setIsMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState<Record<string, number>>({});
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [isFullscreen, setIsFullscreen] = useState<string | null>(null);
-  const [watchLater, setWatchLater] = useState<Set<string>>(new Set());
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const categories = ['All', 'Technology', 'Nature', 'Food', 'Music', 'Gaming', 'Sports', 'Education', 'Health'];
-
-  // Simulate video time progression
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (playingVideo) {
-        setCurrentTime(prev => {
-          const current = prev[playingVideo] || 0;
-          const video = videos.find(v => v.id === playingVideo);
-          const maxDuration = video?.durationSeconds || 0;
-          
-          if (current >= maxDuration && !video?.isLive) {
-            setPlayingVideo(null);
-            toast.info('Video ended');
-            return prev;
-          }
-          
-          return { ...prev, [playingVideo]: current + playbackSpeed };
-        });
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [playingVideo, videos, playbackSpeed]);
 
   const handleVideoClick = (videoId: string) => {
     setPlayingVideo(playingVideo === videoId ? null : videoId);
     const video = videos.find(v => v.id === videoId);
-    toast.success(`${playingVideo === videoId ? 'Paused' : 'Playing'}: ${video?.title}`);
     console.log(`Video ${videoId} ${playingVideo === videoId ? 'paused' : 'playing'}`);
   };
 
@@ -197,16 +114,8 @@ const Watch = () => {
     
     if (likedVideos.has(videoId)) {
       newLiked.delete(videoId);
-      toast.info('Removed like');
-      setVideos(prev => prev.map(v => 
-        v.id === videoId ? { ...v, likes: v.likes - 1 } : v
-      ));
     } else {
       newLiked.add(videoId);
-      toast.success('Video liked!');
-      setVideos(prev => prev.map(v => 
-        v.id === videoId ? { ...v, likes: v.likes + 1 } : v
-      ));
     }
     setLikedVideos(newLiked);
     console.log(`Video ${videoId} ${likedVideos.has(videoId) ? 'unliked' : 'liked'}`);
@@ -214,110 +123,24 @@ const Watch = () => {
 
   const handleSave = (videoId: string) => {
     const newSaved = new Set(savedVideos);
-    const video = videos.find(v => v.id === videoId);
     
     if (savedVideos.has(videoId)) {
       newSaved.delete(videoId);
-      toast.info('Removed from saved');
     } else {
       newSaved.add(videoId);
-      toast.success('Video saved!');
     }
     setSavedVideos(newSaved);
     console.log(`Video ${videoId} ${savedVideos.has(videoId) ? 'unsaved' : 'saved'}`);
   };
 
-  const handleWatchLater = (videoId: string) => {
-    const newWatchLater = new Set(watchLater);
-    const video = videos.find(v => v.id === videoId);
-    
-    if (watchLater.has(videoId)) {
-      newWatchLater.delete(videoId);
-      toast.info('Removed from Watch Later');
-    } else {
-      newWatchLater.add(videoId);
-      toast.success('Added to Watch Later!');
-    }
-    setWatchLater(newWatchLater);
-    console.log(`Video ${videoId} ${watchLater.has(videoId) ? 'removed from' : 'added to'} Watch Later`);
-  };
-
   const handleFollow = (creatorName: string, videoId: string) => {
-    setVideos(prev => prev.map(v => 
-      v.id === videoId 
-        ? { ...v, creator: { ...v.creator, isFollowing: !v.creator.isFollowing } }
-        : v
-    ));
-    const video = videos.find(v => v.id === videoId);
-    toast.success(`${video?.creator.isFollowing ? 'Unfollowed' : 'Now following'} ${creatorName}!`);
-    console.log(`${video?.creator.isFollowing ? 'Unfollowed' : 'Followed'} ${creatorName}`);
+    console.log(`Followed/Unfollowed ${creatorName}`);
   };
 
   const handleShare = (videoId: string) => {
     const video = videos.find(v => v.id === videoId);
     navigator.clipboard.writeText(`${window.location.origin}/watch/${videoId}`);
-    toast.success('Video link copied to clipboard!');
     console.log(`Shared video: ${video?.title}`);
-  };
-
-  const handleComment = (videoId: string) => {
-    toast.info('Opening comments...');
-    console.log(`Opening comments for video ${videoId}`);
-  };
-
-  const handleVolumeToggle = () => {
-    setIsMuted(!isMuted);
-    toast.info(isMuted ? 'Sound on' : 'Sound off');
-  };
-
-  const handleSkip = (videoId: string, direction: 'forward' | 'backward') => {
-    const skipAmount = 10;
-    const current = currentTime[videoId] || 0;
-    const video = videos.find(v => v.id === videoId);
-    const newTime = direction === 'forward' 
-      ? Math.min(current + skipAmount, video?.durationSeconds || 0)
-      : Math.max(current - skipAmount, 0);
-    
-    setCurrentTime(prev => ({ ...prev, [videoId]: newTime }));
-    toast.info(`Skipped ${direction} ${skipAmount}s`);
-  };
-
-  const handleFullscreen = (videoId: string) => {
-    setIsFullscreen(isFullscreen === videoId ? null : videoId);
-    toast.info(isFullscreen === videoId ? 'Exited fullscreen' : 'Entered fullscreen');
-    console.log(`Fullscreen toggled for video ${videoId}`);
-  };
-
-  const handleVideoSettings = (videoId: string) => {
-    toast.info('Video settings opened');
-    console.log(`Settings for video ${videoId}`);
-  };
-
-  const handleDownload = (videoId: string) => {
-    const video = videos.find(v => v.id === videoId);
-    toast.success(`Downloading: ${video?.title}`);
-    console.log(`Download initiated for video ${videoId}`);
-  };
-
-  const handleReport = (videoId: string) => {
-    const video = videos.find(v => v.id === videoId);
-    toast.info(`Report submitted for: ${video?.title}`);
-    console.log(`Report submitted for video ${videoId}`);
-  };
-
-  const handleSpeedChange = (speed: number) => {
-    setPlaybackSpeed(speed);
-    toast.info(`Playback speed: ${speed}x`);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const formatDuration = (duration: string) => {
-    return duration;
   };
 
   const filteredVideos = videos.filter(video => {
@@ -336,8 +159,6 @@ const Watch = () => {
         return b.likes - a.likes;
       case 'newest':
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-      case 'duration':
-        return b.durationSeconds - a.durationSeconds;
       default:
         return 0;
     }
@@ -348,17 +169,24 @@ const Watch = () => {
   const shortsVideos = videos.filter(v => v.isShort);
 
   const renderVideoCard = (video: Video) => (
-    <Card key={video.id} className={`overflow-hidden hover:shadow-lg transition-shadow ${isFullscreen === video.id ? 'fixed inset-0 z-50 rounded-none' : ''}`}>
+    <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
         <img
           src={video.thumbnail}
           alt={video.title}
-          className={`w-full object-cover cursor-pointer ${isFullscreen === video.id ? 'h-screen' : 'h-48'}`}
+          className="w-full h-48 object-cover cursor-pointer"
           onClick={() => handleVideoClick(video.id)}
         />
         
-        {/* Enhanced overlays */}
-        <LiveVideoIndicator viewerCount={video.views} isLive={video.isLive || false} />
+        {/* Live indicator */}
+        {video.isLive && (
+          <div className="absolute top-2 left-2">
+            <Badge className="bg-red-500 text-white animate-pulse">
+              <div className="w-2 h-2 bg-white rounded-full mr-1"></div>
+              LIVE
+            </Badge>
+          </div>
+        )}
         
         {video.isTrending && (
           <div className="absolute top-2 right-2">
@@ -378,7 +206,7 @@ const Watch = () => {
           </div>
         )}
 
-        {/* Video Overlay with enhanced controls */}
+        {/* Play overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all cursor-pointer flex items-center justify-center"
              onClick={() => handleVideoClick(video.id)}>
           <div className="opacity-0 hover:opacity-100 transition-opacity">
@@ -392,7 +220,7 @@ const Watch = () => {
           </div>
         </div>
 
-        {/* Duration Badge */}
+        {/* Duration */}
         <div className="absolute bottom-2 right-2">
           <Badge 
             variant={video.isLive ? 'destructive' : video.isShort ? 'secondary' : 'secondary'}
@@ -401,229 +229,124 @@ const Watch = () => {
             {video.duration}
           </Badge>
         </div>
-
-        {/* Enhanced Video Controls when playing */}
-        {playingVideo === video.id && (
-          <>
-            {!video.isLive && (
-              <div className="absolute bottom-16 left-4 right-4">
-                <Progress 
-                  value={(currentTime[video.id] || 0) / video.durationSeconds * 100} 
-                  className="h-1 bg-white bg-opacity-30"
-                />
-                <div className="flex justify-between text-white text-xs mt-1">
-                  <span>{Math.floor((currentTime[video.id] || 0) / 60)}:{String(Math.floor((currentTime[video.id] || 0) % 60)).padStart(2, '0')}</span>
-                  <span>{video.duration}</span>
-                </div>
-              </div>
-            )}
-            
-            {/* Enhanced Control Buttons */}
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                {!video.isLive && (
-                  <>
-                    <AccessibleButton
-                      size="sm"
-                      onClick={() => console.log(`Skip backward ${video.id}`)}
-                      className="text-white bg-black bg-opacity-50 p-2 rounded"
-                    >
-                      <SkipBack className="w-4 h-4" />
-                    </AccessibleButton>
-                    <AccessibleButton
-                      size="sm"
-                      onClick={() => console.log(`Skip forward ${video.id}`)}
-                      className="text-white bg-black bg-opacity-50 p-2 rounded"
-                    >
-                      <SkipForward className="w-4 h-4" />
-                    </AccessibleButton>
-                  </>
-                )}
-                <AccessibleButton
-                  size="sm"
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="text-white bg-black bg-opacity-50 p-2 rounded"
-                >
-                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                </AccessibleButton>
-              </div>
-              
-              <div className="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                {video.views.toLocaleString()} {video.isLive ? 'watching' : 'views'}
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Select value={playbackSpeed.toString()} onValueChange={(value) => setPlaybackSpeed(parseFloat(value))}>
-                  <SelectTrigger className="w-16 h-8 text-xs text-white bg-black bg-opacity-50 border-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0.5">0.5x</SelectItem>
-                    <SelectItem value="0.75">0.75x</SelectItem>
-                    <SelectItem value="1">1x</SelectItem>
-                    <SelectItem value="1.25">1.25x</SelectItem>
-                    <SelectItem value="1.5">1.5x</SelectItem>
-                    <SelectItem value="2">2x</SelectItem>
-                  </SelectContent>
-                </Select>
-                <AccessibleButton
-                  size="sm"
-                  onClick={() => console.log(`Settings for ${video.id}`)}
-                  className="text-white bg-black bg-opacity-50 p-2 rounded"
-                >
-                  <Settings className="w-4 h-4" />
-                </AccessibleButton>
-                <AccessibleButton
-                  size="sm"
-                  onClick={() => setIsFullscreen(isFullscreen === video.id ? null : video.id)}
-                  className="text-white bg-black bg-opacity-50 p-2 rounded"
-                >
-                  <Maximize className="w-4 h-4" />
-                </AccessibleButton>
-              </div>
-            </div>
-          </>
-        )}
       </div>
 
-      {!isFullscreen && (
-        <CardContent className="p-4">
-          {/* Enhanced Creator Info */}
-          <div className="flex items-start space-x-3 mb-3">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={video.creator.avatar} />
-              <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm leading-tight">
-                {video.title}
-              </h3>
-              <div className="flex items-center space-x-1 mt-1">
-                <p className="text-sm text-gray-600">{video.creator.name}</p>
-                {video.creator.verified && (
-                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs">✓</span>
-                  </div>
-                )}
-                <span className="text-xs text-gray-500">• {video.creator.subscribers} subscribers</span>
-              </div>
-              <p className="text-xs text-gray-500 mt-1 line-clamp-2">{video.description}</p>
-            </div>
-            <div className="flex flex-col space-y-1">
-              <Button
-                variant={video.creator.isFollowing ? "secondary" : "outline"}
-                size="sm"
-                onClick={() => handleFollow(video.creator.name, video.id)}
-              >
-                {video.creator.isFollowing ? 'Following' : 'Follow'}
-              </Button>
-            </div>
-          </div>
-
-          {/* Enhanced Video Stats */}
-          <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1">
-                <Eye className="w-4 h-4" />
-                <span>{video.views.toLocaleString()}</span>
-              </div>
-              <span>{video.timestamp}</span>
-              {video.category && (
-                <Badge variant="outline" className="text-xs">
-                  {video.category}
-                </Badge>
+      <CardContent className="p-4">
+        {/* Creator info */}
+        <div className="flex items-start space-x-3 mb-3">
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={video.creator.avatar} />
+            <AvatarFallback>{video.creator.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm leading-tight">
+              {video.title}
+            </h3>
+            <div className="flex items-center space-x-1 mt-1">
+              <p className="text-sm text-gray-600">{video.creator.name}</p>
+              {video.creator.verified && (
+                <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs">✓</span>
+                </div>
               )}
+              <span className="text-xs text-gray-500">• {video.creator.subscribers} subscribers</span>
             </div>
+            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{video.description}</p>
+          </div>
+          <div className="flex flex-col space-y-1">
+            <Button
+              variant={video.creator.isFollowing ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => handleFollow(video.creator.name, video.id)}
+            >
+              {video.creator.isFollowing ? 'Following' : 'Follow'}
+            </Button>
+          </div>
+        </div>
+
+        {/* Video stats */}
+        <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
+              <Eye className="w-4 h-4" />
+              <span>{video.views.toLocaleString()}</span>
+            </div>
+            <span>{video.timestamp}</span>
+            {video.category && (
+              <Badge variant="outline" className="text-xs">
+                {video.category}
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-1">
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              onClick={() => handleLike(video.id)}
+              className={`flex items-center space-x-1 ${
+                likedVideos.has(video.id) ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
+              }`}
+            >
+              <Heart className={`w-4 h-4 ${likedVideos.has(video.id) ? 'fill-current' : ''}`} />
+              <span className="text-sm">{video.likes}</span>
+            </AccessibleButton>
+            
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              onClick={() => console.log(`Comment on ${video.id}`)}
+              className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span className="text-sm">Comment</span>
+            </AccessibleButton>
+
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              onClick={() => handleSave(video.id)}
+              className={`flex items-center space-x-1 ${
+                savedVideos.has(video.id) ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
+              }`}
+            >
+              <Bookmark className={`w-4 h-4 ${savedVideos.has(video.id) ? 'fill-current' : ''}`} />
+            </AccessibleButton>
           </div>
 
-          {/* Enhanced Action Buttons */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1">
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                onClick={() => handleLike(video.id)}
-                className={`flex items-center space-x-1 ${
-                  likedVideos.has(video.id) ? 'text-red-600' : 'text-gray-600 hover:text-red-600'
-                }`}
-              >
-                <Heart className={`w-4 h-4 ${likedVideos.has(video.id) ? 'fill-current' : ''}`} />
-                <span className="text-sm">{video.likes}</span>
-              </AccessibleButton>
-              
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                onClick={() => handleComment(video.id)}
-                className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span className="text-sm">Comment</span>
-              </AccessibleButton>
+          <div className="flex items-center space-x-1">
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              onClick={() => handleShare(video.id)}
+              className="text-gray-600 hover:text-green-600"
+            >
+              <Share className="w-4 h-4" />
+            </AccessibleButton>
 
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                onClick={() => handleWatchLater(video.id)}
-                className={`flex items-center space-x-1 ${
-                  watchLater.has(video.id) ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'
-                }`}
-              >
-                <Clock className="w-4 h-4" />
-              </AccessibleButton>
-
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                onClick={() => handleSave(video.id)}
-                className={`flex items-center space-x-1 ${
-                  savedVideos.has(video.id) ? 'text-green-600' : 'text-gray-600 hover:text-green-600'
-                }`}
-              >
-                <Bookmark className={`w-4 h-4 ${savedVideos.has(video.id) ? 'fill-current' : ''}`} />
-              </AccessibleButton>
-            </div>
-
-            <div className="flex items-center space-x-1">
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                onClick={() => console.log(`Download ${video.id}`)}
-                className="text-gray-600 hover:text-green-600"
-              >
-                <Download className="w-4 h-4" />
-              </AccessibleButton>
-
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                onClick={() => handleShare(video.id)}
-                className="text-gray-600 hover:text-green-600"
-              >
-                <Share className="w-4 h-4" />
-              </AccessibleButton>
-
-              <AccessibleButton
-                variant="ghost"
-                size="sm"
-                onClick={() => console.log(`Report ${video.id}`)}
-                className="text-gray-600 hover:text-red-600"
-              >
-                <Flag className="w-4 h-4" />
-              </AccessibleButton>
-            </div>
+            <AccessibleButton
+              variant="ghost"
+              size="sm"
+              onClick={() => console.log(`Report ${video.id}`)}
+              className="text-gray-600 hover:text-red-600"
+            >
+              <Flag className="w-4 h-4" />
+            </AccessibleButton>
           </div>
-        </CardContent>
-      )}
+        </div>
+      </CardContent>
     </Card>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          {/* Enhanced Tab List */}
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 gap-2">
+          {/* Tab list */}
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2">
             <TabsTrigger value="home" className="flex items-center space-x-2">
               <Play className="w-4 h-4" />
               <span>Home</span>
@@ -640,19 +363,11 @@ const Watch = () => {
               <Users className="w-4 h-4" />
               <span>Subscriptions</span>
             </TabsTrigger>
-            <TabsTrigger value="playlists" className="flex items-center space-x-2">
-              <List className="w-4 h-4" />
-              <span>Playlists</span>
-            </TabsTrigger>
-            <TabsTrigger value="upload" className="flex items-center space-x-2">
-              <Upload className="w-4 h-4" />
-              <span>Upload</span>
-            </TabsTrigger>
           </TabsList>
 
-          {/* Home Tab */}
+          {/* Home tab */}
           <TabsContent value="home" className="space-y-6">
-            {/* Page Header with Enhanced Stats */}
+            {/* Header */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div>
@@ -672,16 +387,10 @@ const Watch = () => {
                     <Zap className="w-3 h-3 mr-1" />
                     {shortsVideos.length} Shorts
                   </Badge>
-                  <Badge variant="secondary">
-                    {savedVideos.size} Saved
-                  </Badge>
-                  <Badge variant="outline">
-                    {watchLater.size} Watch Later
-                  </Badge>
                 </div>
               </div>
 
-              {/* Enhanced Search and Filters */}
+              {/* Search and filters */}
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <div className="relative">
@@ -704,14 +413,12 @@ const Watch = () => {
                       <SelectItem value="views">Most Viewed</SelectItem>
                       <SelectItem value="likes">Most Liked</SelectItem>
                       <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="duration">Duration</SelectItem>
                     </SelectContent>
                   </Select>
                   <AccessibleButton
                     variant="outline"
                     size="sm"
-                    onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                    aria-label={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
+                    aria-label="Filter options"
                   >
                     <Filter className="w-4 h-4" />
                   </AccessibleButton>
@@ -719,7 +426,7 @@ const Watch = () => {
               </div>
             </div>
 
-            {/* Enhanced Category Filters */}
+            {/* Category filters */}
             <div className="flex space-x-2 overflow-x-auto scrollbar-thin">
               {categories.map((category) => (
                 <Button
@@ -739,12 +446,12 @@ const Watch = () => {
               ))}
             </div>
 
-            {/* Videos Grid */}
-            <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+            {/* Videos grid */}
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {sortedVideos.map(renderVideoCard)}
             </div>
 
-            {/* Empty State */}
+            {/* Empty state */}
             {sortedVideos.length === 0 && (
               <div className="text-center py-12">
                 <Play className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -765,7 +472,7 @@ const Watch = () => {
             )}
           </TabsContent>
 
-          {/* Trending Tab */}
+          {/* Trending tab */}
           <TabsContent value="trending" className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
@@ -778,7 +485,7 @@ const Watch = () => {
             </div>
           </TabsContent>
 
-          {/* Shorts Tab */}
+          {/* Shorts tab */}
           <TabsContent value="shorts" className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
@@ -791,44 +498,26 @@ const Watch = () => {
             </div>
           </TabsContent>
 
-          {/* Subscriptions Tab */}
-          <TabsContent value="subscriptions">
-            <SubscriptionManager />
-          </TabsContent>
-
-          {/* Playlists Tab */}
-          <TabsContent value="playlists">
-            <PlaylistManager />
-          </TabsContent>
-
-          {/* Upload Tab */}
-          <TabsContent value="upload" className="space-y-6">
+          {/* Subscriptions tab */}
+          <TabsContent value="subscriptions" className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center">
-                <Upload className="w-5 h-5 mr-2 text-blue-500" />
-                Upload Video
+                <Users className="w-5 h-5 mr-2 text-blue-500" />
+                Your Subscriptions
               </h2>
               <div className="text-center py-12">
-                <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Share your videos with the world</h3>
-                <p className="text-gray-500 mb-6">Upload and manage your videos to reach millions of viewers</p>
-                <Button onClick={() => setIsUploadModalOpen(true)} size="lg">
-                  <Upload className="w-5 h-5 mr-2" />
-                  Upload Video
+                <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No subscriptions yet</h3>
+                <p className="text-gray-500 mb-6">Subscribe to creators to see their latest videos here</p>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Discover Creators
                 </Button>
               </div>
             </div>
           </TabsContent>
         </Tabs>
       </div>
-      
-      <MobileNavigation />
-      
-      {/* Video Upload Modal */}
-      <VideoUpload 
-        isOpen={isUploadModalOpen} 
-        onClose={() => setIsUploadModalOpen(false)} 
-      />
     </div>
   );
 };
