@@ -67,8 +67,8 @@ const Stories = () => {
             <div className="h-32 bg-gradient-to-b from-blue-400 to-blue-600 rounded-t-lg flex items-center justify-center">
               <Plus className="w-8 h-8 text-white" />
             </div>
-            <div className="p-2 text-center">
-              <p className="text-xs font-medium text-gray-900">Create Story</p>
+            <div className="p-2 text-center flex items-center justify-center h-12">
+              <p className="text-xs font-medium text-gray-900 leading-tight">Create Story</p>
             </div>
           </CardContent>
         </Card>
