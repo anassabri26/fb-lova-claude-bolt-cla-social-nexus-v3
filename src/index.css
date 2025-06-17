@@ -208,7 +208,7 @@
   display: flex;
   max-width: 100%;
   position: relative;
-  min-height: calc(100vh - 2.5rem); /* Adjusted to match actual header height */
+  min-height: calc(100vh - 2rem); /* Adjusted to match actual header height (32px) */
 }
 
 .main-content {
@@ -270,8 +270,8 @@
 .sidebar-responsive {
   position: fixed;
   left: 0;
-  top: 2.5rem; /* Adjusted to match actual header height (40px) */
-  height: calc(100vh - 2.5rem);
+  top: 2rem; /* Adjusted to match actual header height (32px) */
+  height: calc(100vh - 2rem);
   background: white;
   border-right: 1px solid rgb(229 231 235);
   overflow-y: auto;
@@ -316,8 +316,8 @@
 .right-sidebar-responsive {
   position: fixed;
   right: 0;
-  top: 2.5rem; /* Adjusted to match actual header height (40px) */
-  height: calc(100vh - 2.5rem);
+  top: 2rem; /* Adjusted to match actual header height (32px) */
+  height: calc(100vh - 2rem);
   background: rgb(249 250 251);
   overflow-y: auto;
   z-index: 10;
