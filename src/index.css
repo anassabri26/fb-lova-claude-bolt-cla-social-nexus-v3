@@ -239,9 +239,19 @@
   }
 }
 
-/* Desktop: Both sidebars with optimized widths */
+/* Desktop layouts with conditional right sidebar */
+/* Without right sidebar - more space for content */
+@media (min-width: 64.0625rem) { /* 1025px+ */
+  .main-layout.without-right-sidebar .main-content {
+    margin-left: 18rem; /* 288px */
+    width: calc(100% - 18rem);
+    max-width: calc(100% - 18rem);
+  }
+}
+
+/* With right sidebar - balanced layout */
 @media (min-width: 64.0625rem) and (max-width: 80rem) { /* 1025px - 1280px */
-  .main-content {
+  .main-layout.with-right-sidebar .main-content {
     margin-left: 18rem; /* 288px */
     margin-right: 18rem; /* 288px */
     width: calc(100% - 36rem);
@@ -250,19 +260,31 @@
 
 /* Large Desktop: Wider content area with minimal sidebar spacing */
 @media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
-  .main-content {
+  .main-layout.with-right-sidebar .main-content {
     margin-left: 20rem; /* 320px - slightly wider sidebars */
     margin-right: 20rem; /* 320px */
     width: calc(100% - 40rem); /* More space for content */
+  }
+  
+  .main-layout.without-right-sidebar .main-content {
+    margin-left: 20rem; /* 320px */
+    width: calc(100% - 20rem);
+    max-width: calc(100% - 20rem);
   }
 }
 
 /* Extra Large Desktop: Maximum content width */
 @media (min-width: 100.0625rem) { /* 1601px+ */
-  .main-content {
+  .main-layout.with-right-sidebar .main-content {
     margin-left: 22rem; /* 352px */
     margin-right: 22rem; /* 352px */
     width: calc(100% - 44rem); /* Maximum content area */
+  }
+  
+  .main-layout.without-right-sidebar .main-content {
+    margin-left: 22rem; /* 352px */
+    width: calc(100% - 22rem);
+    max-width: calc(100% - 22rem);
   }
 }
 
@@ -321,13 +343,18 @@
   background: rgb(249 250 251);
   overflow-y: auto;
   z-index: 10;
-  display: none; /* Hidden on mobile */
+  display: none; /* Hidden by default - only shown when with-right-sidebar class is present */
   width: 16rem; /* 256px default */
+}
+
+/* Only show right sidebar when the layout has the with-right-sidebar class */
+.main-layout.with-right-sidebar .right-sidebar-responsive {
+  display: block;
 }
 
 /* Desktop: Show right sidebar - content-optimized */
 @media (min-width: 64.0625rem) and (max-width: 80rem) { /* 1025px - 1280px */
-  .right-sidebar-responsive {
+  .main-layout.with-right-sidebar .right-sidebar-responsive {
     display: block;
     width: 18rem; /* 288px - optimized for desktop */
   }
@@ -335,7 +362,7 @@
 
 /* Large Desktop: Optimized right sidebar width */
 @media (min-width: 80.0625rem) and (max-width: 100rem) { /* 1281px - 1600px */
-  .right-sidebar-responsive {
+  .main-layout.with-right-sidebar .right-sidebar-responsive {
     display: block;
     width: 20rem; /* 320px - slightly wider for better balance */
   }
@@ -343,7 +370,7 @@
 
 /* Extra Large Desktop: Maximum right sidebar width */
 @media (min-width: 100.0625rem) { /* 1601px+ */
-  .right-sidebar-responsive {
+  .main-layout.with-right-sidebar .right-sidebar-responsive {
     display: block;
     width: 22rem; /* 352px */
   }

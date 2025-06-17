@@ -26,9 +26,19 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   
   // Determine if we should show the right sidebar based on the current route
   useEffect(() => {
-    // Only show right sidebar on home route
-    setShowRightSidebar(location.pathname === ROUTES.HOME);
-  }, [location.pathname]);
+    // Only show right sidebar on home route and not on mobile/tablet
+    const isHomePage = location.pathname === ROUTES.HOME;
+    const shouldShowRightSidebar = isHomePage && !isMobile && !isTablet;
+    setShowRightSidebar(shouldShowRightSidebar);
+    
+    console.log('Layout update:', {
+      pathname: location.pathname,
+      isHomePage,
+      isMobile,
+      isTablet,
+      shouldShowRightSidebar
+    });
+  }, [location.pathname, isMobile, isTablet]);
 
   if (!user) {
     return (
@@ -43,7 +53,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       <div className="min-h-screen bg-gray-100 flex flex-col">
         <Header />
         
-        <div className="main-layout flex-grow">
+        <div className={`main-layout flex-grow ${showRightSidebar ? 'with-right-sidebar' : 'without-right-sidebar'}`}>
           {/* Left Sidebar - Hidden on mobile */}
           {showSidebars && !isMobile && (
             <aside className="sidebar-responsive">
@@ -56,8 +66,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             {children}
           </main>
           
-          {/* Right Sidebar - Only shown on home page and not on mobile/tablet */}
-          {showSidebars && !isMobile && !isTablet && showRightSidebar && (
+          {/* Right Sidebar - Only shown when showRightSidebar is true (Home page + desktop) */}
+          {showSidebars && (
             <aside className="right-sidebar-responsive">
               <RightSidebar />
             </aside>
