@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Play, X, Camera, Video, Type, Smile, Music } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MOCK_IMAGES } from '@/lib/constants';
 import { toast } from 'sonner';
 
@@ -64,6 +65,30 @@ const Stories = () => {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [storyType, setStoryType] = useState<'photo' | 'video' | 'text'>('photo');
   const [storyContent, setStoryContent] = useState('');
+  const [storyProgress, setStoryProgress] = useState(0);
+
+  // Handle story progress
+  useEffect(() => {
+    if (selectedStory) {
+      const duration = selectedStory.type === 'video' ? 15000 : 5000; // 15s for video, 5s for others
+      const interval = 100; // Update every 100ms
+      const increment = (interval / duration) * 100;
+      
+      const timer = setInterval(() => {
+        setStoryProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(timer);
+            // Auto-close or move to next story
+            setTimeout(() => setSelectedStory(null), 500);
+            return 0;
+          }
+          return prev + increment;
+        });
+      }, interval);
+      
+      return () => clearInterval(timer);
+    }
+  }, [selectedStory]);
 
   const handleCreateStory = () => {
     setIsCreateModalOpen(true);
@@ -71,6 +96,8 @@ const Stories = () => {
 
   const handleViewStory = (story: Story) => {
     setSelectedStory(story);
+    setStoryProgress(0);
+    
     // Mark as viewed
     setStories(prev => prev.map(s => 
       s.id === story.id ? { ...s, isViewed: true } : s
@@ -253,6 +280,16 @@ const Stories = () => {
         <Dialog open={!!selectedStory} onOpenChange={() => setSelectedStory(null)}>
           <DialogContent className="max-w-md p-0 bg-black">
             <div className="relative h-96">
+              {/* Progress Bar */}
+              <div className="absolute top-0 left-0 right-0 z-10 p-2">
+                <div className="w-full h-1 bg-white/30 rounded-full">
+                  <div 
+                    className="h-full bg-white rounded-full transition-all"
+                    style={{ width: `${storyProgress}%` }}
+                  ></div>
+                </div>
+              </div>
+              
               {selectedStory.type === 'text' ? (
                 <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center p-6">
                   <p className="text-white text-lg font-medium text-center">
@@ -288,11 +325,17 @@ const Stories = () => {
                   <X className="w-4 h-4" />
                 </Button>
               </div>
-
-              {/* Progress bar */}
-              <div className="absolute top-2 left-4 right-4">
-                <div className="w-full h-1 bg-white/30 rounded-full">
-                  <div className="w-full h-full bg-white rounded-full"></div>
+              
+              {/* Reply Input */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex space-x-2">
+                  <Input
+                    placeholder={`Reply to ${selectedStory.user.name}...`}
+                    className="bg-white/20 backdrop-blur-sm border-0 text-white placeholder:text-white/70"
+                  />
+                  <Button variant="ghost" className="text-white bg-white/20">
+                    Send
+                  </Button>
                 </div>
               </div>
             </div>
