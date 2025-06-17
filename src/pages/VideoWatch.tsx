@@ -5,6 +5,7 @@ import VideoDetails from '@/components/VideoDetails';
 import VideoComments from '@/components/VideoComments';
 import VideoRecommendations from '@/components/VideoRecommendations';
 import { MOCK_IMAGES } from '@/lib/constants';
+import { formatNumber, formatTimeAgo } from '@/lib/utils';
 import { useIsMobile, useIsTablet } from '@/hooks/use-device';
 import { toast } from 'sonner';
 
