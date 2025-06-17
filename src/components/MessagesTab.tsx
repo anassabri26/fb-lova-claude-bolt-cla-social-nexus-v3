@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { MOCK_IMAGES } from '@/lib/constants';
 import { toast } from 'sonner';
+import { useIsMobile, useIsTablet } from '@/hooks/use-device';
 
 interface Conversation {
   id: string;
@@ -59,6 +60,8 @@ const MessagesTab = () => {
   const [callType, setCallType] = useState<'audio' | 'video'>('audio');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
 
   const [conversations, setConversations] = useState<Conversation[]>([
     {
@@ -697,7 +700,7 @@ const MessagesTab = () => {
       <div className="container-responsive mx-auto py-6">
         <div className="max-w-6xl mx-auto h-[calc(100vh-200px)] flex flex-col md:flex-row bg-white rounded-lg shadow-sm overflow-hidden">
           {/* Conversation List - Hidden on mobile when chat is selected */}
-          <div className={`w-full md:w-1/3 border-r border-gray-200 flex flex-col ${selectedChat ? 'hidden md:flex' : 'flex'}`}>
+          <div className={`w-full md:w-1/3 border-r border-gray-200 flex flex-col ${selectedChat && isMobile ? 'hidden' : 'flex'}`}>
             <div className="p-4 border-b border-gray-200">
               <h2 className="text-xl font-semibold mb-3">Messages</h2>
               <div className="relative">
@@ -728,7 +731,7 @@ const MessagesTab = () => {
                       onClick={() => handleSelectChat(conversation)}
                       className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
                         selectedChat?.id === conversation.id ? 'bg-blue-50 border-blue-200' : ''
-                      }`}
+                      } group`}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="relative">
@@ -884,19 +887,21 @@ const MessagesTab = () => {
           </div>
 
           {/* Chat Area */}
-          <div className={`flex-1 flex flex-col ${!selectedChat ? 'hidden md:flex' : 'flex'}`}>
+          <div className={`flex-1 flex flex-col ${!selectedChat && isMobile ? 'hidden' : 'flex'}`}>
             {selectedChat ? (
               <>
                 <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="md:hidden h-8 w-8 p-0"
-                      onClick={handleBackToList}
-                    >
-                      <ArrowLeft className="w-5 h-5" />
-                    </Button>
+                    {isMobile && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0"
+                        onClick={handleBackToList}
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                      </Button>
+                    )}
                     <Avatar className="w-10 h-10">
                       <AvatarImage src={selectedChat.avatar} />
                       <AvatarFallback>{selectedChat.name.charAt(0)}</AvatarFallback>
@@ -1119,7 +1124,7 @@ const MessagesTab = () => {
                     <MessageCircle className="w-10 h-10 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Your Messages</h3>
-                  <p className="text-gray-500">
+                  <p className="text-gray-500 max-w-md px-4">
                     Select a conversation to start messaging or start a new conversation with the + button.
                   </p>
                   <Button className="mt-4">
@@ -1227,6 +1232,143 @@ const MessagesTab = () => {
                     {selectedChat.isStarred ? 'Unstar conversation' : 'Star conversation'}
                   </Button>
                 </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Group Info Dialog */}
+      <Dialog open={isGroupInfoOpen} onOpenChange={setIsGroupInfoOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Group Info</DialogTitle>
+          </DialogHeader>
+          
+          {selectedChat && selectedChat.isGroup && (
+            <div className="space-y-4">
+              <div className="text-center">
+                <Avatar className="w-24 h-24 mx-auto">
+                  <AvatarImage src={selectedChat.avatar} />
+                  <AvatarFallback>{selectedChat.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <h3 className="text-xl font-semibold mt-2">{selectedChat.name}</h3>
+                <p className="text-sm text-gray-500">
+                  {selectedChat.members?.length || 0} members
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-medium">Members</h4>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {selectedChat.members?.map((member, index) => (
+                    <div key={index} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={member.avatar} />
+                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{member.name}</p>
+                      </div>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-medium">Options</h4>
+                <div className="space-y-2">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => handleMuteConversation(selectedChat.id)}
+                  >
+                    {selectedChat.isMuted ? (
+                      <>
+                        <Bell className="w-4 h-4 mr-2" />
+                        Unmute notifications
+                      </>
+                    ) : (
+                      <>
+                        <BellOff className="w-4 h-4 mr-2" />
+                        Mute notifications
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => handleStarConversation(selectedChat.id)}
+                  >
+                    <Star className={`w-4 h-4 mr-2 ${selectedChat.isStarred ? 'fill-current text-yellow-500' : ''}`} />
+                    {selectedChat.isStarred ? 'Unstar conversation' : 'Star conversation'}
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-red-600"
+                    onClick={() => {
+                      handleDeleteConversation(selectedChat.id);
+                      setIsGroupInfoOpen(false);
+                    }}
+                  >
+                    <Trash className="w-4 h-4 mr-2" />
+                    Leave group
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Call Dialog */}
+      <Dialog open={isCallDialogOpen} onOpenChange={setIsCallDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{callType === 'audio' ? 'Voice Call' : 'Video Call'}</DialogTitle>
+          </DialogHeader>
+          
+          {selectedChat && (
+            <div className="space-y-4 text-center">
+              <Avatar className="w-24 h-24 mx-auto">
+                <AvatarImage src={selectedChat.avatar} />
+                <AvatarFallback>{selectedChat.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <h3 className="text-xl font-semibold">{selectedChat.name}</h3>
+              <p className="text-gray-500">
+                {callType === 'audio' ? 'Calling...' : 'Video calling...'}
+              </p>
+              
+              <div className="flex justify-center space-x-4 pt-4">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="rounded-full h-12 w-12 p-0"
+                  onClick={() => setIsCallDialogOpen(false)}
+                >
+                  <X className="w-6 h-6 text-red-500" />
+                </Button>
+                {callType === 'video' && (
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="rounded-full h-12 w-12 p-0"
+                    onClick={() => setCallType('audio')}
+                  >
+                    <Video className="w-6 h-6 text-blue-500" />
+                  </Button>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="rounded-full h-12 w-12 p-0"
+                  onClick={() => setIsMuted(!isMuted)}
+                >
+                  <Mic className="w-6 h-6 text-blue-500" />
+                </Button>
               </div>
             </div>
           )}
