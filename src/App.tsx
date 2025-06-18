@@ -8,7 +8,6 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { ROUTES } from "@/lib/constants";
 import ChatButton from '@/components/ChatButton';
-import { Toaster } from "@/components/ui/sonner";
 
 // Lazy-loaded pages for better performance
 const Auth = lazy(() => import("./pages/Auth"));
