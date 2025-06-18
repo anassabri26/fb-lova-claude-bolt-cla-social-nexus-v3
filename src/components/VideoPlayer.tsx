@@ -491,7 +491,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               }`}
             >
               <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
-              <span>{video.likes + (isLiked ? 1 : 0)}</span>
+              <span>{video.likes}</span>
             </Button>
             <Button
               variant="ghost"
